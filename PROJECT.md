@@ -28,6 +28,10 @@ A targeted, read-only inspection of conditions that may enable exploitation, plu
 
 `tests/` covers finding classification, the email builders (subject lines, escaping, masking, plain text), the link allowlist and escaping, the filesystem collectors (against a temporary tree), report history, uninstall behavior, and a smoke test of the Site Health controls. All pass on PHP 7.4 and 8.3. The interface has been checked in a browser on desktop, mobile (no horizontal overflow) and print layouts.
 
+## Third-party code
+
+- `plugin-update-checker/` is [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") 5.7 by Jānis Elsts (MIT license, `plugin-update-checker/license.txt`). It is the unmodified upstream copy, kept whole on purpose so it can be replaced by a straight folder swap when a new version is released. Do not edit or trim it. Check the upstream releases page whenever this plugin is released.
+
 ## Limits and open work
 
 - No public-exposure verification, advisory feed, custom signup flow inspection, malware scan or server enforcement test. Permission bits do not establish ACLs or exploitability; HTTPS settings do not establish redirects or certificate validity.

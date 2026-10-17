@@ -56,4 +56,6 @@ See [PROJECT.md](PROJECT.md "Architecture, design decisions and known limits") f
 
 [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2"). Started from a 2019 plugin by Louis Fico, used under the GPLv2-or-later license; the original attribution is retained.
 
+Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") by Jānis Elsts (MIT license), included unmodified.
+
 Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair").
