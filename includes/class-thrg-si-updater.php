@@ -20,7 +20,7 @@ use YahnisElsts\PluginUpdateChecker\v5p7\Vcs\Api;
  * plugin's directory name and deactivate it on update.
  *
  * Release requirements: tag `vX.Y.Z` with an uploaded asset named
- * `thrg-site-inspector-X.Y.Z.zip` whose single top-level folder is
+ * `thrg-site-inspector.X.Y.Z.zip` whose single top-level folder is
  * `thrg-site-inspector/`..
  *
  * A private repository is invisible to an anonymous update check, so this
@@ -30,7 +30,7 @@ final class THRG_SI_Updater {
 
 	const REPOSITORY_URL = 'https://github.com/hackrepair/thrg-site-inspector/';
 	const BRANCH         = 'main';
-	const ASSET_PATTERN  = '/^thrg-site-inspector-[0-9]+(?:\.[0-9]+){2}\.zip$/';
+	const ASSET_PATTERN  = '/^thrg-site-inspector\.[0-9]+(?:\.[0-9]+){2}\.zip$/';
 
 	/**
 	 * @var \YahnisElsts\PluginUpdateChecker\v5\Vcs\Api|null
@@ -87,7 +87,7 @@ final class THRG_SI_Updater {
 					return false;
 				}
 
-				$expected = 'thrg-site-inspector-' . $version . '.zip';
+				$expected = 'thrg-site-inspector.' . $version . '.zip';
 				foreach ( $release->assets as $asset ) {
 					if ( isset( $asset->name ) && is_string( $asset->name ) &&
 						preg_match( self::ASSET_PATTERN, $asset->name ) ) {
