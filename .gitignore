@@ -1,0 +1,6 @@
+.DS_Store
+.AppleDouble
+*.swp
+
+# Local reference material; not part of Site Inspector.
+/other plugins/
