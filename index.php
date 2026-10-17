@@ -372,7 +372,7 @@ function thrg_shc_render_settings_page() {
 
     $options = thrg_shc_get_options();
     $groups  = array(
-        __( 'Interface', 'thrg-site-inspector' )                                        => array(
+        __( 'Interface', 'thrg-site-inspector' ) => array(
             'hide_menu'        => __( 'Hide the Tools > Site Health menu item', 'thrg-site-inspector' ),
             'redirect'         => __( 'Redirect direct visits to the Site Health screen to the dashboard', 'thrg-site-inspector' ),
             'dashboard_widget' => __( 'Remove the Site Health Status dashboard widget', 'thrg-site-inspector' ),
@@ -384,7 +384,7 @@ function thrg_shc_render_settings_page() {
             'block_ajax'    => __( 'Block the Site Health AJAX actions', 'thrg-site-inspector' ),
         ),
     );
-    $mascot = plugins_url( 'assets/img/hackrepair-heart.png', __FILE__ );
+    $mascot  = plugins_url( 'assets/img/hackrepair-heart.png', __FILE__ );
     ?>
     <div class="wrap thrg-inspector thrg-shc-settings">
         <div class="si-head">
@@ -548,11 +548,11 @@ function thrg_shc_format_readme_section( $source ) {
 
     $flush_paragraph = static function () use ( &$output, &$paragraph ) {
         if ( $paragraph ) {
-            $output .= wpautop( thrg_shc_format_readme_inline( implode( "\n", $paragraph ) ) );
+            $output   .= wpautop( thrg_shc_format_readme_inline( implode( "\n", $paragraph ) ) );
             $paragraph = array();
         }
     };
-    $close_list = static function () use ( &$output, &$list_type ) {
+    $close_list      = static function () use ( &$output, &$list_type ) {
         if ( $list_type ) {
             $output   .= '</' . $list_type . '>';
             $list_type = '';
@@ -619,21 +619,23 @@ function thrg_shc_local_plugin_info( $result, $action, $args ) {
         return $result;
     }
 
+    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Reading a local bundled file, not a remote URL.
     $readme = file_get_contents( $readme_path );
     if ( false === $readme ) {
         return $result;
     }
 
-    $parts = preg_split( '/^==\s*([^\r\n]+?)\s*==\s*$/m', $readme, -1, PREG_SPLIT_DELIM_CAPTURE );
-    $tabs  = array(
-        'description'           => 'description',
-        'installation'          => 'installation',
+    $parts    = preg_split( '/^==\s*([^\r\n]+?)\s*==\s*$/m', $readme, -1, PREG_SPLIT_DELIM_CAPTURE );
+    $tabs     = array(
+        'description'                => 'description',
+        'installation'               => 'installation',
         'frequently asked questions' => 'faq',
-        'changelog'             => 'changelog',
+        'changelog'                  => 'changelog',
     );
     $sections = array();
 
-    for ( $i = 1; $i + 1 < count( $parts ); $i += 2 ) {
+    $part_count = count( $parts );
+    for ( $i = 1; $i + 1 < $part_count; $i += 2 ) {
         $key = strtolower( trim( $parts[ $i ] ) );
         if ( isset( $tabs[ $key ] ) ) {
             $sections[ $tabs[ $key ] ] = thrg_shc_format_readme_section( $parts[ $i + 1 ] );

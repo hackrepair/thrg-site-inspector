@@ -39,7 +39,7 @@ $thrg_si_table = static function ( $table ) {
                 echo esc_html( $text );
             }
             if ( $target ) {
-                echo THRG_Site_Inspector::NEW_TAB_HINT . '</a>';
+                echo wp_kses_post( THRG_Site_Inspector::NEW_TAB_HINT ) . '</a>';
             }
             echo '</td>';
         }
@@ -56,7 +56,7 @@ $thrg_si_actions = static function ( $actions ) {
     foreach ( $actions as $action ) {
         $target = THRG_Site_Inspector::href( $action[1] );
         if ( $target ) {
-            echo '<a class="button" href="' . esc_url( $target['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $action[0] ) . ( $target['external'] ? ' ↗' : '' ) . THRG_Site_Inspector::NEW_TAB_HINT . '</a> ';
+            echo '<a class="button" href="' . esc_url( $target['url'] ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $action[0] ) . ( $target['external'] ? ' ↗' : '' ) . wp_kses_post( THRG_Site_Inspector::NEW_TAB_HINT ) . '</a> ';
         }
     }
     echo '</p>';
@@ -88,18 +88,18 @@ $thrg_si_actions = static function ( $actions ) {
 
     <?php
     $thrg_si_notices = array(
-        'cleared' => 'Report history cleared.',
-        'deleted' => 'Report deleted.',
-        'missing' => 'That report is no longer available.',
-        'paused'  => 'History is paused. New inspections will not be saved.',
-        'resumed' => 'History resumed. New inspections will be saved.',
+        'cleared'      => 'Report history cleared.',
+        'deleted'      => 'Report deleted.',
+        'missing'      => 'That report is no longer available.',
+        'paused'       => 'History is paused. New inspections will not be saved.',
+        'resumed'      => 'History resumed. New inspections will be saved.',
         'emailed'      => sprintf( 'Report emailed to %d administrator%s.', $sent, 1 === $sent ? '' : 's' ),
         'mail-partial' => sprintf( 'Report emailed to %d administrator%s, but some messages could not be sent. Check your site\'s email setup.', $sent, 1 === $sent ? '' : 's' ),
         'mail-failed'  => 'WordPress could not send the email. Your site may need an SMTP plugin, or your host may need to enable outgoing mail.',
         'mail-none'    => 'Choose at least one administrator to email.',
         'mail-wait'    => 'An email was just sent. Please wait a minute before sending another.',
     );
-    $thrg_si_warn = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait' );
+    $thrg_si_warn    = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait' );
     if ( isset( $thrg_si_notices[ $flag ] ) ) :
         ?>
         <div class="si-callout<?php echo in_array( $flag, $thrg_si_warn, true ) ? ' si-callout--warning' : ''; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
@@ -129,22 +129,42 @@ $thrg_si_actions = static function ( $actions ) {
             'observed'  => 0,
         );
         foreach ( $rows as $thrg_si_row ) {
-            $thrg_si_counts[ $thrg_si_tone( $thrg_si_row['status'] ) ]++;
+            ++$thrg_si_counts[ $thrg_si_tone( $thrg_si_row['status'] ) ];
         }
-        $thrg_si_issues = array_values( array_filter( $rows, static function ( $r ) { return 'No issue observed' !== $r['status']; } ) );
-        $thrg_si_passed = array_values( array_filter( $rows, static function ( $r ) { return 'No issue observed' === $r['status']; } ) );
+        $thrg_si_issues = array_values(
+            array_filter(
+                $rows,
+                static function ( $r ) {
+					return 'No issue observed' !== $r['status'];
+				}
+            )
+        );
+        $thrg_si_passed = array_values(
+            array_filter(
+                $rows,
+                static function ( $r ) {
+					return 'No issue observed' === $r['status'];
+				}
+            )
+        );
         $thrg_si_first  = array();
         foreach ( $rows as $thrg_si_row ) {
             $thrg_si_first += array( $thrg_si_tone( $thrg_si_row['status'] ) => $thrg_si_row['id'] );
         }
-        $thrg_si_when   = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $saved ? (int) $saved['time'] : null );
-        $thrg_si_site   = $saved ? (string) $saved['site'] : wp_parse_url( home_url(), PHP_URL_HOST );
+        $thrg_si_when = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), $saved ? (int) $saved['time'] : null );
+        $thrg_si_site = $saved ? (string) $saved['site'] : wp_parse_url( home_url(), PHP_URL_HOST );
         ?>
         <?php if ( $saved ) : ?>
             <div class="si-callout si-callout--warning" role="status"><strong>Saved report</strong> from <?php echo esc_html( $thrg_si_when ); ?><?php echo '' !== (string) $saved['name'] ? ' by ' . esc_html( $saved['name'] ) : ''; ?>. This is a snapshot, so what you see may have changed since. <a href="<?php echo esc_url( admin_url( THRG_Site_Inspector::PAGE_URL ) ); ?>">Back to Site Inspector</a></div>
         <?php endif; ?>
         <div class="si-summary" role="status">
-            <?php foreach ( array( 'attention' => 'need attention', 'review' => 'to review', 'observed' => 'nothing found' ) as $thrg_si_k => $thrg_si_label ) : ?>
+            <?php
+            foreach ( array(
+				'attention' => 'need attention',
+				'review'    => 'to review',
+				'observed'  => 'nothing found',
+			) as $thrg_si_k => $thrg_si_label ) :
+				?>
                 <?php $thrg_si_anchor = 'observed' === $thrg_si_k ? 'si-passed' : ( isset( $thrg_si_first[ $thrg_si_k ] ) ? $thrg_si_first[ $thrg_si_k ] : '' ); ?>
                 <?php if ( $thrg_si_anchor && $thrg_si_counts[ $thrg_si_k ] ) : ?>
                     <a class="si-sum si-sum-<?php echo esc_attr( $thrg_si_k ); ?>" href="#<?php echo esc_attr( $thrg_si_anchor ); ?>"><strong><?php echo (int) $thrg_si_counts[ $thrg_si_k ]; ?></strong> <?php echo esc_html( $thrg_si_label ); ?></a>

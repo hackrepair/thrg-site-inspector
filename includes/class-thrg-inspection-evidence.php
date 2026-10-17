@@ -75,7 +75,14 @@ final class THRG_Inspection_Evidence {
      * @return array
      */
     public static function uploads( $root, $limit = self::UPLOAD_LIMIT, $seconds = self::UPLOAD_SECONDS ) {
-        $result = array( 'items' => array(), 'placeholders' => array(), 'partial' => false, 'checked' => 0, 'rules' => array(), 'missing' => false );
+        $result = array(
+			'items'        => array(),
+			'placeholders' => array(),
+			'partial'      => false,
+			'checked'      => 0,
+			'rules'        => array(),
+			'missing'      => false,
+		);
         if ( ! is_dir( $root ) || is_link( $root ) || ! is_readable( $root ) ) {
             $result['partial'] = true;
             $result['missing'] = true;
@@ -90,7 +97,11 @@ final class THRG_Inspection_Evidence {
                 $result['partial'] = true;
                 continue;
             }
-            while ( false !== ( $name = readdir( $handle ) ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+            while ( true ) {
+                $name = readdir( $handle );
+                if ( false === $name ) {
+                    break;
+                }
                 if ( '.' === $name || '..' === $name ) {
                     continue;
                 }
@@ -99,7 +110,7 @@ final class THRG_Inspection_Evidence {
                     closedir( $handle );
                     return $result;
                 }
-                $result['checked']++;
+                ++$result['checked'];
                 $path = $dir . '/' . $name;
                 if ( is_link( $path ) ) {
                     $result['partial'] = true;
@@ -117,7 +128,12 @@ final class THRG_Inspection_Evidence {
                             $result['placeholders'][] = $rel;
                         }
                     } elseif ( count( $result['items'] ) < self::RESULT_LIMIT ) {
-                        $result['items'][] = array( 'path' => $rel, 'size' => false === $size ? null : (int) $size, 'modified' => (int) @filemtime( $path ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+                        $result['items'][] = array(
+							'path'     => $rel,
+							'size'     => false === $size ? null : (int) $size,
+								// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- The file can disappear during this bounded read-only scan.
+							'modified' => (int) @filemtime( $path ),
+						);
                     } else {
                         $result['partial'] = true;
                     }
@@ -153,10 +169,25 @@ final class THRG_Inspection_Evidence {
         };
 
         $fixed = array(
-            'wp-config.php.bak', 'wp-config.php.old', 'wp-config.php.orig', 'wp-config.php.save', 'wp-config.php~',
-            'wp-config.php.swp', '.wp-config.php.swp', 'wp-config.bak', 'wp-config.txt',
-            '.env', '.git/config', 'backup.sql', 'database.sql', 'dump.sql',
-            'phpinfo.php', 'info.php', 'adminer.php', 'error_log', 'php_errorlog',
+            'wp-config.php.bak',
+			'wp-config.php.old',
+			'wp-config.php.orig',
+			'wp-config.php.save',
+			'wp-config.php~',
+            'wp-config.php.swp',
+			'.wp-config.php.swp',
+			'wp-config.bak',
+			'wp-config.txt',
+            '.env',
+			'.git/config',
+			'backup.sql',
+			'database.sql',
+			'dump.sql',
+            'phpinfo.php',
+			'info.php',
+			'adminer.php',
+			'error_log',
+			'php_errorlog',
         );
         foreach ( $fixed as $name ) {
             $add( $root . $name, $name );
@@ -211,7 +242,12 @@ final class THRG_Inspection_Evidence {
         if ( is_object( $core_data ) && ! empty( $core_data->updates ) && is_array( $core_data->updates ) ) {
             foreach ( $core_data->updates as $offer ) {
                 if ( isset( $offer->response, $offer->current ) && 'upgrade' === $offer->response ) {
-                    $updates[] = array( 'type' => 'core', 'name' => 'WordPress', 'installed' => get_bloginfo( 'version' ), 'available' => (string) $offer->current );
+                    $updates[] = array(
+						'type'      => 'core',
+						'name'      => 'WordPress',
+						'installed' => get_bloginfo( 'version' ),
+						'available' => (string) $offer->current,
+					);
                     break;
                 }
             }
@@ -232,7 +268,12 @@ final class THRG_Inspection_Evidence {
         if ( is_object( $theme_data ) && ! empty( $theme_data->response ) && is_array( $theme_data->response ) ) {
             foreach ( $theme_data->response as $slug => $offer ) {
                 if ( isset( $themes[ $slug ] ) && isset( $offer['new_version'] ) ) {
-                    $updates[] = array( 'type' => 'theme', 'name' => $themes[ $slug ]->get( 'Name' ), 'installed' => $themes[ $slug ]->get( 'Version' ), 'available' => (string) $offer['new_version'] );
+                    $updates[] = array(
+						'type'      => 'theme',
+						'name'      => $themes[ $slug ]->get( 'Name' ),
+						'installed' => $themes[ $slug ]->get( 'Version' ),
+						'available' => (string) $offer['new_version'],
+					);
                 }
             }
         }
@@ -285,17 +326,32 @@ final class THRG_Inspection_Evidence {
                 }
                 $path = $dir . '/' . $name;
                 if ( is_dir( $path ) ) {
-                    $mu[] = array( 'path' => 'mu-plugins/' . $name . '/', 'modified' => (int) @filemtime( $path ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+                    $mu[] = array(
+						'path'     => 'mu-plugins/' . $name . '/',
+							// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- The path can disappear during this bounded read-only scan.
+						'modified' => (int) @filemtime( $path ),
+					);
                 } elseif ( preg_match( '/\.php[0-9]*$/i', $name ) ) {
-                    $mu[] = array( 'path' => 'mu-plugins/' . $name, 'modified' => (int) @filemtime( $path ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+                    $mu[] = array(
+						'path'     => 'mu-plugins/' . $name,
+							// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- The file can disappear during this bounded read-only scan.
+						'modified' => (int) @filemtime( $path ),
+					);
                 }
             }
         }
         $dropins = array();
         foreach ( array_keys( get_dropins() ) as $file ) {
-            $dropins[] = array( 'path' => 'wp-content/' . $file, 'modified' => (int) @filemtime( WP_CONTENT_DIR . '/' . $file ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+            $dropins[] = array(
+				'path'     => 'wp-content/' . $file,
+					// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- The drop-in can disappear during this bounded read-only scan.
+				'modified' => (int) @filemtime( WP_CONTENT_DIR . '/' . $file ),
+			);
         }
-        return array( 'mu' => array_slice( $mu, 0, self::RESULT_LIMIT ), 'dropins' => $dropins );
+        return array(
+			'mu'      => array_slice( $mu, 0, self::RESULT_LIMIT ),
+			'dropins' => $dropins,
+		);
     }
 
     /**
@@ -309,7 +365,7 @@ final class THRG_Inspection_Evidence {
         foreach ( array( 'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY', 'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT' ) as $name ) {
             $value = defined( $name ) ? (string) constant( $name ) : '';
             if ( strlen( $value ) < 32 || false !== stripos( $value, 'put your unique phrase here' ) ) {
-                $weak++;
+                ++$weak;
             }
         }
         return $weak;

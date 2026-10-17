@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<ruleset name="The Hack Repair Guy's Site Inspector">
+    <description>WordPress coding standards and PHP 7.4+ compatibility for The Hack Repair Guy's Site Inspector.</description>
+
+    <file>.</file>
+
+    <exclude-pattern>/.git/*</exclude-pattern>
+    <exclude-pattern>/.review/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <exclude-pattern>/plugin-update-checker/*</exclude-pattern>
+    <exclude-pattern>/tests/*</exclude-pattern>
+    <exclude-pattern>/vendor/*</exclude-pattern>
+
+    <arg name="extensions" value="php"/>
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg value="ps"/>
+
+    <config name="minimum_wp_version" value="6.9.4"/>
+    <config name="testVersion" value="7.4-"/>
+
+    <rule ref="WordPress-Extra">
+        <!-- This plugin follows the four-space house style used across these plugins. -->
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent"/>
+        <exclude name="Universal.WhiteSpace.PrecisionAlignment"/>
+    </rule>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="thrg-site-inspector"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="thrg"/>
+                <element value="THRG"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="PHPCompatibilityWP"/>
+</ruleset>

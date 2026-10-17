@@ -58,6 +58,7 @@ final class THRG_Site_Inspector {
 
     public static function handle_delete() {
         self::guard( 'thrg_si_delete_report' );
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- guard() verifies this action's nonce before form data is read.
         $id = isset( $_POST['report'] ) ? sanitize_key( wp_unslash( $_POST['report'] ) ) : '';
         self::back( THRG_SI_History::delete( $id ) ? 'deleted' : 'missing' );
     }
@@ -71,6 +72,7 @@ final class THRG_Site_Inspector {
     /** Email a saved report to chosen administrators, then return to that report. */
     public static function handle_email() {
         self::guard( 'thrg_si_email_report' );
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- guard() verifies this action's nonce before form data is read.
         $id    = isset( $_POST['report'] ) ? sanitize_key( wp_unslash( $_POST['report'] ) ) : '';
         $back  = static function ( $flag, $sent = 0 ) use ( $id ) {
             $args = array( 'thrg_si_done' => $flag );
@@ -87,6 +89,7 @@ final class THRG_Site_Inspector {
         if ( ! $entry ) {
             $back( 'missing' );
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- guard() verifies this action's nonce before form data is read.
         $ids = isset( $_POST['recipients'] ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST['recipients'] ) ) ) : array();
         if ( ! $ids ) {
             $back( 'mail-none' );
@@ -95,6 +98,7 @@ final class THRG_Site_Inspector {
         if ( get_transient( $wait_key ) ) {
             $back( 'mail-wait' );
         }
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- guard() verifies this action's nonce before form data is read.
         $note  = isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '';
         $note  = function_exists( 'mb_substr' ) ? mb_substr( $note, 0, THRG_SI_Email::NOTE_LENGTH ) : substr( $note, 0, THRG_SI_Email::NOTE_LENGTH );
         $older = null;
@@ -252,27 +256,33 @@ final class THRG_Site_Inspector {
         } elseif ( $o['registration'] && $o['role_caps'] ) {
             $status = 'Potential weakness';
         }
-        $rows[] = self::act( self::finding(
-            'registration',
-            'Public registration privileges',
-            $status,
-            'Potential weakness' === $status ? 'Anyone can register, and new accounts receive more than basic access.' : ( 'Unable to verify' === $status ? 'Registration policy could not be confirmed on this setup.' : 'New sign-ups do not receive elevated access.' ),
-            array( '[[options-general.php|Anyone can register]]: ' . ( $o['registration'] ? 'yes' : 'no' ) . '; default role: ' . self::plain( $o['role'] ) . '; elevated capabilities: ' . ( $o['role_caps'] ? implode( ', ', $o['role_caps'] ) : 'none' ) . '.' ),
-            'Custom registration forms, capability filters, and network signup policy are not verified.',
-            $o['multisite'] ? 'Review network registration policy and custom signup flows separately.' : ( 'Potential weakness' === $status ? 'Set the default role to Subscriber under [[options-general.php|Settings > General]], or turn off open registration.' : '' )
-        ), 'No issue observed' === $status ? array() : array( array( 'Open General Settings', 'options-general.php' ) ) );
+        $rows[] = self::act(
+            self::finding(
+                'registration',
+                'Public registration privileges',
+                $status,
+                'Potential weakness' === $status ? 'Anyone can register, and new accounts receive more than basic access.' : ( 'Unable to verify' === $status ? 'Registration policy could not be confirmed on this setup.' : 'New sign-ups do not receive elevated access.' ),
+                array( '[[options-general.php|Anyone can register]]: ' . ( $o['registration'] ? 'yes' : 'no' ) . '; default role: ' . self::plain( $o['role'] ) . '; elevated capabilities: ' . ( $o['role_caps'] ? implode( ', ', $o['role_caps'] ) : 'none' ) . '.' ),
+                'Custom registration forms, capability filters, and network signup policy are not verified.',
+                $o['multisite'] ? 'Review network registration policy and custom signup flows separately.' : ( 'Potential weakness' === $status ? 'Set the default role to Subscriber under [[options-general.php|Settings > General]], or turn off open registration.' : '' )
+            ),
+            'No issue observed' === $status ? array() : array( array( 'Open General Settings', 'options-general.php' ) )
+        );
 
         // HTTPS.
         $https_ok = $o['home_https'] && $o['site_https'];
-        $rows[]   = self::act( self::finding(
-            'https-config',
-            'Configured HTTPS URLs',
-            $https_ok ? 'No issue observed' : ( $o['local_environment'] ? 'Review' : 'Potential weakness' ),
-            $https_ok ? 'Both site addresses are set to HTTPS.' : ( $o['local_environment'] ? 'This looks like a local copy, where HTTP is expected.' : 'Logins and cookies can travel unencrypted when the site address uses HTTP.' ),
-            array( ( $o['local_environment'] ? 'Local/development environment detected. ' : '' ) . 'Site address HTTPS: ' . ( $o['home_https'] ? 'yes' : 'no' ) . '; WordPress address HTTPS: ' . ( $o['site_https'] ? 'yes' : 'no' ) . '.' ),
-            'Settings do not prove the certificate is valid or that HTTP redirects to HTTPS.',
-            $https_ok ? '' : ( $o['local_environment'] ? 'HTTP is normal on a local copy. Run this inspection on the live site to check its settings.' : 'Install a certificate and switch both addresses under [[options-general.php|Settings > General]] to https://.' )
-        ), $https_ok ? array() : array( array( 'Open General Settings', 'options-general.php' ) ) );
+        $rows[]   = self::act(
+            self::finding(
+                'https-config',
+                'Configured HTTPS URLs',
+                $https_ok ? 'No issue observed' : ( $o['local_environment'] ? 'Review' : 'Potential weakness' ),
+                $https_ok ? 'Both site addresses are set to HTTPS.' : ( $o['local_environment'] ? 'This looks like a local copy, where HTTP is expected.' : 'Logins and cookies can travel unencrypted when the site address uses HTTP.' ),
+                array( ( $o['local_environment'] ? 'Local/development environment detected. ' : '' ) . 'Site address HTTPS: ' . ( $o['home_https'] ? 'yes' : 'no' ) . '; WordPress address HTTPS: ' . ( $o['site_https'] ? 'yes' : 'no' ) . '.' ),
+                'Settings do not prove the certificate is valid or that HTTP redirects to HTTPS.',
+                $https_ok ? '' : ( $o['local_environment'] ? 'HTTP is normal on a local copy. Run this inspection on the live site to check its settings.' : 'Install a certificate and switch both addresses under [[options-general.php|Settings > General]] to https://.' )
+            ),
+            $https_ok ? array() : array( array( 'Open General Settings', 'options-general.php' ) )
+        );
 
         // wp-config.php permissions. PHP being able to write it is normal on cPanel/PHP-FPM hosting.
         $mode   = $o['config_mode'];
@@ -322,22 +332,32 @@ final class THRG_Site_Inspector {
         }
         $table = null;
         if ( $count ) {
-            $table = array( 'head' => array( 'Type', 'Name', 'Installed', 'Available' ), 'rows' => array() );
-            $pages = array( 'core' => 'update-core.php', 'plugin' => 'plugins.php', 'theme' => 'themes.php' );
+            $table = array(
+				'head' => array( 'Type', 'Name', 'Installed', 'Available' ),
+				'rows' => array(),
+			);
+            $pages = array(
+				'core'   => 'update-core.php',
+				'plugin' => 'plugins.php',
+				'theme'  => 'themes.php',
+			);
             foreach ( $s['updates'] as $u ) {
                 $table['rows'][] = array( $u['type'], array( self::plain( $u['name'] ), $pages[ $u['type'] ] ), $u['installed'], array( $u['available'], 'update-core.php' ) );
             }
         }
-        return self::act( self::finding(
-            'updates',
-            $count ? sprintf( '%d update%s waiting', $count, 1 === $count ? '' : 's' ) : 'Software updates',
-            $status,
-            $why,
-            array( $fresh . ' [[update-core.php?force-check=1|Check again]]' ),
-            'An available update is not proof of a known vulnerability, and an up-to-date plugin can still be vulnerable or abandoned. Data comes from WordPress\'s stored update checks; this inspection sends no requests.',
-            $count ? 'Back up, then apply these updates from [[update-core.php|Dashboard > Updates]]. Remove anything you no longer use instead of updating it.' : ( 'No issue observed' === $status ? '' : 'Open [[update-core.php|Dashboard > Updates]] to refresh update information.' ),
-            $table
-        ), array( array( 'Open Updates', 'update-core.php' ) ) );
+        return self::act(
+            self::finding(
+                'updates',
+                $count ? sprintf( '%d update%s waiting', $count, 1 === $count ? '' : 's' ) : 'Software updates',
+                $status,
+                $why,
+                array( $fresh . ' [[update-core.php?force-check=1|Check again]]' ),
+                'An available update is not proof of a known vulnerability, and an up-to-date plugin can still be vulnerable or abandoned. Data comes from WordPress\'s stored update checks; this inspection sends no requests.',
+                $count ? 'Back up, then apply these updates from [[update-core.php|Dashboard > Updates]]. Remove anything you no longer use instead of updating it.' : ( 'No issue observed' === $status ? '' : 'Open [[update-core.php|Dashboard > Updates]] to refresh update information.' ),
+                $table
+            ),
+            array( array( 'Open Updates', 'update-core.php' ) )
+        );
     }
 
     private static function accounts_finding( array $o ) {
@@ -348,7 +368,11 @@ final class THRG_Site_Inspector {
         $admin_caps = array( 'manage_options', 'promote_users', 'edit_users', 'install_plugins' );
         $recent     = array();
         $unusual    = array();
-        $table      = array( 'head' => array( 'ID', 'Username', 'Role', 'Created', 'Note' ), 'rows' => array(), 'mask' => 1 );
+        $table      = array(
+			'head' => array( 'ID', 'Username', 'Role', 'Created', 'Note' ),
+			'rows' => array(),
+			'mask' => 1,
+		);
         foreach ( $a['items'] as $u ) {
             $note    = array();
             $created = strtotime( $u['registered'] . ' UTC' );
@@ -372,16 +396,19 @@ final class THRG_Site_Inspector {
             $status = $a['partial'] ? 'Partial inspection' : 'No issue observed';
             $why    = count( $a['items'] ) . ' account' . ( 1 === count( $a['items'] ) ? '' : 's' ) . ' can change site settings, users, or code. None look unusual.';
         }
-        return self::act( self::finding(
-            'account-access',
-            'Who can change this site?',
-            $status,
-            $why,
-            array( $a['checked'] . ' site accounts checked' . ( $a['partial'] ? ' (limit reached; more accounts exist)' : '' ) . '.' ),
-            'Includes roles and direct capability grants. Network-only super administrators, context-dependent filters, and custom authorization paths may differ. At most 200 accounts are checked.',
-            'Review' === $status ? 'Confirm you recognize each flagged account. Remove or downgrade any you do not in [[users.php|Users]], then change administrator passwords.' : 'Remove accounts that no longer need this access in [[users.php|Users]].',
-            $table['rows'] ? $table : null
-        ), array( array( 'Open Users', 'users.php' ) ) );
+        return self::act(
+            self::finding(
+                'account-access',
+                'Who can change this site?',
+                $status,
+                $why,
+                array( $a['checked'] . ' site accounts checked' . ( $a['partial'] ? ' (limit reached; more accounts exist)' : '' ) . '.' ),
+                'Includes roles and direct capability grants. Network-only super administrators, context-dependent filters, and custom authorization paths may differ. At most 200 accounts are checked.',
+                'Review' === $status ? 'Confirm you recognize each flagged account. Remove or downgrade any you do not in [[users.php|Users]], then change administrator passwords.' : 'Remove accounts that no longer need this access in [[users.php|Users]].',
+                $table['rows'] ? $table : null
+            ),
+            array( array( 'Open Users', 'users.php' ) )
+        );
     }
 
     private static function editor_finding( array $o ) {
@@ -389,7 +416,7 @@ final class THRG_Site_Inspector {
         if ( is_array( $o['accounts'] ) ) {
             foreach ( $o['accounts']['items'] as $u ) {
                 if ( array_intersect( array( 'edit_plugins', 'edit_themes' ), $u['caps'] ) ) {
-                    $editors++;
+                    ++$editors;
                 }
             }
         }
@@ -430,31 +457,37 @@ final class THRG_Site_Inspector {
 
     private static function php_finding( array $o ) {
         list( $status, $end ) = self::php_status( $o['php_version'], $o['now'] );
-        $why = 'Potential weakness' === $status
+        $why                  = 'Potential weakness' === $status
             ? 'This PHP version no longer receives security fixes.'
             : ( 'Review' === $status ? 'This PHP version stops receiving security fixes soon.' : 'This PHP version still receives security fixes.' );
-        return self::act( self::finding(
-            'php-version',
-            'PHP version',
-            $status,
-            $why,
-            array( 'PHP ' . $o['php_version'] . ( $end ? '; security support ' . ( 'Potential weakness' === $status ? 'ended ' : 'ends ' ) . $end : '' ) . '.' ),
-            'Based on php.net support dates built into this release. Some hosts and distributions backport fixes to older versions.',
-            'No issue observed' === $status ? '' : 'Test the site on a supported PHP version (8.3 or newer), then switch in cPanel > Select PHP Version or MultiPHP Manager.'
-        ), array( array( 'PHP supported versions', 'https://www.php.net/supported-versions.php' ) ) );
+        return self::act(
+            self::finding(
+                'php-version',
+                'PHP version',
+                $status,
+                $why,
+                array( 'PHP ' . $o['php_version'] . ( $end ? '; security support ' . ( 'Potential weakness' === $status ? 'ended ' : 'ends ' ) . $end : '' ) . '.' ),
+                'Based on php.net support dates built into this release. Some hosts and distributions backport fixes to older versions.',
+                'No issue observed' === $status ? '' : 'Test the site on a supported PHP version (8.3 or newer), then switch in cPanel > Select PHP Version or MultiPHP Manager.'
+            ),
+            array( array( 'PHP supported versions', 'https://www.php.net/supported-versions.php' ) )
+        );
     }
 
     private static function salts_finding( array $o ) {
         $weak = (int) $o['weak_salts'];
-        return self::act( self::finding(
-            'security-keys',
-            'Security keys and salts',
-            $weak ? 'Potential weakness' : 'No issue observed',
-            $weak ? 'Missing or placeholder keys make login cookies easier to forge.' : 'All eight security keys are set to unique-looking values.',
-            array( $weak . ' of 8 keys missing, shorter than 32 characters, or still set to the sample placeholder.' ),
-            'Only presence, length, and the sample placeholder are checked. Values are never displayed or stored. Keys copied from another site would not be detected.',
-            $weak ? 'Generate fresh keys with the [[https://api.wordpress.org/secret-key/1.1/salt/|WordPress.org key generator]] and replace them in wp-config.php. Everyone will be logged out.' : ''
-        ), $weak ? array( array( 'Generate new keys', 'https://api.wordpress.org/secret-key/1.1/salt/' ) ) : array() );
+        return self::act(
+            self::finding(
+                'security-keys',
+                'Security keys and salts',
+                $weak ? 'Potential weakness' : 'No issue observed',
+                $weak ? 'Missing or placeholder keys make login cookies easier to forge.' : 'All eight security keys are set to unique-looking values.',
+                array( $weak . ' of 8 keys missing, shorter than 32 characters, or still set to the sample placeholder.' ),
+                'Only presence, length, and the sample placeholder are checked. Values are never displayed or stored. Keys copied from another site would not be detected.',
+                $weak ? 'Generate fresh keys with the [[https://api.wordpress.org/secret-key/1.1/salt/|WordPress.org key generator]] and replace them in wp-config.php. Everyone will be logged out.' : ''
+            ),
+            $weak ? array( array( 'Generate new keys', 'https://api.wordpress.org/secret-key/1.1/salt/' ) ) : array()
+        );
     }
 
     private static function sensitive_finding( array $o ) {
@@ -464,7 +497,10 @@ final class THRG_Site_Inspector {
         }
         $table = null;
         if ( $items ) {
-            $table = array( 'head' => array( 'File', 'Size', 'Modified' ), 'rows' => array() );
+            $table = array(
+				'head' => array( 'File', 'Size', 'Modified' ),
+				'rows' => array(),
+			);
             foreach ( $items as $f ) {
                 $table['rows'][] = array( $f['path'], self::bytes( $f['size'] ), $f['modified'] ? gmdate( 'Y-m-d', $f['modified'] ) : '' );
             }
@@ -488,7 +524,10 @@ final class THRG_Site_Inspector {
         }
         $table = null;
         if ( $u['items'] ) {
-            $table = array( 'head' => array( 'File', 'Size', 'Modified' ), 'rows' => array() );
+            $table = array(
+				'head' => array( 'File', 'Size', 'Modified' ),
+				'rows' => array(),
+			);
             foreach ( $u['items'] as $f ) {
                 $table['rows'][] = array( $f['path'], null === $f['size'] ? '' : self::bytes( $f['size'] ), $f['modified'] ? gmdate( 'Y-m-d', $f['modified'] ) : '' );
             }
@@ -519,7 +558,10 @@ final class THRG_Site_Inspector {
         $all   = array_merge( $h['mu'], $h['dropins'] );
         $table = null;
         if ( $all ) {
-            $table = array( 'head' => array( 'File', 'Modified' ), 'rows' => array() );
+            $table = array(
+				'head' => array( 'File', 'Modified' ),
+				'rows' => array(),
+			);
             foreach ( $h['mu'] as $f ) {
                 $table['rows'][] = array( array( $f['path'], 'plugins.php?plugin_status=mustuse' ), $f['modified'] ? gmdate( 'Y-m-d', $f['modified'] ) : '' );
             }
@@ -534,16 +576,19 @@ final class THRG_Site_Inspector {
         if ( $h['dropins'] ) {
             $actions[] = array( 'View drop-ins', 'plugins.php?plugin_status=dropins' );
         }
-        return self::act( self::finding(
-            'hidden-code',
-            'Code outside the plugin list',
-            $all ? 'Review' : 'No issue observed',
-            $all ? 'Must-use plugins and drop-ins run on every page but don\'t appear as normal plugins, which makes them a favorite hiding place for malware.' : 'No must-use plugins or drop-ins are installed.',
-            array( '[[plugins.php?plugin_status=mustuse|' . count( $h['mu'] ) . ' must-use item(s)]], [[plugins.php?plugin_status=dropins|' . count( $h['dropins'] ) . ' drop-in(s)]].' ),
-            'Listed by name only. Hosts and caching plugins often install legitimate ones (for example object-cache.php or advanced-cache.php).',
-            $all ? 'Confirm you or your host recognize each file. Unexpected entries deserve a closer look.' : '',
-            $table
-        ), $actions );
+        return self::act(
+            self::finding(
+                'hidden-code',
+                'Code outside the plugin list',
+                $all ? 'Review' : 'No issue observed',
+                $all ? 'Must-use plugins and drop-ins run on every page but don\'t appear as normal plugins, which makes them a favorite hiding place for malware.' : 'No must-use plugins or drop-ins are installed.',
+                array( '[[plugins.php?plugin_status=mustuse|' . count( $h['mu'] ) . ' must-use item(s)]], [[plugins.php?plugin_status=dropins|' . count( $h['dropins'] ) . ' drop-in(s)]].' ),
+                'Listed by name only. Hosts and caching plugins often install legitimate ones (for example object-cache.php or advanced-cache.php).',
+                $all ? 'Confirm you or your host recognize each file. Unexpected entries deserve a closer look.' : '',
+                $table
+            ),
+            $actions
+        );
     }
 
     private static function inactive_finding( array $o ) {
@@ -554,19 +599,22 @@ final class THRG_Site_Inspector {
         $plugins = $s['inactive_plugins'];
         $themes  = $s['inactive_themes'];
         // Keeping one spare theme as a fallback is reasonable.
-        $extra = count( $plugins ) + max( 0, count( $themes ) - 1 );
-        $lines = array();
+        $extra   = count( $plugins ) + max( 0, count( $themes ) - 1 );
+        $lines   = array();
         $lines[] = '[[plugins.php?plugin_status=inactive|Inactive plugins]]: ' . ( $plugins ? self::plain( implode( ', ', $plugins ) ) : 'none' ) . '.';
         $lines[] = '[[themes.php|Inactive themes]]: ' . ( $themes ? self::plain( implode( ', ', $themes ) ) : 'none' ) . '.';
-        return self::act( self::finding(
-            'inactive',
-            'Unused plugins and themes',
-            $extra ? 'Review' : 'No issue observed',
-            $extra ? 'Deactivated plugins and themes are still on the server, and their files can still be attacked.' : 'No unused software beyond one spare theme.',
-            $lines,
-            'A deactivated plugin\'s code can still be reached directly in some cases. Removing it removes that risk.',
-            $extra ? 'Delete what you don\'t use from [[plugins.php?plugin_status=inactive|Plugins]] and [[themes.php|Themes]]. Keep one default theme as a fallback.' : ''
-        ), $extra ? array( array( 'Manage plugins', 'plugins.php?plugin_status=inactive' ), array( 'Manage themes', 'themes.php' ) ) : array() );
+        return self::act(
+            self::finding(
+                'inactive',
+                'Unused plugins and themes',
+                $extra ? 'Review' : 'No issue observed',
+                $extra ? 'Deactivated plugins and themes are still on the server, and their files can still be attacked.' : 'No unused software beyond one spare theme.',
+                $lines,
+                'A deactivated plugin\'s code can still be reached directly in some cases. Removing it removes that risk.',
+                $extra ? 'Delete what you don\'t use from [[plugins.php?plugin_status=inactive|Plugins]] and [[themes.php|Themes]]. Keep one default theme as a fallback.' : ''
+            ),
+            $extra ? array( array( 'Manage plugins', 'plugins.php?plugin_status=inactive' ), array( 'Manage themes', 'themes.php' ) ) : array()
+        );
     }
 
     /**
@@ -582,6 +630,7 @@ final class THRG_Site_Inspector {
      * @param array|null $table    Optional table: head, rows, mask (username column index).
      * @return array
      */
+    // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- compact() consumes all named parameters.
     private static function finding( $id, $title, $status, $why, $evidence, $limits, $next, $table = null ) {
         return compact( 'id', 'title', 'status', 'why', 'evidence', 'limits', 'next', 'table' ) + array( 'actions' => array() );
     }
@@ -606,10 +655,16 @@ final class THRG_Site_Inspector {
     public static function href( $target ) {
         $external = array( 'https://www.php.net/supported-versions.php', 'https://api.wordpress.org/secret-key/1.1/salt/' );
         if ( in_array( $target, $external, true ) ) {
-            return array( 'url' => $target, 'external' => true );
+            return array(
+				'url'      => $target,
+				'external' => true,
+			);
         }
         if ( preg_match( '/^[a-z0-9_-]+\.php(?:\?[a-z0-9_=.-]+)?$/i', (string) $target ) ) {
-            return array( 'url' => admin_url( $target ), 'external' => false );
+            return array(
+				'url'      => admin_url( $target ),
+				'external' => false,
+			);
         }
         return null;
     }
@@ -639,7 +694,7 @@ final class THRG_Site_Inspector {
         $i     = 0;
         while ( $size >= 1024 && $i < 3 ) {
             $size /= 1024;
-            $i++;
+            ++$i;
         }
         return ( $i ? number_format( $size, 1 ) : (string) (int) $size ) . ' ' . $units[ $i ];
     }
@@ -660,7 +715,12 @@ final class THRG_Site_Inspector {
             }
             if ( $r['table'] ) {
                 foreach ( $r['table']['rows'] as $cells ) {
-                    $texts = array_map( static function ( $c ) { return is_array( $c ) ? (string) $c[0] : (string) $c; }, $cells );
+                    $texts = array_map(
+                        static function ( $c ) {
+							return is_array( $c ) ? (string) $c[0] : (string) $c;
+						},
+                        $cells
+                    );
                     $out  .= '  * ' . implode( ' | ', array_filter( $texts, 'strlen' ) ) . "\n";
                 }
             }
@@ -681,8 +741,8 @@ final class THRG_Site_Inspector {
         $report_id = null;
         if ( 'POST' === ( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' ) ) {
             check_admin_referer( 'thrg_si_inspect' );
-            $rows = self::evaluate( self::collect() );
-            $user = wp_get_current_user();
+            $rows      = self::evaluate( self::collect() );
+            $user      = wp_get_current_user();
             $report_id = THRG_SI_History::add( $rows, wp_parse_url( home_url(), PHP_URL_HOST ), self::version(), $user->ID, $user->user_login, time() );
         } elseif ( isset( $_GET['thrg_report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view, capability checked above.
             $saved = THRG_SI_History::find( sanitize_key( wp_unslash( $_GET['thrg_report'] ) ) );

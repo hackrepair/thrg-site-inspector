@@ -28,6 +28,14 @@ A targeted, read-only inspection of conditions that may enable exploitation, plu
 
 `tests/` covers finding classification, the email builders (subject lines, escaping, masking, plain text), the link allowlist and escaping, the filesystem collectors (against a temporary tree), report history, uninstall behavior, and a smoke test of the Site Health controls. All pass on PHP 7.4 and 8.3. The interface has been checked in a browser on desktop, mobile (no horizontal overflow) and print layouts.
 
+Run the shared PHPCS installation from `/Volumes/BACKUP8TB2/plugins/PHPCS` before committing PHP changes:
+
+```sh
+/Volumes/BACKUP8TB2/plugins/PHPCS/run-phpcs.sh "$PWD"
+```
+
+The local `phpcs.xml.dist` checks shipped first-party PHP against WordPress Extra and PHPCompatibilityWP for PHP 7.4 and newer. It excludes the test harness, review helpers, and bundled third-party updater. The source passed this check on 2026-10-17.
+
 ## Third-party code
 
 - `plugin-update-checker/` is [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") 5.7 by Jānis Elsts (MIT license, `plugin-update-checker/license.txt`). It is the unmodified upstream copy, kept whole on purpose so it can be replaced by a straight folder swap when a new version is released. Do not edit or trim it. Check the upstream releases page whenever this plugin is released.

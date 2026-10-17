@@ -22,7 +22,11 @@ final class THRG_SI_Email {
 
     /** Group findings by what the reader should do with them. */
     public static function groups( array $rows ) {
-        $out = array( 'fix' => array(), 'look' => array(), 'good' => array() );
+        $out = array(
+			'fix'  => array(),
+			'look' => array(),
+			'good' => array(),
+		);
         foreach ( $rows as $r ) {
             if ( 'Potential weakness' === $r['status'] ) {
                 $out['fix'][] = $r;
@@ -84,14 +88,14 @@ final class THRG_SI_Email {
         }
         if ( $look ) {
             return sprintf(
-                "Nothing urgent turned up on %s. %s a second look from someone who knows the site, because only a person can say whether %s expected.",
+                'Nothing urgent turned up on %s. %s a second look from someone who knows the site, because only a person can say whether %s expected.',
                 $site,
                 self::plural( $look, 'item deserves', 'items deserve' ),
                 1 === $look ? 'it is' : 'they are'
             );
         }
         return sprintf(
-            "Good news: every check on %s came back clean. No automated check can promise a site is safe, but the most common ways in are closed right now.",
+            'Good news: every check on %s came back clean. No automated check can promise a site is safe, but the most common ways in are closed right now.',
             $site
         );
     }
@@ -201,9 +205,9 @@ final class THRG_SI_Email {
         $h .= '<div style="font-size:14px;color:#e8d8cc;">State of security for <strong style="color:#ffffff;">' . self::e( $site ) . '</strong> &middot; ' . self::e( $a['when'] ) . '</div>';
         $h .= '</td></tr>';
 
-        $h .= '<tr><td style="background:#ffffff;padding:24px;border:1px solid #ead9cc;border-top:0;">';
+        $h    .= '<tr><td style="background:#ffffff;padding:24px;border:1px solid #ead9cc;border-top:0;">';
         $greet = '' !== (string) $a['recipient'] ? 'Hi ' . self::e( $a['recipient'] ) . ',' : 'Hi,';
-        $h .= '<p style="font-size:15px;line-height:1.6;color:#1d2327;margin:0 0 14px;">' . $greet . '</p>';
+        $h    .= '<p style="font-size:15px;line-height:1.6;color:#1d2327;margin:0 0 14px;">' . $greet . '</p>';
 
         if ( '' !== trim( (string) $a['note'] ) ) {
             $h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#fff8f2;border-left:4px solid #b34700;border-radius:4px;padding:12px 14px;font-size:14px;line-height:1.55;color:#1d2327;">';
@@ -220,7 +224,7 @@ final class THRG_SI_Email {
             array( count( $g['look'] ), 'worth a look', '#fff4d6', '#8a5a00' ),
             array( count( $g['good'] ), 'looking good', '#e6f3ec', '#2e6b4f' ),
         );
-        $h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:6px 0;margin:0 -6px 22px;"><tr>';
+        $h    .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:6px 0;margin:0 -6px 22px;"><tr>';
         foreach ( $tiles as $t ) {
             $h .= '<td width="33%" style="background:' . $t[2] . ';border-radius:6px;padding:12px 14px;color:' . $t[3] . ';"><div style="font-size:26px;font-weight:700;line-height:1.1;">' . (int) $t[0] . '</div><div style="font-size:13px;font-weight:600;">' . $t[1] . '</div></td>';
         }
@@ -282,7 +286,10 @@ final class THRG_SI_Email {
         $out .= 'STATE OF SECURITY: ' . $site . ' (' . $a['when'] . ")\n\n";
         $out .= self::narrative( $rows, $site ) . "\n" . self::change_line( $a['change'], $a['older_when'] ) . "\n\n";
         $out .= count( $g['fix'] ) . ' need attention · ' . count( $g['look'] ) . ' worth a look · ' . count( $g['good'] ) . " looking good\n";
-        foreach ( array( 'fix' => 'FIX THESE FIRST', 'look' => 'WORTH A SECOND LOOK' ) as $k => $label ) {
+        foreach ( array(
+			'fix'  => 'FIX THESE FIRST',
+			'look' => 'WORTH A SECOND LOOK',
+		) as $k => $label ) {
             if ( ! $g[ $k ] ) {
                 continue;
             }
@@ -332,10 +339,14 @@ final class THRG_SI_Email {
                 'fields'  => array( 'ID', 'display_name', 'user_email' ),
             )
         );
-        $out = array();
+        $out   = array();
         foreach ( $users as $u ) {
             if ( is_email( $u->user_email ) ) {
-                $out[] = array( 'id' => (int) $u->ID, 'name' => (string) $u->display_name, 'email' => (string) $u->user_email );
+                $out[] = array(
+					'id'    => (int) $u->ID,
+					'name'  => (string) $u->display_name,
+					'email' => (string) $u->user_email,
+				);
             }
         }
         return $out;
@@ -351,8 +362,8 @@ final class THRG_SI_Email {
      * @return array{sent:int,failed:int}
      */
     public static function send( array $entry, $older, array $user_ids, $note ) {
-        $wanted = array_map( 'intval', $user_ids );
-        $to     = array_values(
+        $wanted  = array_map( 'intval', $user_ids );
+        $to      = array_values(
             array_filter(
                 self::recipients(),
                 static function ( $r ) use ( $wanted ) {
@@ -360,10 +371,10 @@ final class THRG_SI_Email {
                 }
             )
         );
-        $sender = wp_get_current_user();
-        $fmt    = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-        $change = THRG_SI_History::change( $entry, $older );
-        $base   = array(
+        $sender  = wp_get_current_user();
+        $fmt     = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+        $change  = THRG_SI_History::change( $entry, $older );
+        $base    = array(
             'rows'       => $entry['rows'],
             'site'       => (string) $entry['site'],
             'when'       => wp_date( $fmt, (int) $entry['time'] ),
@@ -388,10 +399,13 @@ final class THRG_SI_Email {
             };
             add_action( 'phpmailer_init', $hook );
             if ( wp_mail( $r['email'], $subject, self::html( $args ), $headers ) ) {
-                $sent++;
+                ++$sent;
             }
             remove_action( 'phpmailer_init', $hook );
         }
-        return array( 'sent' => $sent, 'failed' => count( $to ) - $sent );
+        return array(
+			'sent'   => $sent,
+			'failed' => count( $to ) - $sent,
+		);
     }
 }

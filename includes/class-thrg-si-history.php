@@ -75,14 +75,19 @@ final class THRG_SI_History {
      * @return array{attention:int,review:int,observed:int,issues:string[]}
      */
     public static function summarize( array $rows ) {
-        $out = array( 'attention' => 0, 'review' => 0, 'observed' => 0, 'issues' => array() );
+        $out = array(
+			'attention' => 0,
+			'review'    => 0,
+			'observed'  => 0,
+			'issues'    => array(),
+		);
         foreach ( $rows as $row ) {
             if ( 'Potential weakness' === $row['status'] ) {
-                $out['attention']++;
+                ++$out['attention'];
             } elseif ( 'No issue observed' === $row['status'] ) {
-                $out['observed']++;
+                ++$out['observed'];
             } else {
-                $out['review']++;
+                ++$out['review'];
             }
             if ( 'No issue observed' !== $row['status'] ) {
                 $out['issues'][] = (string) $row['id'];
@@ -107,7 +112,8 @@ final class THRG_SI_History {
             return null;
         }
         $entries = self::all();
-        $hash    = md5( serialize( $rows ) );
+        // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Hashing a trusted internal array; no data is unserialized here.
+        $hash = md5( serialize( $rows ) );
         if ( $entries && isset( $entries[0]['hash'] ) && $entries[0]['hash'] === $hash && ( $now - (int) $entries[0]['time'] ) < self::DEDUPE_SECONDS ) {
             return $entries[0]['id'];
         }
@@ -116,24 +122,31 @@ final class THRG_SI_History {
         array_unshift(
             $entries,
             array(
-                'schema'   => self::SCHEMA,
-                'id'       => $id,
-                'time'     => (int) $now,
-                'site'     => substr( (string) $site, 0, 190 ),
-                'version'  => substr( (string) $version, 0, 20 ),
-                'user'     => (int) $user_id,
-                'name'     => substr( (string) $user_name, 0, 60 ),
+                'schema'    => self::SCHEMA,
+                'id'        => $id,
+                'time'      => (int) $now,
+                'site'      => substr( (string) $site, 0, 190 ),
+                'version'   => substr( (string) $version, 0, 20 ),
+                'user'      => (int) $user_id,
+                'name'      => substr( (string) $user_name, 0, 60 ),
                 'attention' => $summary['attention'],
-                'review'   => $summary['review'],
-                'observed' => $summary['observed'],
-                'issues'   => $summary['issues'],
-                'hash'     => $hash,
-                'rows'     => $rows,
+                'review'    => $summary['review'],
+                'observed'  => $summary['observed'],
+                'issues'    => $summary['issues'],
+                'hash'      => $hash,
+                'rows'      => $rows,
             )
         );
-        $entries = array_slice( $entries, 0, self::MAX_ENTRIES );
-        while ( count( $entries ) > 1 && strlen( serialize( $entries ) ) > self::MAX_BYTES ) {
+        $entries     = array_slice( $entries, 0, self::MAX_ENTRIES );
+        $entry_count = count( $entries );
+        while ( $entry_count > 1 ) {
+            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Measures the trusted option's serialized storage size.
+            $serialized = serialize( $entries );
+            if ( strlen( $serialized ) <= self::MAX_BYTES ) {
+                break;
+            }
             array_pop( $entries );
+            --$entry_count;
         }
         update_option( self::OPTION, $entries, false );
         return $id;
@@ -176,10 +189,18 @@ final class THRG_SI_History {
      */
     public static function change( array $entry, $older ) {
         if ( ! is_array( $older ) ) {
-            return array( 'first' => true, 'new' => 0, 'resolved' => 0 );
+            return array(
+				'first'    => true,
+				'new'      => 0,
+				'resolved' => 0,
+			);
         }
         $now  = isset( $entry['issues'] ) ? (array) $entry['issues'] : array();
         $then = isset( $older['issues'] ) ? (array) $older['issues'] : array();
-        return array( 'first' => false, 'new' => count( array_diff( $now, $then ) ), 'resolved' => count( array_diff( $then, $now ) ) );
+        return array(
+			'first'    => false,
+			'new'      => count( array_diff( $now, $then ) ),
+			'resolved' => count( array_diff( $then, $now ) ),
+		);
     }
 }

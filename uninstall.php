@@ -28,8 +28,13 @@ if ( ! function_exists( 'thrg_shc_uninstall_site' ) ) {
 }
 
 if ( is_multisite() ) {
-    foreach ( get_sites( array( 'fields' => 'ids', 'number' => 0 ) ) as $site_id ) {
-        switch_to_blog( $site_id );
+    foreach ( get_sites(
+        array(
+			'fields' => 'ids',
+			'number' => 0,
+        )
+    ) as $thrg_site_id ) {
+        switch_to_blog( $thrg_site_id );
         thrg_shc_uninstall_site();
         restore_current_blog();
     }
