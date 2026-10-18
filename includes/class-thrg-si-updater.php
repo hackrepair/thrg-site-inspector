@@ -64,6 +64,9 @@ final class THRG_SI_Updater {
 			return;
 		}
 
+		require_once __DIR__ . '/class-thrg-si-update-notices.php';
+		new THRG_SI_Update_Notices( $this->checker );
+
 		$api->enableReleaseAssets( self::ASSET_PATTERN, Api::REQUIRE_RELEASE_ASSETS );
 
 		// Only the latest-release strategy: the tag and branch fallbacks both

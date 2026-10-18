@@ -71,3 +71,7 @@ Corrected release packaging to retain the complete bundled updater, including th
 ## 2.2.2
 
 View Details uses the approved compact companion-plugin cards, with content contained beside the sidebar and the installed version displayed.
+
+## 2.2.3
+
+Manual update-check failures now explain that inspection features remain available. Confirmed GitHub rate limits show a retry time in the site's timezone. Technical diagnostics are available in a disclosure rather than the main message. This update changes reporting; retry scheduling is unchanged.
