@@ -59,3 +59,15 @@ See [PROJECT.md](PROJECT.md "Architecture, design decisions and known limits") f
 Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") by Jānis Elsts (MIT license), included unmodified.
 
 Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair").
+
+## 2.2.0
+
+View Details now includes **Other THRG Plugins**, a guide to the three companion tools with descriptions and project links.
+
+## 2.2.1
+
+Corrected release packaging to retain the complete bundled updater, including the View Details parser dependencies.
+
+## 2.2.2
+
+View Details uses the approved compact companion-plugin cards, with content contained beside the sidebar and the installed version displayed.

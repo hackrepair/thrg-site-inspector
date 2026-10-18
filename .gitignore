@@ -4,3 +4,6 @@
 
 # Local reference material; not part of Site Inspector.
 /other plugins/
+
+# Generated release artifacts.
+/dist/

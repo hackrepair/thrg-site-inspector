@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.1.0
+Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -113,6 +113,16 @@ The only outside request is WordPress's normal update check against this plugin'
 By default nothing is deleted, so a reinstall picks up where you left off. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.2.2 =
+* Match the compact companion-plugin cards and sidebar layout used by Disable Other Plugin Notices.
+* Display the installed version in View Details.
+
+= 2.2.1 =
+* Restore bundled updater parser dependencies required by View Details.
+
+= 2.2.0 =
+* Added an Other THRG Plugins tab to View Details with companion tools and project links.
 
 = 2.1.0 =
 * New: Email to administrators on every saved report. Send a "state of security" briefing to some or all administrators, with a descriptive subject line, an optional personal note and what changed since the last check. Each administrator gets a personal copy, usernames are partly hidden, replies go to you, and sending is limited to once a minute.
