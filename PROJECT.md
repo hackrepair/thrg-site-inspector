@@ -15,7 +15,7 @@ A targeted, read-only inspection of conditions that may enable exploitation, plu
 - `includes/class-thrg-inspection-evidence.php`: bounded, read-only collectors (accounts, uploads, sensitive files, software, must-use code, salts). No file contents are read, symlinks are skipped, and results say when coverage is partial.
 - `includes/class-thrg-si-history.php`: report history in one non-autoloaded option (25 reports, about 600 KB cap, identical results within five minutes saved once).
 - `includes/class-thrg-si-email.php`: emails a saved report to chosen administrators as a "state of security" briefing. Pure builders (`subject()`, `narrative()`, `change_line()`, `html()`, `text()`) plus `recipients()` and `send()`. Recipients are looked up server-side from administrator user IDs, never typed in; one personal email each via `wp_mail()` with a plain-text alternative; usernames masked; Reply-To is the sender; one send per user per minute. Handler: `admin_post_thrg_si_email_report` (manage_options + nonce).
-- `includes/view-inspector.php`, `assets/inspector.css`: the interface. Shared by the Site Health Controls page, modeled on [The Hack Repair Guy's Plugin Detective](https://github.com/hackrepair/hackrepair-plugin-detective "Plugin Detective on GitHub"). The mascot image is reused from it.
+- `includes/view-inspector.php`, `assets/inspector.css`: the interface. Shared by the Site Health Controls page, modeled on [The Hack Repair Guy's Plugin Detective](https://github.com/hackrepair/hackrepair-plugin-detective "Plugin Detective on GitHub"). The mascot uses the updated 2026 THRG heart artwork.
 - `includes/class-thrg-si-updater.php` and `plugin-update-checker/`: GitHub release updates, independent of the inspector. A release needs tag `vX.Y.Z` and an uploaded `thrg-site-inspector.X.Y.Z.zip` whose top-level folder is `thrg-site-inspector/`.
 - `uninstall.php`: removes settings, report history and notice dismissal only when *Delete all plugin data* is ticked.
 
@@ -74,3 +74,11 @@ Email feedback below the administrator form now reports both counts, for example
 ## 2.2.4 release approval
 
 User approved versioning, packaging and publication on October 18, 2026. Earlier local-review/no-release statements above describe the development stage. The release includes subject tags, full-width HTML, version placement, accepted/failed feedback, and the documentation audit. Final scope and validation limits: releases/v2.2.4.md.
+
+## Animated branding
+
+The 2026 heart logo now appears in the main inspector and Site Health Controls headers, with two gentle heartbeat cycles (4.4 seconds total). Native View Details uses the same logo on a warm dark banner with a wrapping title. Reduced-motion preferences and printing disable animation. Assets are local PNG/CSS, loaded only on this plugin’s screens or matching details dialog; no JavaScript or external service is needed. The help-card image uses the updated artwork without animation. Reusable source kit: `/Volumes/BACKUP8TB2/plugins/hackrepair-with-heart-animated-2026/plugin-kit`. Included in release 2.2.5.
+
+Branding preview validation: shared PHPCS passed (11 files), existing smoke tests passed, and Zendogs main page/native View Details were checked in the browser. Details fit 772px and 390px widths; both placements disable animation under emulated reduced motion, and the computed CSS confirms a finite two-cycle animation. Group Password Reset’s details dialog did not load Site Inspector branding styles. Source and Zendogs only; no new plugin release, tag, commit or push. Runtime backup: `/tmp/thrg-si-before-brand-preview.tar.gz` inside `zendogs-wp-sandbox-wordpress-1`.
+
+Release 2.2.5: refreshed 2026 THRG heart branding, two heartbeat cycles on opening, reduced-motion/print support, and a wrapping native View Details banner. Assets are bundled locally. Consider the Codex Security review reminder before future changes.

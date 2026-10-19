@@ -128,6 +128,7 @@ final class THRG_Site_Inspector {
 
     public static function assets( $hook ) {
         if ( in_array( $hook, array( 'tools_page_thrg-site-inspector', 'settings_page_thrg-site-health-controls' ), true ) ) {
+            wp_enqueue_style( 'thrg-si-brand', plugins_url( '../assets/brand/thrg-brand.css', __FILE__ ), array(), self::version() );
             wp_enqueue_style( 'thrg-inspector', plugins_url( '../assets/inspector.css', __FILE__ ), array(), self::version() );
         }
     }

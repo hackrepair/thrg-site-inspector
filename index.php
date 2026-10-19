@@ -3,7 +3,7 @@
  * Plugin Name:       The Hack Repair Guy's Site Inspector
  * Plugin URI:        https://github.com/hackrepair/thrg-site-inspector
  * Description:       Your friendly WordPress security inspector. Keeps a history of your reports and shows what changed. Includes optional Site Health controls.
- * Version:           2.2.4
+ * Version:           2.2.5
  * Author:            The Hack Repair Guy
  * Author URI:        https://hackrepair.com/
  * Update URI:        https://github.com/hackrepair/thrg-site-inspector
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const THRG_SI_VERSION = '2.2.4';
+const THRG_SI_VERSION = '2.2.5';
 
 /*
  * GitHub release updates. Deliberately NOT gated by is_admin(): WordPress's
@@ -384,11 +384,11 @@ function thrg_shc_render_settings_page() {
             'block_ajax'    => __( 'Block the Site Health AJAX actions', 'thrg-site-inspector' ),
         ),
     );
-    $mascot  = plugins_url( 'assets/img/hackrepair-heart.png', __FILE__ );
+    $mascot  = plugins_url( 'assets/brand/thrg-heart-128.png', __FILE__ );
     ?>
     <div class="wrap thrg-inspector thrg-shc-settings">
         <div class="si-head">
-            <a class="si-mascot-link" href="<?php echo esc_url( admin_url( 'tools.php?page=thrg-site-inspector' ) ); ?>" title="<?php esc_attr_e( 'Back to Site Inspector', 'thrg-site-inspector' ); ?>"><img class="si-mascot" src="<?php echo esc_url( $mascot ); ?>" alt="<?php esc_attr_e( 'Back to Site Inspector', 'thrg-site-inspector' ); ?>" width="56" height="56" /></a>
+            <a class="si-mascot-link" href="<?php echo esc_url( admin_url( 'tools.php?page=thrg-site-inspector' ) ); ?>" title="<?php esc_attr_e( 'Back to Site Inspector', 'thrg-site-inspector' ); ?>"><img class="si-mascot thrg-brand-heart" src="<?php echo esc_url( $mascot ); ?>" alt="<?php esc_attr_e( 'Back to Site Inspector', 'thrg-site-inspector' ); ?>" width="56" height="56" /></a>
             <div>
                 <p class="si-eyebrow">The Hack Repair Guy&rsquo;s</p>
                 <h1><?php esc_html_e( 'Site Health Controls', 'thrg-site-inspector' ); ?></h1>
@@ -448,7 +448,7 @@ function thrg_shc_render_settings_page() {
                 <p><?php esc_html_e( 'These options only hide or stop WordPress\'s own Site Health screens and checks. Uncheck any option to bring that feature back.', 'thrg-site-inspector' ); ?></p>
             </div>
             <div class="si-coverage-col si-help">
-                <img class="si-mascot" src="<?php echo esc_url( $mascot ); ?>" alt="" width="44" height="44" />
+                <img class="si-mascot thrg-brand-heart" src="<?php echo esc_url( $mascot ); ?>" alt="" width="44" height="44" />
                 <p>Need a deeper look?<br />Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" target="_blank" rel="noopener noreferrer">The Hack Repair Guy<span class="screen-reader-text"> (opens in a new tab)</span></a>.</p>
             </div>
         </footer>

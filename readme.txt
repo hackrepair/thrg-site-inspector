@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.2.4
+Stable tag: 2.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,11 @@ Plugin update discovery and package downloads contact GitHub independently of in
 By default nothing is deleted, so a reinstall picks up where you left off. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.2.5 =
+* Updated 2026 THRG heart branding with a gentle two-cycle animation and matching native View Details banner.
+* Respects reduced motion and printing; local PNG/CSS assets require no animation library.
+
 
 = 2.2.4 =
 * Show accepted-for-sending and failed email counts below the administrator form, clarifying that acceptance does not confirm delivery.

@@ -4,7 +4,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Current release: **2.2.4**. See [release notes](releases/v2.2.4.md).
+Current release: **2.2.4**. See [release notes](releases/v2.2.5.md).
 
 ## What it does
 
@@ -100,3 +100,9 @@ Email subjects follow `[domain] [Site Inspector] Security Check: …`, retaining
 The HTML email fills the available width, matching Group Password Reset’s layout standard. Existing branding, recipient selection, personal notes, username masking, report links and the plain-text alternative remain in place.
 
 Email feedback below the administrator form now reports both counts, for example: **Email accepted for sending: 1. Failed: 0. Acceptance does not confirm delivery.** Partial and complete failures retain setup guidance. Counts are display-only values returned after the send; they do not authorize sending.
+
+## Animated branding
+
+The 2026 heart logo now appears in the main inspector and Site Health Controls headers, with two gentle heartbeat cycles (4.4 seconds total). Native View Details uses the same logo on a warm dark banner with a wrapping title. Reduced-motion preferences and printing disable animation. Assets are local PNG/CSS, loaded only on this plugin’s screens or matching details dialog; no JavaScript or external service is needed. The help-card image uses the updated artwork without animation. Reusable source kit: `/Volumes/BACKUP8TB2/plugins/hackrepair-with-heart-animated-2026/plugin-kit`. Included in release 2.2.5.
+
+Release 2.2.5: refreshed 2026 THRG heart branding, two heartbeat cycles on opening, reduced-motion/print support, and a wrapping native View Details banner. Assets are bundled locally. Consider the Codex Security review reminder before future changes.

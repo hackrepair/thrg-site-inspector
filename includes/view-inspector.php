@@ -64,7 +64,7 @@ $thrg_si_actions = static function ( $actions ) {
 ?>
 <div class="wrap thrg-inspector">
     <div class="si-head">
-        <img class="si-mascot" src="<?php echo esc_url( plugins_url( '../assets/img/hackrepair-heart.png', __FILE__ ) ); ?>" alt="" width="56" height="56" />
+        <img class="si-mascot thrg-brand-heart" src="<?php echo esc_url( plugins_url( '../assets/brand/thrg-heart-128.png', __FILE__ ) ); ?>" alt="" width="56" height="56" />
         <div>
             <p class="si-eyebrow">The Hack Repair Guy&rsquo;s</p>
             <h1>Site Inspector <span class="si-version"><?php echo esc_html( 'v' . THRG_Site_Inspector::version() ); ?></span></h1>
@@ -422,7 +422,7 @@ $thrg_si_actions = static function ( $actions ) {
             <p><strong>Limits:</strong> This is a read-only look at your site's own files and settings. It does not test what the public can reach, match known vulnerabilities, or scan for malware.</p>
         </div>
         <div class="si-coverage-col si-help">
-            <img class="si-mascot" src="<?php echo esc_url( plugins_url( '../assets/img/hackrepair-heart.png', __FILE__ ) ); ?>" alt="" width="44" height="44" />
+            <img class="si-mascot" src="<?php echo esc_url( plugins_url( '../assets/brand/thrg-heart-128.png', __FILE__ ) ); ?>" alt="" width="44" height="44" />
             <p>Need a deeper look?<br />Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" target="_blank" rel="noopener noreferrer">The Hack Repair Guy<?php echo wp_kses_post( THRG_Site_Inspector::NEW_TAB_HINT ); ?></a>.</p>
         </div>
     </footer>
