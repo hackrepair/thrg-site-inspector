@@ -67,8 +67,8 @@ $thrg_si_actions = static function ( $actions ) {
         <img class="si-mascot" src="<?php echo esc_url( plugins_url( '../assets/img/hackrepair-heart.png', __FILE__ ) ); ?>" alt="" width="56" height="56" />
         <div>
             <p class="si-eyebrow">The Hack Repair Guy&rsquo;s</p>
-            <h1>Site Inspector</h1>
-            <p class="si-byline">A quick, friendly site security inspection to identify what might need your attention today. <span class="si-version"><?php echo esc_html( 'v' . THRG_Site_Inspector::version() ); ?></span></p>
+            <h1>Site Inspector <span class="si-version"><?php echo esc_html( 'v' . THRG_Site_Inspector::version() ); ?></span></h1>
+            <p class="si-byline">A quick, friendly site security inspection to identify what might need your attention today.</p>
         </div>
     </div>
 
@@ -93,14 +93,14 @@ $thrg_si_actions = static function ( $actions ) {
         'missing'      => 'That report is no longer available.',
         'paused'       => 'History is paused. New inspections will not be saved.',
         'resumed'      => 'History resumed. New inspections will be saved.',
-        'emailed'      => sprintf( 'Report emailed to %d administrator%s.', $sent, 1 === $sent ? '' : 's' ),
-        'mail-partial' => sprintf( 'Report emailed to %d administrator%s, but some messages could not be sent. Check your site\'s email setup.', $sent, 1 === $sent ? '' : 's' ),
-        'mail-failed'  => 'WordPress could not send the email. Your site may need an SMTP plugin, or your host may need to enable outgoing mail.',
+        'emailed'      => THRG_SI_Email::feedback( $sent, $mail_failed ),
+        'mail-partial' => THRG_SI_Email::feedback( $sent, $mail_failed ) . ' Check your site\'s email setup for failed messages.',
+        'mail-failed'  => THRG_SI_Email::feedback( $sent, $mail_failed ) . ' Check your site\'s email setup for failed messages.',
         'mail-none'    => 'Choose at least one administrator to email.',
         'mail-wait'    => 'An email was just sent. Please wait a minute before sending another.',
     );
     $thrg_si_warn    = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait' );
-    if ( isset( $thrg_si_notices[ $flag ] ) ) :
+    if ( isset( $thrg_si_notices[ $flag ] ) && ! in_array( $flag, array( 'emailed', 'mail-partial', 'mail-failed' ), true ) ) :
         ?>
         <div class="si-callout<?php echo in_array( $flag, $thrg_si_warn, true ) ? ' si-callout--warning' : ''; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
     <?php endif; ?>
@@ -284,11 +284,14 @@ $thrg_si_actions = static function ( $actions ) {
                                 <textarea id="si-email-note" name="note" rows="3" maxlength="<?php echo (int) THRG_SI_Email::NOTE_LENGTH; ?>" class="large-text" placeholder="For example: Here's this week's check. Can we fix the first two items by Friday?"></textarea>
                             </p>
                             <?php if ( $thrg_si_entry ) : ?>
-                                <p class="si-email-subject"><span class="si-muted">Subject:</span> <?php echo esc_html( THRG_SI_Email::subject( $thrg_si_entry['rows'], $thrg_si_entry['site'], THRG_SI_History::change( $thrg_si_entry, $thrg_si_prev ) ) ); ?></p>
+                                <p class="si-email-subject"><span class="si-muted">Subject:</span> <?php echo esc_html( THRG_SI_Email::subject( $thrg_si_entry['rows'], THRG_SI_Email::site_domain(), THRG_SI_History::change( $thrg_si_entry, $thrg_si_prev ) ) ); ?></p>
                             <?php endif; ?>
                             <p class="si-email-actions">
                                 <button type="submit" class="button button-primary">Send email</button>                            </p>
                         </form>
+                    <?php endif; ?>
+                    <?php if ( in_array( $flag, array( 'emailed', 'mail-partial', 'mail-failed' ), true ) ) : ?>
+                        <div class="si-callout<?php echo 'emailed' === $flag ? '' : ' si-callout--warning'; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
                     <?php endif; ?>
                     <textarea id="si-report-text" class="large-text si-report" readonly rows="12" aria-label="Plain-text report"><?php echo esc_textarea( THRG_Site_Inspector::plain_text( $rows, $thrg_si_site, $thrg_si_when ) ); ?></textarea>
                     <p class="si-note">Includes usernames, file names and update details for this site. Share it only with people you trust.</p>

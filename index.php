@@ -3,7 +3,7 @@
  * Plugin Name:       The Hack Repair Guy's Site Inspector
  * Plugin URI:        https://github.com/hackrepair/thrg-site-inspector
  * Description:       Your friendly WordPress security inspector. Keeps a history of your reports and shows what changed. Includes optional Site Health controls.
- * Version:           2.2.3
+ * Version:           2.2.4
  * Author:            The Hack Repair Guy
  * Author URI:        https://hackrepair.com/
  * Update URI:        https://github.com/hackrepair/thrg-site-inspector
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const THRG_SI_VERSION = '2.2.3';
+const THRG_SI_VERSION = '2.2.4';
 
 /*
  * GitHub release updates. Deliberately NOT gated by is_admin(): WordPress's

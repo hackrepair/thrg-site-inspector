@@ -43,6 +43,28 @@ final class THRG_SI_Email {
         return $n . ' ' . ( 1 === (int) $n ? $one : $many );
     }
 
+    /** Report acceptance separately from confirmed inbox delivery. */
+    public static function feedback( $accepted, $failed ) {
+        return sprintf(
+            'Email accepted for sending: %d. Failed: %d. Acceptance does not confirm delivery.',
+            max( 0, (int) $accepted ),
+            max( 0, (int) $failed )
+        );
+    }
+
+    /** Site identity for subjects and previews, including local ports. */
+    public static function site_domain() {
+        $url  = home_url( '/' );
+        $host = wp_parse_url( $url, PHP_URL_HOST );
+        $port = wp_parse_url( $url, PHP_URL_PORT );
+        if ( ! $host ) {
+            $url  = site_url( '/' );
+            $host = wp_parse_url( $url, PHP_URL_HOST );
+            $port = wp_parse_url( $url, PHP_URL_PORT );
+        }
+        return strtolower( (string) $host ) . ( $port ? ':' . (int) $port : '' );
+    }
+
     /**
      * A subject line that says where things stand before the email is opened.
      *
@@ -58,19 +80,19 @@ final class THRG_SI_Email {
         $done = is_array( $change ) && empty( $change['first'] ) ? (int) $change['resolved'] : 0;
 
         if ( $fix ) {
-            $s = sprintf( 'Security check for %s: %s %s attention', $site, self::plural( $fix, 'issue', 'issues' ), 1 === $fix ? 'needs' : 'need' );
+            $s = sprintf( 'Security Check: %s %s attention', self::plural( $fix, 'issue', 'issues' ), 1 === $fix ? 'needs' : 'need' );
             if ( $new ) {
                 $s .= sprintf( ' (%d new since last check)', $new );
             }
         } elseif ( $look ) {
-            $s = sprintf( 'Security check for %s: nothing urgent, %s worth a look', $site, self::plural( $look, 'item', 'items' ) );
+            $s = sprintf( 'Security Check: nothing urgent, %s worth a look', self::plural( $look, 'item', 'items' ) );
         } else {
-            $s = sprintf( 'Security check for %s: all clear on %s', $site, self::plural( count( $rows ), 'check', 'checks' ) );
+            $s = sprintf( 'Security Check: all clear on %s', self::plural( count( $rows ), 'check', 'checks' ) );
         }
         if ( ! $fix && $done ) {
             $s .= sprintf( ' (%d fixed since last check)', $done );
         }
-        return $s;
+        return '[' . $site . '] [Site Inspector] ' . $s;
     }
 
     /** The opening "state of security" paragraph. */
@@ -196,7 +218,7 @@ final class THRG_SI_Email {
         $h .= '<body style="margin:0;padding:0;background:#f3eee9;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">';
         $h .= '<div style="display:none;max-height:0;overflow:hidden;">' . self::e( self::narrative( $rows, $site ) ) . '</div>';
         $h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3eee9;"><tr><td align="center" style="padding:24px 12px;">';
-        $h .= '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;border-collapse:collapse;">';
+        $h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;">';
 
         // Header.
         $h .= '<tr><td style="background:#2b170d;border-radius:8px 8px 0 0;padding:22px 24px;">';
@@ -376,7 +398,7 @@ final class THRG_SI_Email {
         $change  = THRG_SI_History::change( $entry, $older );
         $base    = array(
             'rows'       => $entry['rows'],
-            'site'       => (string) $entry['site'],
+            'site'       => self::site_domain(),
             'when'       => wp_date( $fmt, (int) $entry['time'] ),
             'change'     => $change,
             'older_when' => is_array( $older ) ? wp_date( get_option( 'date_format' ), (int) $older['time'] ) : '',

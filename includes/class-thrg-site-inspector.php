@@ -74,14 +74,13 @@ final class THRG_Site_Inspector {
         self::guard( 'thrg_si_email_report' );
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- guard() verifies this action's nonce before form data is read.
         $id    = isset( $_POST['report'] ) ? sanitize_key( wp_unslash( $_POST['report'] ) ) : '';
-        $back  = static function ( $flag, $sent = 0 ) use ( $id ) {
+        $back  = static function ( $flag, $sent = 0, $failed = 0 ) use ( $id ) {
             $args = array( 'thrg_si_done' => $flag );
             if ( THRG_SI_History::valid_id( $id ) ) {
                 $args['thrg_report'] = $id;
             }
-            if ( $sent ) {
-                $args['thrg_si_sent'] = (int) $sent;
-            }
+            $args['thrg_si_sent']   = (int) $sent;
+            $args['thrg_si_failed'] = (int) $failed;
             wp_safe_redirect( add_query_arg( $args, admin_url( self::PAGE_URL ) ) . '#si-share' );
             exit;
         };
@@ -113,7 +112,7 @@ final class THRG_Site_Inspector {
         if ( $result['sent'] ) {
             set_transient( $wait_key, 1, THRG_SI_Email::WAIT_SECONDS );
         }
-        $back( $result['sent'] ? ( $result['failed'] ? 'mail-partial' : 'emailed' ) : 'mail-failed', $result['sent'] );
+        $back( $result['sent'] ? ( $result['failed'] ? 'mail-partial' : 'emailed' ) : 'mail-failed', $result['sent'], $result['failed'] );
     }
 
     public static function handle_toggle() {
@@ -756,9 +755,10 @@ final class THRG_Site_Inspector {
         if ( '' === $flag && isset( $_GET['thrg_si_done'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only flag after our own redirect.
             $flag = sanitize_key( wp_unslash( $_GET['thrg_si_done'] ) );
         }
-        $history    = THRG_SI_History::all();
-        $recipients = null === $rows ? array() : THRG_SI_Email::recipients();
-        $sent       = isset( $_GET['thrg_si_sent'] ) ? absint( $_GET['thrg_si_sent'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only count after our own redirect.
+        $history     = THRG_SI_History::all();
+        $recipients  = null === $rows ? array() : THRG_SI_Email::recipients();
+        $sent        = isset( $_GET['thrg_si_sent'] ) ? absint( $_GET['thrg_si_sent'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only count after our own redirect.
+        $mail_failed = isset( $_GET['thrg_si_failed'] ) ? absint( $_GET['thrg_si_failed'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only count, never used to authorize a send.
         require __DIR__ . '/view-inspector.php';
     }
 }
