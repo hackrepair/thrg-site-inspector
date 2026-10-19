@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.2.5
+Stable tag: 2.2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,11 @@ Plugin update discovery and package downloads contact GitHub independently of in
 By default nothing is deleted, so a reinstall picks up where you left off. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.2.6 =
+* Fixed ZIP file permissions that could prevent the web server from serving inspector.css, leaving the admin page unstyled.
+* All packaged files now use 0644 permissions, verified during every build.
+
 
 = 2.2.5 =
 * Updated 2026 THRG heart branding with a gentle two-cycle animation and matching native View Details banner.

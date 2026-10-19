@@ -8,7 +8,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Current release: **2.2.5**. See [release notes](releases/v2.2.5.md).
+Current release: **2.2.6**. See [release notes](releases/v2.2.6.md).
 
 ## What it does
 

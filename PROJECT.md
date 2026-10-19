@@ -82,3 +82,7 @@ The 2026 heart logo now appears in the main inspector and Site Health Controls h
 Branding preview validation: shared PHPCS passed (11 files), existing smoke tests passed, and Zendogs main page/native View Details were checked in the browser. Details fit 772px and 390px widths; both placements disable animation under emulated reduced motion, and the computed CSS confirms a finite two-cycle animation. Group Password Reset’s details dialog did not load Site Inspector branding styles. Source and Zendogs only; no new plugin release, tag, commit or push. Runtime backup: `/tmp/thrg-si-before-brand-preview.tar.gz` inside `zendogs-wp-sandbox-wordpress-1`.
 
 Release 2.2.5: refreshed 2026 THRG heart branding, two heartbeat cycles on opening, reduced-motion/print support, and a wrapping native View Details banner. Assets are bundled locally. Consider the Codex Security review reminder before future changes.
+
+## Release 2.2.6: portable ZIP permissions
+
+A live installation returned HTTP 403 for assets/inspector.css because the 2.2.5 ZIP retained its source mode 0600. The builder now explicitly emits Unix regular files with mode 0644 for every package entry, including bundled dependencies, independently of source permissions. The build verifies modes and byte-for-byte source correspondence. tests/package-permissions.py exercises mode-0600 source files in an isolated fixture. Previous release ZIPs are preserved. Consider the existing Codex Security review reminder separately.
