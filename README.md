@@ -77,32 +77,6 @@ Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-
 
 Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair").
 
-## 2.2.0
+## Changelog
 
-View Details now includes **Other THRG Plugins**, a guide to the three companion tools with descriptions and project links.
-
-## 2.2.1
-
-Corrected release packaging to retain the complete bundled updater, including the View Details parser dependencies.
-
-## 2.2.2
-
-View Details uses the approved compact companion-plugin cards, with content contained beside the sidebar and the installed version displayed.
-
-## 2.2.3
-
-Manual update-check failures now explain that inspection features remain available. Confirmed GitHub rate limits show a retry time in the site's timezone. Technical diagnostics are available in a disclosure rather than the main message. This update changes reporting; retry scheduling is unchanged.
-
-## 2.2.4 email format
-
-Email subjects follow `[domain] [Site Inspector] Security Check: …`, retaining status and new/resolved counts. For example: `[example.com] [Site Inspector] Security Check: 2 issues need attention`. Both the preview and send use the current configured home URL domain, including subdomains and explicit local ports; scheme and path are omitted, with site URL as fallback. Saved report history is not rewritten.
-
-The HTML email fills the available width, matching Group Password Reset’s layout standard. Existing branding, recipient selection, personal notes, username masking, report links and the plain-text alternative remain in place.
-
-Email feedback below the administrator form now reports both counts, for example: **Email accepted for sending: 1. Failed: 0. Acceptance does not confirm delivery.** Partial and complete failures retain setup guidance. Counts are display-only values returned after the send; they do not authorize sending.
-
-## Animated branding
-
-The 2026 heart logo now appears in the main inspector and Site Health Controls headers, with two gentle heartbeat cycles (4.4 seconds total). Native View Details uses the same logo on a warm dark banner with a wrapping title. Reduced-motion preferences and printing disable animation. Assets are local PNG/CSS, loaded only on this plugin’s screens or matching details dialog; no JavaScript or external service is needed. The help-card image uses the updated artwork without animation. Reusable source kit: `/Volumes/BACKUP8TB2/plugins/hackrepair-with-heart-animated-2026/plugin-kit`. Included in release 2.2.5.
-
-Release 2.2.5: refreshed 2026 THRG heart branding, two heartbeat cycles on opening, reduced-motion/print support, and a wrapping native View Details banner. Assets are bundled locally. Consider the Codex Security review reminder before future changes.
+See the **Changelog** section of [`readme.txt`](readme.txt).
