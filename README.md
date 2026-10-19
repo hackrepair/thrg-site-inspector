@@ -1,10 +1,14 @@
-# The Hack Repair Guy's Site Inspector
+<p align="center">
+  <img src=".github/branding/thrg-heart-animated.gif" alt="The Hack Repair Guy heart and wrench logo" width="144" height="144">
+</p>
+
+<h1 align="center">The Hack Repair Guy's Site Inspector</h1>
 
 Your friendly WordPress security inspector. Keeps a history of every report, so you can see what's new, what's fixed, and what's next.
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Current release: **2.2.4**. See [release notes](releases/v2.2.5.md).
+Current release: **2.2.5**. See [release notes](releases/v2.2.5.md).
 
 ## What it does
 
