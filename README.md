@@ -73,6 +73,12 @@ Run shared PHPCS with `/Volumes/BACKUP8TB2/plugins/PHPCS/run-phpcs.sh "$PWD"`. C
 
 See [PROJECT.md](PROJECT.md "Architecture, design decisions and known limits") for the architecture, design decisions and known limits.
 
+## Author and support
+
+**[Jim Walker](https://hackrepair.com/)** — The Hack Repair Guy — author and maintainer.
+
+[Report a bug or request a feature](https://github.com/hackrepair/thrg-site-inspector/issues) · [Security reporting](mailto:jim%40hackrepair%2Ecom) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
+
 ## License and credits
 
 [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2"). Started from a 2019 plugin by Louis Fico, used under the GPLv2-or-later license; the original attribution is retained.
