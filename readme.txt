@@ -7,6 +7,7 @@ Tested up to: 7.1.3
 Stable tag: 2.2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
 
 Your friendly WordPress security inspector. Keeps a history of every report, so you can see what's new, what's fixed, and what's next.
 
@@ -64,6 +65,16 @@ Started from a 2019 plugin by Louis Fico, used under the [GPLv2-or-later license
 3. Open Tools > Site Inspector and click Inspect this site.
 4. To email a saved report, open it and choose Email to administrators under Send this report to your designer or developer. Review recipients and Subject, optionally add a note, then choose Send email.
 5. Optional: review Settings > Site Health Controls to choose which Site Health features stay off.
+
+== Support ==
+
+For questions, ideas and community support, visit GitHub Discussions:
+https://github.com/hackrepair/thrg-site-inspector/discussions
+
+Report reproducible bugs through Issues:
+https://github.com/hackrepair/thrg-site-inspector/issues
+
+Report security concerns privately to Jim Walker at jim@hackrepair.com. Do not include credentials or sensitive site information in public posts.
 
 == Frequently Asked Questions ==
 

@@ -77,7 +77,7 @@ See [PROJECT.md](PROJECT.md "Architecture, design decisions and known limits") f
 
 **[Jim Walker](https://hackrepair.com/)** — The Hack Repair Guy — author and maintainer.
 
-[Report a bug or request a feature](https://github.com/hackrepair/thrg-site-inspector/issues) · [Security reporting](mailto:jim%40hackrepair%2Ecom) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
+[Questions, ideas and community support](https://github.com/hackrepair/thrg-site-inspector/discussions) · [Report a bug](https://github.com/hackrepair/thrg-site-inspector/issues) · [Security reporting](mailto:jim%40hackrepair%2Ecom) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
 
 ## License and credits
 

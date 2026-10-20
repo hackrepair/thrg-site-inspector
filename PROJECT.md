@@ -86,3 +86,7 @@ Release 2.2.5: refreshed 2026 THRG heart branding, two heartbeat cycles on openi
 ## Release 2.2.6: portable ZIP permissions
 
 A live installation returned HTTP 403 for assets/inspector.css because the 2.2.5 ZIP retained its source mode 0600. The builder now explicitly emits Unix regular files with mode 0644 for every package entry, including bundled dependencies, independently of source permissions. The build verifies modes and byte-for-byte source correspondence. tests/package-permissions.py exercises mode-0600 source files in an isolated fixture. Previous release ZIPs are preserved. Consider the existing Codex Security review reminder separately.
+
+## Community support
+
+Questions, ideas and community help: https://github.com/hackrepair/thrg-site-inspector/discussions. Reproducible bugs: https://github.com/hackrepair/thrg-site-inspector/issues. Security reports stay private. GitHub Discussions is enabled; Reddit is no longer the support destination. Documentation and support-link updates are committed for future packages without replacing published release assets.
