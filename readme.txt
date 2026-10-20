@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.2.6
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -135,6 +135,9 @@ Plugin update discovery and package downloads contact GitHub independently of in
 By default nothing is deleted, so a reinstall picks up where you left off. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.3.0 =
+* Added a Support container at the bottom of the Tools > Site Inspector screen: a link to buy Jim a cup of coffee and a link to GitHub Discussions for questions, ideas and help.
 
 = 2.2.6 =
 * Fixed ZIP file permissions that could prevent the web server from serving inspector.css, leaving the admin page unstyled.

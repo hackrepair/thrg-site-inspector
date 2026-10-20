@@ -417,6 +417,14 @@ $thrg_si_actions = static function ( $actions ) {
         </div>
     </section>
 
+    <section id="support" class="si-block si-support" aria-labelledby="si-support-title">
+        <h2 id="si-support-title" class="si-section"><?php esc_html_e( 'Support', 'thrg-site-inspector' ); ?></h2>
+        <div class="si-card">
+            <p>&#9749; <?php echo wp_kses_post( __( 'If you found this plugin helpful, please <a href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener">buy Jim a cup of coffee?</a>', 'thrg-site-inspector' ) ); ?></p>
+            <p><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo wp_kses_post( __( 'Questions and Feedback: For questions, ideas, or help with the plugin, <a href="https://github.com/hackrepair/thrg-site-inspector/discussions" target="_blank" rel="noopener">visit GitHub Discussions</a>.', 'thrg-site-inspector' ) ); ?></p>
+        </div>
+    </section>
+
     <footer class="si-coverage">
         <div class="si-coverage-col">
             <p><strong>Limits:</strong> This is a read-only look at your site's own files and settings. It does not test what the public can reach, match known vulnerabilities, or scan for malware.</p>

@@ -8,7 +8,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Current release: **2.2.6**. See [release notes](releases/v2.2.6.md).
+Current release: **2.3.0**. See [release notes](releases/v2.3.0.md).
 
 ## What it does
 
@@ -28,6 +28,8 @@ Each finding says why it matters, what was observed, and what to do next, with t
 **Report history.** When history is enabled, inspections are saved on your own site (up to 25 reports within a 600,000-byte storage limit), with what is new and what is resolved since the previous report. Reopen, delete, clear or pause history at any time.
 
 **Share a report.** Copy it as plain text, download it, or print it (usernames are masked on paper), or email a plain-language "state of security" briefing to some or all of the site's administrators, with a subject line that says where things stand.
+
+**Support.** A Support container at the bottom of the screen links to the buy-Jim-a-coffee page and to GitHub Discussions.
 
 **Settings → Site Health Controls** keeps the original feature: switch off the WordPress Site Health menu item, screen redirect, dashboard widget, background tests, weekly cron check, REST routes and AJAX actions, with administrator and user ID exemptions. It also has an opt-in *Delete all plugin data* setting for uninstall.
 
