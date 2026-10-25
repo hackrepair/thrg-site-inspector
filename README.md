@@ -10,6 +10,14 @@ Most hacked WordPress sites were open to the same handful of things: out-of-date
 
 Current release: **2.3.0**. See [release notes](releases/v2.3.0.md).
 
+<p align="center">
+  <a href="https://github.com/hackrepair/thrg-site-inspector/releases/latest" title="Download the latest Site Inspector plugin zip from GitHub"><img src="https://img.shields.io/badge/%E2%AC%87%20%20Download%20the%20latest%20release-b34700?style=for-the-badge&labelColor=b34700" alt="Download the latest release" height="46"></a>
+  <br>
+  <sub>Free. Upload the zip in WordPress, and later updates arrive on the Plugins screen.</sub>
+  <br><br>
+  <a href="https://hackrepair.github.io/thrg-site-inspector/" title="The Site Inspector project page">Visit the Site Inspector page</a>
+</p>
+
 ## What it does
 
 **Tools → Site Inspector** checks:

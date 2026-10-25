@@ -94,3 +94,11 @@ A live installation returned HTTP 403 for assets/inspector.css because the 2.2.5
 ## Community support
 
 Questions, ideas and community help: https://github.com/hackrepair/thrg-site-inspector/discussions. Reproducible bugs: https://github.com/hackrepair/thrg-site-inspector/issues. Security reports stay private. GitHub Discussions is enabled; Reddit is no longer the support destination. Documentation and support-link updates are committed for future packages without replacing published release assets.
+
+## Project page (GitHub Pages), October 25, 2026
+
+https://hackrepair.github.io/thrg-site-inspector/ is a one-page site served by GitHub Pages from `docs/` on `main` (`docs/index.html`, `docs/img/`, `docs/video/`, `docs/.nojekyll`). It has a hero with an animated sample report, the click-to-load intro video, download buttons, the four "open doors", the check list, the three main features, a read-only and privacy band, Site Health Controls, install steps and project links. On load it asks the GitHub API for the latest release and points every download button at that zip, labeled with the version; if the lookup fails the buttons go to the latest release page. Fonts: Bricolage Grotesque and Atkinson Hyperlegible from Google Fonts, matching the Stickies page. Images in `docs/img/` are copies of plugin assets; refresh them if the brand art changes.
+
+The intro video (`docs/video/site-inspector-intro.mp4`, 94 seconds, 1080p, no audio yet) is an animated mock-up with sample data (example.com), not a recording of a real site. Its source and the voiceover script live outside the repo in `../video-intro/`. When a voiced version is on YouTube, set `YOUTUBE_ID` in the page script and the player switches to youtube-nocookie.
+
+Release rule: `docs/` is not part of the plugin. `scripts/build-release.py` already skips it.
