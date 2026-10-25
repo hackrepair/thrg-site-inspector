@@ -13,6 +13,8 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 == Description ==
 
+The native View Details window includes an Other THRG Plugins guide to five other tools from The Hack Repair Guy.
+
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those, in a few seconds, and tells you in plain language what it found, why it matters, and what to do about it. The inspection does not apply fixes to your site. Reports are saved locally when history is enabled.
 
 Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
