@@ -236,7 +236,7 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-5-5m5 5 5-5M5 20h14"/></svg>
             <span data-download-label>Download Site Inspector</span>
           </a>
-          <a class="text-link" href="#tour">Watch the 90-second tour</a>
+          <a class="text-link" href="#tour">Watch the 75-second tour</a>
         </div>
         <p class="fine">Free and open source (GPL-2.0-or-later). Needs WordPress 6.9.4 or newer and PHP 7.4 or newer.</p>
       </div>
@@ -263,7 +263,7 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
 <main>
   <div class="wrap">
     <section id="tour" aria-labelledby="tour-h">
-      <h2 id="tour-h">See it work in 90 seconds</h2>
+      <h2 id="tour-h">See it work in 75 seconds</h2>
       <p class="sub">Run an inspection, read a finding, check what changed since last time, and send the report to the people who can fix it.</p>
       <div class="player" id="player">
         <img src="img/poster.jpg" alt="" width="1280" height="720" loading="lazy">
@@ -403,14 +403,14 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
       if (YOUTUBE_ID) {
         el = document.createElement('iframe');
         el.src = 'https://www.youtube-nocookie.com/embed/' + YOUTUBE_ID + '?autoplay=1&rel=0';
-        el.title = 'Site Inspector in 90 seconds';
+        el.title = 'Site Inspector in 75 seconds';
         el.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen';
         el.allowFullscreen = true;
       } else {
         el = document.createElement('video');
         el.src = 'video/site-inspector-intro.mp4';
         el.controls = true; el.autoplay = true; el.playsInline = true;
-        el.setAttribute('aria-label', 'Site Inspector in 90 seconds');
+        el.setAttribute('aria-label', 'Site Inspector in 75 seconds');
       }
       player.textContent = '';
       player.appendChild(el);
