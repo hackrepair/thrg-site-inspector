@@ -57,24 +57,6 @@ Upload the plugin ZIP under **Plugins → Add New → Upload Plugin**, or place 
 
 The plugin lives in the `thrg-site-inspector` folder and starts from `index.php`. Updates come from this repository's [GitHub releases](https://github.com/hackrepair/thrg-site-inspector/releases "All Site Inspector releases and download files").
 
-## Development
-
-Requires WordPress 6.9.4+ and PHP 7.4+. Tests are plain PHP scripts:
-
-```
-php tests/smoke.php
-php tests/inspector.php
-php tests/evidence.php
-php tests/history.php
-php tests/uninstall.php
-php tests/email.php
-php tests/update-notices.php
-```
-
-Run shared PHPCS with `/Volumes/BACKUP8TB2/plugins/PHPCS/run-phpcs.sh "$PWD"`. Consider a Codex Security diff review before release; do not run that tool automatically.
-
-See [PROJECT.md](PROJECT.md "Architecture, design decisions and known limits") for the architecture, design decisions and known limits.
-
 ## Author and support
 
 **[Jim Walker](https://hackrepair.com/)** — The Hack Repair Guy — author and maintainer.
