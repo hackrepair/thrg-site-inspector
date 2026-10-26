@@ -72,7 +72,7 @@ The plugin lives in the `thrg-site-inspector` folder and starts from `index.php`
 
 **[Jim Walker](https://hackrepair.com/)** — The Hack Repair Guy — author and maintainer.
 
-[Questions, ideas and community support](https://github.com/hackrepair/thrg-site-inspector/discussions) · [Report a bug](https://github.com/hackrepair/thrg-site-inspector/issues) · [Security reporting](mailto:jim%40hackrepair%2Ecom) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
+[Questions, ideas and community support](https://github.com/hackrepair/thrg-site-inspector/discussions) · [Report a bug](https://github.com/hackrepair/thrg-site-inspector/issues) · [Security reporting](SECURITY.md) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
 
 ## License and credits
 
