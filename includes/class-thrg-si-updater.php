@@ -103,6 +103,44 @@ final class THRG_SI_Updater {
 			Api::RELEASE_FILTER_SKIP_PRERELEASE,
 			1
 		);
+
+		// The bundled Markdown renderer (Parsedown 1.6.0, unmodified upstream) predates its
+		// XSS and class-injection fixes. Clean what it produces before WordPress shows it.
+		$this->checker->addFilter( 'request_info_result', array( __CLASS__, 'clean_info' ), 20, 2 );
+	}
+
+	/**
+	 * HTML tags and attributes allowed in update details: WordPress's post allowlist without class attributes.
+	 *
+	 * @return array
+	 */
+	public static function allowed_html() {
+		$allowed = wp_kses_allowed_html( 'post' );
+		foreach ( $allowed as $tag => $attributes ) {
+			if ( is_array( $attributes ) ) {
+				unset( $allowed[ $tag ]['class'] );
+			}
+		}
+		return $allowed;
+	}
+
+	/**
+	 * Sanitize every text section of the plugin information built from GitHub release notes or the readme.
+	 *
+	 * @param mixed $info Plugin information object from the update checker.
+	 * @return mixed
+	 */
+	public static function clean_info( $info ) {
+		if ( ! is_object( $info ) || ! isset( $info->sections ) || ! is_array( $info->sections ) ) {
+			return $info;
+		}
+		$allowed = self::allowed_html();
+		foreach ( $info->sections as $name => $html ) {
+			if ( is_string( $html ) ) {
+				$info->sections[ $name ] = wp_kses( $html, $allowed );
+			}
+		}
+		return $info;
 	}
 
 	/**

@@ -142,6 +142,7 @@ A full review of 2.3.1 found no security bugs. These fixes are in source for the
 - Email: Reply-To is built by `THRG_SI_Email::reply_to()`, which quotes the display name and strips characters `wp_mail()` treats as separators.
 - View details: Requires at least, Tested up to and Requires PHP are read from the installed readme header instead of being repeated in code. `last_updated` is no longer sent, because the installed files only know their unpack time.
 - Email form: non-scalar `recipients[]` values are dropped before conversion to user IDs.
+- Update details: `THRG_SI_Updater::clean_info()` sanitizes the text sections the update checker builds from GitHub release notes (see the Parsedown assessment in `docs/dependency-coverage.md`). Covered by `tests/updater-sanitize.php`.
 - Docs: current-release line, Architecture list, stale 2.2.4 notes, companion-guide status and version-specific subject wording brought up to date.
 
-Tests: new checks for the account query, PHP 8.5, Reply-To, uninstall leftovers and readme metadata (including readme/header agreement). All `tests/` pass.
+Tests: new checks for the account query, PHP 8.5, Reply-To, uninstall leftovers, readme metadata (including readme/header agreement) and update-details sanitizing. All `tests/` pass.
