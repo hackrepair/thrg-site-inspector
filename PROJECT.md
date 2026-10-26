@@ -2,7 +2,7 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.3.1**, tag `v2.3.1`, published October 25, 2026.
+Current release: **2.3.2**, tag `v2.3.2`, October 26, 2026. See `releases/v2.3.2.md`.
 
 ## Scope
 
@@ -132,9 +132,9 @@ Added the common SECURITY.md policy, repository-specific private reporting desti
 
 Enabled secret scanning, push protection and Dependabot alerts; added the trusted-main dependency inventory workflow and live read-only protection verifier. This is repository tooling, with no plugin release/SVN/runtime change. Bundled Parsedown declares 1.6.0, with upstream advisories requiring source-aware review. See `docs/repository-protection-2026-10-26.md` and `docs/dependency-coverage.md` for evidence and limits.
 
-## Review fixes — October 26, 2026 (not yet released)
+## Review fixes — October 26, 2026 (released in 2.3.2)
 
-A full review of 2.3.1 found no security bugs. These fixes are in source for the next patch release:
+A full review of 2.3.1 found no security bugs. These fixes shipped in 2.3.2:
 
 - Accounts: the collector now fetches only accounts with a watched capability (`capability__in`), newest first, so the 200-account limit can no longer hide a recently added administrator behind older ordinary users.
 - PHP support table: added PHP 8.5 (security support until 2029-12-31).

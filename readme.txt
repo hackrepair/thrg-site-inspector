@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.3.1
+Stable tag: 2.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -137,6 +137,14 @@ Plugin update discovery and package downloads contact GitHub independently of in
 By default nothing is deleted, so a reinstall picks up where you left off. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.3.2 =
+* Site Inspector now checks the newest accounts with administrator-level access first, so the 200-account limit can no longer hide a recently added admin on a large site.
+* Added PHP 8.5 to the supported-version check.
+* Update details from GitHub are cleaned before WordPress shows them.
+* Reply-To names in emailed reports are quoted safely.
+* View Details reads its WordPress and PHP requirements from this readme, and no longer shows a misleading last-updated date.
+* Deleting the plugin with "Delete all plugin data" ticked now also removes the update checker's saved data.
 
 = 2.3.1 =
 * Expanded Other THRG Plugins in View Details to show five companion tools, excluding the current plugin.
