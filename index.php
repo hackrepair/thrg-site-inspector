@@ -457,7 +457,7 @@ function thrg_shc_render_settings_page() {
             </div>
             <div class="si-coverage-col si-help">
                 <img class="si-mascot thrg-brand-heart" src="<?php echo esc_url( $mascot ); ?>" alt="" width="44" height="44" />
-                <p>Need a deeper look?<br />Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" target="_blank" rel="noopener noreferrer">The Hack Repair Guy<span class="screen-reader-text"> (opens in a new tab)</span></a>.</p>
+                <p>Need a deeper look or someone to assist with updates and security?<br />Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" target="_blank" rel="noopener noreferrer">The Hack Repair Guy<span class="screen-reader-text"> (opens in a new tab)</span></a></p>
             </div>
         </footer>
     </div>

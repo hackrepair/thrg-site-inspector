@@ -508,7 +508,7 @@ $thrg_si_actions = static function ( $actions ) {
         </div>
         <div class="si-coverage-col si-help">
             <img class="si-mascot" src="<?php echo esc_url( plugins_url( '../assets/brand/thrg-heart-128.png', __FILE__ ) ); ?>" alt="" width="44" height="44" />
-            <p>Need a deeper look?<br />Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" target="_blank" rel="noopener noreferrer">The Hack Repair Guy<?php echo wp_kses_post( THRG_Site_Inspector::NEW_TAB_HINT ); ?></a>.</p>
+            <p>Need a deeper look or someone to assist with updates and security?<br />Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" target="_blank" rel="noopener noreferrer">The Hack Repair Guy<?php echo wp_kses_post( THRG_Site_Inspector::NEW_TAB_HINT ); ?></a></p>
         </div>
     </footer>
 </div>
