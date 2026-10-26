@@ -27,19 +27,32 @@ final class THRG_Inspection_Evidence {
     }
 
     /**
+     * Query arguments for accounts that may hold a watched capability.
+     *
+     * Only accounts with a watched capability (by role or direct grant) are
+     * fetched, newest first, so the limit never hides a recently added admin
+     * behind older, ordinary accounts.
+     *
+     * @param int $blog_id Site ID.
+     * @return array
+     */
+    public static function account_query( $blog_id ) {
+        return array(
+            'blog_id'        => (int) $blog_id,
+            'capability__in' => self::watched_caps(),
+            'number'         => self::ACCOUNT_LIMIT + 1,
+            'orderby'        => 'ID',
+            'order'          => 'DESC',
+        );
+    }
+
+    /**
      * Accounts holding any watched capability (role inheritance and direct grants).
      *
      * @return array
      */
     public static function accounts() {
-        $users = get_users(
-            array(
-                'blog_id' => get_current_blog_id(),
-                'number'  => self::ACCOUNT_LIMIT + 1,
-                'orderby' => 'ID',
-                'order'   => 'ASC',
-            )
-        );
+        $users = get_users( self::account_query( get_current_blog_id() ) );
         $items = array();
         foreach ( array_slice( $users, 0, self::ACCOUNT_LIMIT ) as $user ) {
             $caps = array();

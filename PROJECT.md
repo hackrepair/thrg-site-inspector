@@ -2,7 +2,7 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.2.4**, tag `v2.2.4`, approved for publication October 18, 2026.
+Current release: **2.3.1**, tag `v2.3.1`, published October 25, 2026.
 
 ## Scope
 
@@ -10,25 +10,27 @@ A targeted, read-only inspection of conditions that may enable exploitation, plu
 
 ## Architecture
 
-- `index.php`: plugin header, Site Health controls (seven toggles, exemptions, Uninstall option), settings page, Plugins-screen links and View details, one-time notice. The plugin slug is its installed folder name (`thrg_si_slug()`), so earlier installs under another folder name keep working. The settings option stays `thrg_shc_options`.
-- `includes/class-thrg-site-inspector.php`: Tools > Site Inspector, admin-post handlers (delete, clear, pause), pure `evaluate()` separated from `collect()`, link-token system with a strict allowlist (`href()`), plain-text report.
+- `index.php`: plugin header, Site Health controls (seven toggles, exemptions, Uninstall option), settings page, Plugins-screen links and View details (built from the installed readme), one-time notice. The plugin slug is its installed folder name (`thrg_si_slug()`), so earlier installs under another folder name keep working. The settings option stays `thrg_shc_options`.
+- `includes/class-thrg-site-inspector.php`: Tools > Site Inspector, admin-post handlers (delete, clear, pause/resume, email), pure `evaluate()` separated from `collect()`, link-token system with a strict allowlist (`href()`), plain-text report.
 - `includes/class-thrg-inspection-evidence.php`: bounded, read-only collectors (accounts, uploads, sensitive files, software, must-use code, salts). No file contents are read, symlinks are skipped, and results say when coverage is partial.
 - `includes/class-thrg-si-history.php`: report history in one non-autoloaded option (25 reports, about 600 KB cap, identical results within five minutes saved once).
 - `includes/class-thrg-si-email.php`: emails a saved report to chosen administrators as a "state of security" briefing. Pure builders (`subject()`, `narrative()`, `change_line()`, `html()`, `text()`) plus `recipients()` and `send()`. Recipients are looked up server-side from administrator user IDs, never typed in; one personal email each via `wp_mail()` with a plain-text alternative; usernames masked; Reply-To is the sender; one send per user per minute. Handler: `admin_post_thrg_si_email_report` (manage_options + nonce).
 - `includes/view-inspector.php`, `assets/inspector.css`: the interface. Shared by the Site Health Controls page, modeled on [The Hack Repair Guy's Plugin Detective](https://github.com/hackrepair/hackrepair-plugin-detective "Plugin Detective on GitHub"). The mascot uses the updated 2026 THRG heart artwork.
 - `includes/class-thrg-si-updater.php` and `plugin-update-checker/`: GitHub release updates, independent of the inspector. A release needs tag `vX.Y.Z` and an uploaded `thrg-site-inspector.X.Y.Z.zip` whose top-level folder is `thrg-site-inspector/`.
-- `uninstall.php`: removes settings, report history and notice dismissal only when *Delete all plugin data* is ticked.
+- `includes/class-thrg-si-update-notices.php`: plain-language messages when a manual update check fails, including a confirmed GitHub rate limit; technical details stay in a disclosure.
+- `includes/companion-plugins.php`: adds the **Other THRG Plugins** tab (five companion tools) to this plugin's native View Details dialog.
+- `uninstall.php`: removes settings, report history, the history-paused flag, the notice dismissal and update-checker leftovers only when *Delete all plugin data* is ticked.
 
 ## Design rules
 
-- Collection is bounded (200 accounts; 20,000 upload entries, five seconds, 50 results) and read-only. No outbound requests, scheduled jobs, file writes or remediation handlers in the inspector.
+- Collection is bounded (200 privileged accounts, newest first; 20,000 upload entries, five seconds, 50 results) and read-only. No outbound requests, scheduled jobs, file writes or remediation handlers in the inspector.
 - Findings use plain language: why it matters, what was observed, what to do, and the limits of the check. A clean baseline produces zero Review items.
 - Output is escaped. Links come from an allowlist: admin pages matching a strict pattern plus two reference URLs. Anything else renders as plain text, and dynamic names cannot create links. Links to other pages open in a new tab (except the way back to Site Inspector from Site Health Controls).
 - Reports contain usernames and file names, so the page and docs say to share them only with people you trust. Printing masks usernames.
 
 ## Tests
 
-`tests/` covers finding classification, the email builders (subject lines, escaping, masking, plain text), the link allowlist and escaping, the filesystem collectors (against a temporary tree), report history, uninstall behavior, and a smoke test of the Site Health controls. Earlier project notes record PHP 7.4/8.3 and desktop/mobile/print checks. These are historical baseline results, not proof that the current 2.2.4 changes were exercised across that runtime matrix. The 2.2.4 evidence is listed below.
+`tests/` covers finding classification, the email builders (subject lines, escaping, masking, plain text), the link allowlist and escaping, the filesystem collectors (against a temporary tree), report history, uninstall behavior, and a smoke test of the Site Health controls. Earlier project notes record PHP 7.4/8.3 and desktop/mobile/print checks. These are historical baseline results, not proof that later changes were exercised across that runtime matrix. Each release section below records its own evidence.
 
 Run the shared PHPCS installation from `/Volumes/BACKUP8TB2/plugins/PHPCS` before committing PHP changes:
 
@@ -36,7 +38,7 @@ Run the shared PHPCS installation from `/Volumes/BACKUP8TB2/plugins/PHPCS` befor
 /Volumes/BACKUP8TB2/plugins/PHPCS/run-phpcs.sh "$PWD"
 ```
 
-The local `phpcs.xml.dist` checks shipped first-party PHP against WordPress Extra and PHPCompatibilityWP for PHP 7.4 and newer. It excludes the test harness, review helpers, and bundled third-party updater. The current 2.2.4 email changes passed this check on October 18, 2026.
+The local `phpcs.xml.dist` checks shipped first-party PHP against WordPress Extra and PHPCompatibilityWP for PHP 7.4 and newer. It excludes the test harness, review helpers, and bundled third-party updater. Run it for every PHP change; release sections below record when it passed.
 
 ## Third-party code
 
@@ -47,7 +49,7 @@ The local `phpcs.xml.dist` checks shipped first-party PHP against WordPress Extr
 - No public-exposure verification, advisory feed, custom signup flow inspection, malware scan or server enforcement test. Permission bits do not establish ACLs or exploitability; HTTPS settings do not establish redirects or certificate validity.
 - Multisite behavior and cross-version compatibility need dedicated tests.
 - Inspector strings are not yet translatable.
-- For the pending 2.2.4 build, published-updater discovery/install continuity and a final security review have not been verified. Consider the Codex Security diff-review reminder; do not run that plugin automatically.
+- `PHP_SUPPORT` dates are maintained by hand. Add new PHP branches as they ship, and expect each branch to move from Review to Potential weakness on its end date (8.2 on January 1, 2027).
 
 ## 2.2.4 email format update — October 18, 2026
 
@@ -104,9 +106,9 @@ The intro video (`docs/video/site-inspector-intro.mp4`, 75 seconds, 1080p, with 
 Release rule: `docs/` is not part of the plugin. `scripts/build-release.py` already skips it.
 
 
-## Companion-plugin guide — October 25, 2026 (pending release)
+## Companion-plugin guide — October 25, 2026 (released in 2.3.1)
 
-The native View Details **Other THRG Plugins** tab lists the other five tools: Disable Other Plugin Notices, Group Password Reset, Plugin Detective, Site Inspector, Post Update Email Notifier and Plugin Archiver, excluding the current plugin. Plugin Archiver always links to https://wordpress.org/plugins/hackrepair-plugin-archiver/; the GitHub-distributed tools link to their own repositories. Cards are informational links, with no automatic installs or external requests. Archiver retains WordPress.org updates and metadata. No published version, tag or release asset is changed by this source update.
+The native View Details **Other THRG Plugins** tab lists the five other tools: Disable Other Plugin Notices, Group Password Reset, Plugin Detective, Post Update Email Notifier and Plugin Archiver. The same guide in each sibling plugin lists Site Inspector and excludes itself. Plugin Archiver always links to https://wordpress.org/plugins/hackrepair-plugin-archiver/; the GitHub-distributed tools link to their own repositories. Cards are informational links, with no automatic installs or external requests. Archiver retains WordPress.org updates and metadata. Shipped in 2.3.1.
 
 Verification: shared PHPCS and `php tests/companion-plugins.php` pass for this checkout. Native WordPress View Details on Zendogs renders five distinct companion cards, with no self-link and Archiver linked only to WordPress.org. Archiver uses `plugins_api_result` for official metadata and preserves ratings/version/update controls; the test used a temporary loader beside the older installed Archiver, not a full upgrade. Temporary preview files are restored after testing; no reset, archive, delete or email action was performed. Published releases remain unchanged.
 
@@ -129,3 +131,17 @@ Added the common SECURITY.md policy, repository-specific private reporting desti
 ## Secret protection and dependency coverage — October 26, 2026
 
 Enabled secret scanning, push protection and Dependabot alerts; added the trusted-main dependency inventory workflow and live read-only protection verifier. This is repository tooling, with no plugin release/SVN/runtime change. Bundled Parsedown declares 1.6.0, with upstream advisories requiring source-aware review. See `docs/repository-protection-2026-10-26.md` and `docs/dependency-coverage.md` for evidence and limits.
+
+## Review fixes — October 26, 2026 (not yet released)
+
+A full review of 2.3.1 found no security bugs. These fixes are in source for the next patch release:
+
+- Accounts: the collector now fetches only accounts with a watched capability (`capability__in`), newest first, so the 200-account limit can no longer hide a recently added administrator behind older ordinary users.
+- PHP support table: added PHP 8.5 (security support until 2029-12-31).
+- Uninstall: when *Delete all plugin data* is ticked on any site, also removes the update checker's `external_updates-<folder>` site option and the `thrg_si_github_limit` site transient. The update checker already clears its cron hook on deactivation.
+- Email: Reply-To is built by `THRG_SI_Email::reply_to()`, which quotes the display name and strips characters `wp_mail()` treats as separators.
+- View details: Requires at least, Tested up to and Requires PHP are read from the installed readme header instead of being repeated in code. `last_updated` is no longer sent, because the installed files only know their unpack time.
+- Email form: non-scalar `recipients[]` values are dropped before conversion to user IDs.
+- Docs: current-release line, Architecture list, stale 2.2.4 notes, companion-guide status and version-specific subject wording brought up to date.
+
+Tests: new checks for the account query, PHP 8.5, Reply-To, uninstall leftovers and readme metadata (including readme/header agreement). All `tests/` pass.

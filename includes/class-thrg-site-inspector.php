@@ -31,6 +31,7 @@ final class THRG_Site_Inspector {
         '8.2' => '2026-12-31',
         '8.3' => '2027-12-31',
         '8.4' => '2028-12-31',
+        '8.5' => '2029-12-31',
     );
 
     public static function boot() {
@@ -89,7 +90,7 @@ final class THRG_Site_Inspector {
             $back( 'missing' );
         }
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- guard() verifies this action's nonce before form data is read.
-        $ids = isset( $_POST['recipients'] ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST['recipients'] ) ) ) : array();
+        $ids = isset( $_POST['recipients'] ) ? array_filter( array_map( 'absint', array_filter( (array) wp_unslash( $_POST['recipients'] ), 'is_scalar' ) ) ) : array();
         if ( ! $ids ) {
             $back( 'mail-none' );
         }
@@ -402,8 +403,8 @@ final class THRG_Site_Inspector {
                 'Who can change this site?',
                 $status,
                 $why,
-                array( $a['checked'] . ' site accounts checked' . ( $a['partial'] ? ' (limit reached; more accounts exist)' : '' ) . '.' ),
-                'Includes roles and direct capability grants. Network-only super administrators, context-dependent filters, and custom authorization paths may differ. At most 200 accounts are checked.',
+                array( $a['checked'] . ' account' . ( 1 === (int) $a['checked'] ? '' : 's' ) . ' with elevated access checked, newest first' . ( $a['partial'] ? ' (limit reached; older accounts were not checked)' : '' ) . '.' ),
+                'Includes roles and direct capability grants. Network-only super administrators, context-dependent filters, and custom authorization paths may differ. At most 200 accounts with elevated access are checked, newest first.',
                 'Review' === $status ? 'Confirm you recognize each flagged account. Remove or downgrade any you do not in [[users.php|Users]], then change administrator passwords.' : 'Remove accounts that no longer need this access in [[users.php|Users]].',
                 $table['rows'] ? $table : null
             ),

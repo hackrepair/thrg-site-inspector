@@ -30,6 +30,8 @@ file_put_contents( $site . '/site-backup.zip', 'x' );
 file_put_contents( $site . '/wp-config.php', 'x' );
 
 try {
+    $q = THRG_Inspection_Evidence::account_query( 3 );
+    check( 3 === $q['blog_id'] && THRG_Inspection_Evidence::watched_caps() === $q['capability__in'] && 'DESC' === $q['order'] && 'ID' === $q['orderby'] && THRG_Inspection_Evidence::ACCOUNT_LIMIT + 1 === $q['number'], 'account query: privileged accounts only, newest first' );
     $result = THRG_Inspection_Evidence::uploads( $root );
     $paths  = array_column( $result['items'], 'path' );
     sort( $paths );

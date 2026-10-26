@@ -589,6 +589,28 @@ function thrg_shc_format_readme_section( $source ) {
 }
 
 /**
+ * Read the compatibility fields from the readme header.
+ *
+ * @param string $readme Full readme.txt contents.
+ * @return array<string,string> Keys requires, tested, requires_php (only those present).
+ */
+function thrg_shc_readme_meta( $readme ) {
+    $fields = array(
+        'requires'     => 'Requires at least',
+        'tested'       => 'Tested up to',
+        'requires_php' => 'Requires PHP',
+    );
+    $head   = preg_split( '/^==\s*Description\s*==\s*$/mi', (string) $readme, 2 );
+    $meta   = array();
+    foreach ( $fields as $key => $label ) {
+        if ( preg_match( '/^' . preg_quote( $label, '/' ) . ':\s*([0-9][0-9.]*)\s*$/mi', $head[0], $m ) ) {
+            $meta[ $key ] = $m[1];
+        }
+    }
+    return $meta;
+}
+
+/**
  * Supply plugin details directly from the installed readme and local artwork.
  * Only intercept information requests for our unique slug, and only while no
  * newer release is pending (then the update checker describes that release).
@@ -646,24 +668,24 @@ function thrg_shc_local_plugin_info( $result, $action, $args ) {
         return $result;
     }
 
-    $info               = new stdClass();
-    $info->name         = "The Hack Repair Guy's Site Inspector";
-    $info->slug         = thrg_si_slug();
-    $info->version      = THRG_SI_VERSION;
-    $info->author       = '<a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair">The Hack Repair Guy</a>';
-    $info->homepage     = 'https://github.com/hackrepair/thrg-site-inspector';
-    $info->external     = true;
-    $info->requires     = '6.9.4';
-    $info->tested       = '7.1.3';
-    $info->requires_php = '7.4';
-    $info->last_updated = gmdate( 'Y-m-d H:i:s', (int) filemtime( __FILE__ ) );
-    $info->sections     = $sections;
-    $asset_url          = plugin_dir_url( __FILE__ ) . 'assets/';
-    $info->banners      = array(
+    $info           = new stdClass();
+    $info->name     = "The Hack Repair Guy's Site Inspector";
+    $info->slug     = thrg_si_slug();
+    $info->version  = THRG_SI_VERSION;
+    $info->author   = '<a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair">The Hack Repair Guy</a>';
+    $info->homepage = 'https://github.com/hackrepair/thrg-site-inspector';
+    $info->external = true;
+    foreach ( thrg_shc_readme_meta( $readme ) as $key => $value ) {
+        $info->$key = $value;
+    }
+    // No last_updated: the installed files only know when they were unpacked, not when the release was published.
+    $info->sections = $sections;
+    $asset_url      = plugin_dir_url( __FILE__ ) . 'assets/';
+    $info->banners  = array(
         'low'  => $asset_url . 'banner-772x250.png',
         'high' => $asset_url . 'banner-1544x500.png',
     );
-    $info->icons        = array(
+    $info->icons    = array(
         '1x' => $asset_url . 'icon-128x128.png',
         '2x' => $asset_url . 'icon-256x256.png',
     );

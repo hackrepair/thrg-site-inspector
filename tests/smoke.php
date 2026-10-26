@@ -94,4 +94,13 @@ check( 'readme link without tooltip has no title', false !== strpos( $html, '<a 
 $bad = thrg_shc_format_readme_inline( '[x](https://e.com/ "a\" onmouseover=\"b")' );
 check( 'readme tooltip cannot break out of the attribute', 1 === preg_match( '/^<a href="https:\/\/e\.com\/" title="[^"]*" target="_blank" rel="noopener noreferrer">x<\/a>$/', $bad ) );
 
+// View details compatibility comes from readme.txt and agrees with the plugin header.
+$meta   = thrg_shc_readme_meta( file_get_contents( __DIR__ . '/../readme.txt' ) );
+$header = file_get_contents( __DIR__ . '/../index.php', false, null, 0, 2000 );
+preg_match( '/Requires at least:\s*(\S+)/', $header, $h_wp );
+preg_match( '/Requires PHP:\s*(\S+)/', $header, $h_php );
+check( 'readme compatibility fields parsed', isset( $meta['requires'], $meta['tested'], $meta['requires_php'] ) );
+check( 'readme and header agree on requirements', $meta['requires'] === $h_wp[1] && $meta['requires_php'] === $h_php[1] );
+check( 'readme fields ignored outside the header', array() === thrg_shc_readme_meta( "== Description ==\nTested up to: 9.9\n" ) );
+
 exit( $fail ? 1 : 0 );

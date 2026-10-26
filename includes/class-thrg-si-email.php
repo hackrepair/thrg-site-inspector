@@ -141,6 +141,23 @@ final class THRG_SI_Email {
         return 'Since the previous check' . $since . ': ' . implode( ', ', $parts ) . '.';
     }
 
+    /**
+     * A Reply-To header for the sender, or '' without a valid address.
+     * The display name loses characters wp_mail() treats as separators.
+     *
+     * @param string $name  Sender display name.
+     * @param string $email Sender email address.
+     * @return string
+     */
+    public static function reply_to( $name, $email ) {
+        $email = trim( (string) $email );
+        if ( '' === $email || ! is_email( $email ) || preg_match( '/[\r\n,<>]/', $email ) ) {
+            return '';
+        }
+        $name = trim( preg_replace( '/\s+/', ' ', str_replace( array( '"', ',', ';', '<', '>', '\\' ), ' ', (string) $name ) ) );
+        return 'Reply-To: ' . ( '' !== $name ? '"' . $name . '" ' : '' ) . '<' . $email . '>';
+    }
+
     private static function e( $text ) {
         return htmlspecialchars( (string) $text, ENT_QUOTES, 'UTF-8' );
     }
@@ -408,8 +425,9 @@ final class THRG_SI_Email {
         );
         $subject = self::subject( $entry['rows'], $base['site'], $change );
         $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-        if ( is_email( $sender->user_email ) ) {
-            $headers[] = 'Reply-To: ' . $base['sender'] . ' <' . $sender->user_email . '>';
+        $reply   = self::reply_to( $base['sender'], $sender->user_email );
+        if ( '' !== $reply ) {
+            $headers[] = $reply;
         }
 
         $sent = 0;

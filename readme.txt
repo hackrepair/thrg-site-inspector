@@ -13,8 +13,6 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 == Description ==
 
-The native View Details window includes an Other THRG Plugins guide to five other tools from The Hack Repair Guy.
-
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those, in a few seconds, and tells you in plain language what it found, why it matters, and what to do about it. The inspection does not apply fixes to your site. Reports are saved locally when history is enabled.
 
 Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
@@ -37,6 +35,8 @@ Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
 **Email a "state of security" briefing.** From any report, send a friendly, plain-language summary to some or all of the site's administrators: what needs fixing first, what's worth a second look, what's already in good shape, and what changed since the last check, with a subject line that tells them where things stand before they open it. You can add a personal note, each administrator gets their own copy, and replies come back to you.
 
 Administrator emails use a full-width branded HTML layout with a plain-text alternative. Subjects follow `[example.com] [Site Inspector] Security Check: 2 issues need attention`, retaining the report status and change counts. The configured home URL supplies the domain, preserving subdomains and explicit ports such as `localhost:8081`. The subject preview matches the sent message.
+
+**More tools from The Hack Repair Guy.** The plugin's View Details window includes an Other THRG Plugins guide to five companion tools.
 
 = Privacy =
 
@@ -110,7 +110,7 @@ A retained report, manage_options permission and a valid nonce are required. To 
 
 = What format do the email subjects use? =
 
-Version 2.2.4 uses `[domain] [Site Inspector] Security Check: …`, for example `[example.com] [Site Inspector] Security Check: 2 issues need attention`. Status and new/resolved counts remain in the subject. The preview and sent message use the current configured home URL domain, preserving subdomains and explicit ports such as localhost:8081 while omitting scheme/path, with site URL as fallback. Saved report history is unchanged.
+Subjects use `[domain] [Site Inspector] Security Check: …`, for example `[example.com] [Site Inspector] Security Check: 2 issues need attention`. Status and new/resolved counts remain in the subject. The preview and sent message use the current configured home URL domain, preserving subdomains and explicit ports such as localhost:8081 while omitting scheme/path, with site URL as fallback. Saved report history is unchanged.
 
 = Will it disable WordPress background health checks? =
 

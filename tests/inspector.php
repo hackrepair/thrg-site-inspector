@@ -45,6 +45,7 @@ $cases = array(
     array( 'PHP 7.4 unsupported', array( 'php_version' => '7.4.33' ), 'php-version', 'Potential weakness' ),
     array( 'PHP 8.2 ending soon', array( 'php_version' => '8.2.20' ), 'php-version', 'Review' ),
     array( 'PHP 8.3 supported', array(), 'php-version', 'No issue observed' ),
+    array( 'PHP 8.5 supported', array( 'php_version' => '8.5.1' ), 'php-version', 'No issue observed' ),
     array( 'unknown future PHP', array( 'php_version' => '8.6.0' ), 'php-version', 'No issue observed' ),
     array( 'placeholder salts', array( 'weak_salts' => 8 ), 'security-keys', 'Potential weakness' ),
     array( 'sensitive candidate', array( 'sensitive' => array( array( 'path' => 'error_log', 'size' => 10, 'modified' => $now ) ) ), 'sensitive-files', 'Potential weakness' ),
@@ -84,6 +85,9 @@ foreach ( array( 'https://evil.example/', '//evil.example', '../wp-config.php', 
     if ( THRG_Site_Inspector::href( $t ) ) { fwrite( STDERR, "FAIL href rejects $t\n" ); exit( 1 ); }
 }
 echo "PASS link allowlist\n";
+$php85 = array_column( THRG_Site_Inspector::evaluate( array_merge( $base, array( 'php_version' => '8.5.1' ) ) ), null, 'id' );
+if ( false === strpos( $php85['php-version']['evidence'][0], 'ends 2029-12-31' ) ) { fwrite( STDERR, "FAIL PHP 8.5 end date shown\n" ); exit( 1 ); }
+echo "PASS PHP 8.5 end date shown\n";
 $html = THRG_Site_Inspector::linkify( 'Open [[update-core.php|Dashboard > Updates]] or [[https://evil.example/|click]] <b>x</b>' );
 if ( false === strpos( $html, '<a href="http://x/wp-admin/update-core.php" target="_blank" rel="noopener noreferrer">Dashboard &gt; Updates' ) || false !== strpos( $html, 'evil.example' ) || false !== strpos( $html, '<b>' ) ) {
     fwrite( STDERR, "FAIL linkify $html\n" ); exit( 1 );

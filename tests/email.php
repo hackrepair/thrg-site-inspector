@@ -8,6 +8,7 @@ function wp_parse_url( $url, $part ) { return parse_url( $url, $part ); }
 function admin_url( $p = '' ) { return 'http://x/wp-admin/' . $p; }
 function esc_url( $u ) { return $u; }
 function esc_html( $t ) { return htmlspecialchars( (string) $t, ENT_QUOTES ); }
+function is_email( $e ) { return false !== filter_var( $e, FILTER_VALIDATE_EMAIL ) ? $e : false; }
 require __DIR__ . '/../includes/class-thrg-site-inspector.php';
 
 function check( $cond, $name ) {
@@ -57,3 +58,7 @@ check( 'fallback.example' === THRG_SI_Email::site_domain(), 'fallback to configu
 check( 'Email accepted for sending: 1. Failed: 0. Acceptance does not confirm delivery.' === THRG_SI_Email::feedback( 1, 0 ), 'successful send acceptance message' );
 check( 'Email accepted for sending: 1. Failed: 2. Acceptance does not confirm delivery.' === THRG_SI_Email::feedback( 1, 2 ), 'partial failure counts' );
 check( 'Email accepted for sending: 0. Failed: 2. Acceptance does not confirm delivery.' === THRG_SI_Email::feedback( 0, 2 ), 'all-failed counts' );
+check( 'Reply-To: "Jim Walker" <jim@example.com>' === THRG_SI_Email::reply_to( 'Jim Walker', 'jim@example.com' ), 'reply-to quotes the display name' );
+check( 'Reply-To: "Walker Jim Ops" <jim@example.com>' === THRG_SI_Email::reply_to( 'Walker, Jim <Ops>', 'jim@example.com' ), 'reply-to strips separators from the name' );
+check( 'Reply-To: <jim@example.com>' === THRG_SI_Email::reply_to( '""', 'jim@example.com' ), 'reply-to without a usable name' );
+check( '' === THRG_SI_Email::reply_to( 'Jim', 'not-an-email' ), 'no reply-to without a valid address' );
