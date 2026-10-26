@@ -17,6 +17,7 @@ $GLOBALS['redirect'] = null;
 
 function add_action( $h, $cb, $p = 10, $a = 1 ) { $GLOBALS['hooks'][ $h ][] = $cb; }
 function add_filter( $h, $cb, $p = 10, $a = 1 ) { $GLOBALS['hooks'][ $h ][] = $cb; }
+function register_deactivation_hook( $f, $cb ) { $GLOBALS['hooks']['deactivate'][] = $cb; }
 function apply_filters( $h, $v ) { return $v; }
 function get_option( $k, $d = false ) { return isset( $GLOBALS['opts'][ $k ] ) ? $GLOBALS['opts'][ $k ] : $d; }
 function wp_parse_args( $a, $d ) { return array_merge( $d, $a ); }

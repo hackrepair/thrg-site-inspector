@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.3.2
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -23,7 +23,7 @@ Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
 * Backups, error_log and debug logs, and leftover wp-config copies sitting in the web folder
 * Must-use plugins and drop-ins, which run on every page but don't appear in the plugin list
 * Unused plugins and themes
-* PHP version support, security keys and salts, the built-in code editor, and PHP error display
+* PHP version support, and whether a known PHP security fix is missing, plus security keys and salts, the built-in code editor, and PHP error display
 * Registration privileges, HTTPS settings and wp-config.php permissions
 
 **Every finding is easy to act on.** Each one says why it matters, what was observed and what to do next, with the limits of the check one click away. Passing checks are tucked away so the problems stand out, and most results link straight to the admin page where you can fix them.
@@ -34,13 +34,15 @@ Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
 
 **Email a "state of security" briefing.** From any report, send a friendly, plain-language summary to some or all of the site's administrators: what needs fixing first, what's worth a second look, what's already in good shape, and what changed since the last check, with a subject line that tells them where things stand before they open it. You can add a personal note, each administrator gets their own copy, and replies come back to you.
 
+**Get a monthly security statement.** Turn on the monthly email to have Site Inspector check the site on a day you choose and send the statement to all administrators or the ones you pick. It is off until you turn it on. Send it every month, or only when something needs fixing or a second look.
+
 Administrator emails use a full-width branded HTML layout with a plain-text alternative. Subjects follow `[example.com] [Site Inspector] Security Check: 2 issues need attention`, retaining the report status and change counts. The configured home URL supplies the domain, preserving subdomains and explicit ports such as `localhost:8081`. The subject preview matches the sent message.
 
 **More tools from The Hack Repair Guy.** The plugin's View Details window includes an Other THRG Plugins guide to five companion tools.
 
 = Privacy =
 
-The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names, so share them only with people you trust. Reports leave the site only when you choose to export or email them, and emails can only go to the site's own administrators, with usernames partly hidden. Optionally, you can have all plugin data deleted when the plugin is deleted (see below).
+The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names, so share them only with people you trust. Reports leave the site only when you choose to export or email them, or when you turn on the monthly email, and emails can only go to the site's own administrators, with usernames partly hidden. Optionally, you can have all plugin data deleted when the plugin is deleted (see below).
 
 = What it is not =
 
@@ -86,7 +88,7 @@ No. It reads local settings, file names, sizes and dates, and sends no requests.
 
 = Where are my reports kept? =
 
-On your own site, in one database entry. Up to 25 reports are kept, newest first, within a 600,000-byte storage limit; older reports may be dropped sooner to stay within that limit. Identical results within five minutes are not saved twice. Nothing is sent to us. A report leaves the site only when you choose to copy, download, print, or email it. Reports include usernames and file names, so treat a copy like any other sensitive document.
+On your own site, in one database entry. Up to 25 reports are kept, newest first, within a 600,000-byte storage limit; older reports may be dropped sooner to stay within that limit. Identical results within five minutes are not saved twice. Nothing is sent to us. A report leaves the site only when you choose to copy, download, print, or email it, or when the monthly email you turned on goes out. Reports include usernames and file names, so treat a copy like any other sensitive document.
 
 = Why does it flag things that might be fine? =
 
@@ -108,9 +110,19 @@ Each recipient gets a separate full-width branded HTML email with a plain-text a
 
 A retained report, manage_options permission and a valid nonce are required. To email a new report, enable history before running the inspection. After at least one message is accepted, the sender must wait one minute before sending again. Email acceptance does not guarantee delivery. Mail failures may require configuring the site's WordPress mail transport; an SMTP plugin alone cannot guarantee inbox receipt.
 
+= Can reports be emailed automatically every month? =
+
+Yes. Under Tools > Site Inspector, open **Monthly security email**, tick **Email a security statement every month**, choose a day (1 to 28), choose whether to send every month or only when something needs fixing or a second look, and choose all administrators or specific ones. You can add a note that goes out every month. Then choose **Save monthly email**.
+
+It is off by default. Each run inspects the site, saves the report to your history, and emails it at about 8 am site time. Emails are signed with the name of the administrator who last saved the settings, and replies go to them. Recipients are checked again before every send, so someone who is no longer an administrator is dropped. WordPress runs scheduled jobs when someone visits the site, so on a quiet site the email can arrive late; the screen warns when a run is overdue, and a server cron job for wp-cron.php fixes it. Deactivating the plugin cancels the next run; it comes back when the plugin is reactivated.
+
+= Why does the PHP version check mention a security fix? =
+
+Being on a supported PHP branch is not the same as being patched. Site Inspector has a built-in list of recent PHP security releases (starting with the PHP2Shell fixes of October 21, 2026). If the site's PHP version is older than the release with the fix, the check says so, with the date and the advisory numbers. Plain PHP builds are marked as a potential weakness. Operating-system packages (Debian, Ubuntu, Red Hat, CloudLinux) often carry the fix under the old version number, so those are marked for review instead. The check makes no outside requests, so the list is only as current as the plugin; it says when the list is more than 90 days old.
+
 = What format do the email subjects use? =
 
-Subjects use `[domain] [Site Inspector] Security Check: …`, for example `[example.com] [Site Inspector] Security Check: 2 issues need attention`. Status and new/resolved counts remain in the subject. The preview and sent message use the current configured home URL domain, preserving subdomains and explicit ports such as localhost:8081 while omitting scheme/path, with site URL as fallback. Saved report history is unchanged.
+Subjects use `[domain] [Site Inspector] Security Check: …`, for example `[example.com] [Site Inspector] Security Check: 2 issues need attention`. The monthly email says `Monthly Security Check`. Status and new/resolved counts remain in the subject. The preview and sent message use the current configured home URL domain, preserving subdomains and explicit ports such as localhost:8081 while omitting scheme/path, with site URL as fallback. Saved report history is unchanged.
 
 = Will it disable WordPress background health checks? =
 
@@ -134,9 +146,15 @@ Plugin update discovery and package downloads contact GitHub independently of in
 
 = What happens to my data if I uninstall? =
 
-By default nothing is deleted, so a reinstall picks up where you left off. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
+By default nothing is deleted, so a reinstall picks up where you left off. Any queued monthly email is always cancelled. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.4.0 =
+* New monthly security email: on a day you choose, Site Inspector checks the site, saves the report and emails it to all administrators or the ones you pick. Off until you turn it on. Send every month, or only when something needs fixing or a second look.
+* The Send this report section now shows whether the monthly email is on, with a link to set it up.
+* The PHP version check now says when the site runs a PHP version older than the release that fixes a known security flaw, starting with PHP2Shell (CVE-2026-109618 and CVE-2026-109619, fixed October 21, 2026). Operating-system PHP packages are marked for review, since they often carry the fix under the old number.
+* The PHP check says when its built-in list of PHP security fixes is more than 90 days old.
 
 = 2.3.2 =
 * Site Inspector now checks the newest accounts with administrator-level access first, so the 200-account limit can no longer hide a recently added admin on a large site.

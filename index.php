@@ -3,7 +3,7 @@
  * Plugin Name:       The Hack Repair Guy's Site Inspector
  * Plugin URI:        https://github.com/hackrepair/thrg-site-inspector
  * Description:       Your friendly WordPress security inspector. Keeps a history of your reports and shows what changed. Includes optional Site Health controls.
- * Version:           2.3.2
+ * Version:           2.4.0
  * Author:            The Hack Repair Guy
  * Author URI:        https://hackrepair.com/
  * Update URI:        https://github.com/hackrepair/thrg-site-inspector
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const THRG_SI_VERSION = '2.3.2';
+const THRG_SI_VERSION = '2.4.0';
 
 /*
  * GitHub release updates. Deliberately NOT gated by is_admin(): WordPress's
@@ -42,6 +42,14 @@ if ( ! defined( 'THRG_SI_SKIP_UPDATER' ) ) {
 
 require_once __DIR__ . '/includes/class-thrg-site-inspector.php';
 THRG_Site_Inspector::boot();
+
+// A deactivated plugin must not leave its monthly email queued. The schedule comes back on reactivation if it was on.
+register_deactivation_hook(
+    __FILE__,
+    static function () {
+        wp_clear_scheduled_hook( THRG_SI_Schedule::HOOK );
+    }
+);
 
 const THRG_SHC_OPTION = 'thrg_shc_options';
 

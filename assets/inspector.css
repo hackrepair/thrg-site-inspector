@@ -198,3 +198,11 @@ a.si-sum:hover { filter: brightness(.96); box-shadow: 0 0 0 2px currentColor ins
 .si-email-subject { font-size: 13px !important; background: #fff; border: 1px dashed var(--line); border-radius: 4px; padding: 6px 10px; }
 .si-email-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0 !important; }
 .si-email-actions .si-muted, .si-email .si-muted { color: var(--ink-soft); font-size: 12px; }
+
+/* Monthly security email */
+.si-schedule-form { display: block; }
+.si-schedule-form fieldset { margin: 10px 0 8px; }
+.si-schedule-form .si-email-list { margin-top: 6px; }
+.si-schedule-status { font-size: 14px; }
+.thrg-inspector .si-schedule-link { font-size: 13px; margin: 8px 0 12px; color: var(--ink-soft); }
+.si-schedule-link a { font-weight: 600; }

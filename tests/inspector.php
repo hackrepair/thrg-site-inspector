@@ -88,6 +88,74 @@ echo "PASS link allowlist\n";
 $php85 = array_column( THRG_Site_Inspector::evaluate( array_merge( $base, array( 'php_version' => '8.5.1' ) ) ), null, 'id' );
 if ( false === strpos( $php85['php-version']['evidence'][0], 'ends 2029-12-31' ) ) { fwrite( STDERR, "FAIL PHP 8.5 end date shown\n" ); exit( 1 ); }
 echo "PASS PHP 8.5 end date shown\n";
+
+// Known-fix check: a patch release older than the fixed one is flagged, with allowance for packaged builds.
+$after = strtotime( '2026-10-26 12:00:00 UTC' );
+$php   = static function ( $version, $extra = '', $ini = '', $at = null ) use ( $base, $after ) {
+    $rows = array_column( THRG_Site_Inspector::evaluate( array_merge( $base, array( 'now' => null === $at ? $after : $at, 'php_version' => $version, 'php_extra' => $extra, 'php_ini' => $ini ) ) ), null, 'id' );
+    return $rows['php-version'];
+};
+$patch_cases = array(
+    array( '8.2.33 upstream build behind the fix', $php( '8.2.33' ), 'Potential weakness' ),
+    array( '8.3.35 upstream build behind the fix', $php( '8.3.35' ), 'Potential weakness' ),
+    array( '8.3.36 has the fix', $php( '8.3.36' ), 'No issue observed' ),
+    array( '8.4.26 behind', $php( '8.4.26' ), 'Potential weakness' ),
+    array( '8.4.27 has the fix', $php( '8.4.27' ), 'No issue observed' ),
+    array( '8.5.11 behind', $php( '8.5.11' ), 'Potential weakness' ),
+    array( '8.5.12 has the fix', $php( '8.5.12' ), 'No issue observed' ),
+    array( 'Ubuntu-style version suffix is review', $php( '8.4.26-1ubuntu1' ), 'Review' ),
+    array( 'extra version marks a package build', $php( '8.4.26', '-0ubuntu0.24.04.1' ), 'Review' ),
+    array( 'Debian-layout php.ini marks a package build', $php( '8.4.26', '', '/etc/php/8.4/fpm/php.ini' ), 'Review' ),
+    array( 'CloudLinux alt-php layout marks a package build', $php( '8.3.30', '', '/opt/alt/php83/etc/php.ini' ), 'Review' ),
+    array( 'Docker or cPanel layout is not a package build', $php( '8.4.26', '', '/usr/local/etc/php/php.ini' ), 'Potential weakness' ),
+    array( 'release candidates are not flagged', $php( '8.5.0', 'RC1' ), 'No issue observed' ),
+    array( 'advisory ignored before its release date', $php( '8.3.12', '', '', strtotime( '2026-10-16 12:00:00 UTC' ) ), 'No issue observed' ),
+    array( 'end-of-life branch stays a weakness', $php( '7.4.33' ), 'Potential weakness' ),
+    array( 'branch ending soon but already fixed stays review', $php( '8.2.35' ), 'Review' ),
+);
+foreach ( $patch_cases as $c ) {
+    if ( $c[1]['status'] !== $c[2] ) { fwrite( STDERR, 'FAIL ' . $c[0] . ' (got ' . $c[1]['status'] . ')' . PHP_EOL ); exit( 1 ); }
+    echo 'PASS ' . $c[0] . PHP_EOL;
+}
+$behind = $php( '8.2.33' );
+$text   = implode( ' ', $behind['evidence'] ) . ' ' . $behind['next'] . ' ' . $behind['why'];
+foreach ( array( 'The fix for CVE-2026-109618 and CVE-2026-109619 is in PHP 8.2.35, released October 21, 2026', '8.2.35', 'released October 21, 2026', 'CVE-2026-109618 and CVE-2026-109619', 'Patch list current to October 26, 2026', 'restart PHP', 'Support for this branch also ends soon' ) as $needle ) {
+    if ( false === strpos( $text, $needle ) ) { fwrite( STDERR, "FAIL patch wording missing: $needle\n" ); exit( 1 ); }
+}
+foreach ( array( 'server you manage', 'PHP-FPM', 'LiteSpeed', 'update the PHP packages' ) as $absent ) {
+    if ( false !== strpos( $text, $absent ) ) { fwrite( STDERR, "FAIL patch wording should not give server-admin instructions: $absent\n" ); exit( 1 ); }
+}
+echo "PASS patch wording gives no server-administrator instructions\n";
+echo "PASS patch wording names the fixed release, date, CVEs, list date and restart\n";
+$distro = $php( '8.4.26-1ubuntu1' );
+if ( false === strpos( $distro['why'], 'operating-system package' ) || false === strpos( $distro['limits'], 'cannot see whether your host applied a fix' ) ) { fwrite( STDERR, "FAIL package-build wording\n" ); exit( 1 ); }
+echo "PASS package-build wording is gentler and states the limit\n";
+$eol = $php( '7.4.33' );
+if ( false === strpos( implode( ' ', $eol['evidence'] ), 'received no official PHP release' ) ) { fwrite( STDERR, "FAIL end-of-life note\n" ); exit( 1 ); }
+echo "PASS end-of-life branch notes it received no official release\n";
+$clean = $php( '8.3.36' );
+if ( false !== strpos( implode( ' ', $clean['evidence'] ), 'Patch list' ) ) { fwrite( STDERR, "FAIL no patch note when fixed\n" ); exit( 1 ); }
+echo "PASS no patch note when the fix is present\n";
+$p = THRG_Site_Inspector::php_patch( 'banana', '', '', $after );
+if ( $p['behind'] || $p['unfixed'] ) { fwrite( STDERR, "FAIL unparseable version\n" ); exit( 1 ); }
+echo "PASS unparseable version is ignored\n";
+
+// A patch list that has not been reviewed for a while says so, without changing the status.
+$listed  = strtotime( '2026-10-26 00:00:00 UTC' );
+$fresh   = $php( '8.3.36', '', '', $listed + 89 * 86400 );
+$stale   = $php( '8.3.36', '', '', $listed + 91 * 86400 );
+if ( 'No issue observed' !== $stale['status'] || 'No issue observed' !== $fresh['status'] ) { fwrite( STDERR, "FAIL stale list must not change the status\n" ); exit( 1 ); }
+if ( false !== strpos( implode( ' ', $fresh['evidence'] ) . $fresh['why'], 'days old' ) || array() !== $fresh['evidence'] && false !== strpos( implode( ' ', $fresh['evidence'] ), 'last reviewed' ) ) { fwrite( STDERR, "FAIL fresh list should not warn\n" ); exit( 1 ); }
+echo "PASS list reviewed within 90 days does not warn\n";
+if ( false === strpos( $stale['why'], 'more than 90 days old' ) || false === strpos( implode( ' ', $stale['evidence'] ), 'last reviewed October 26, 2026, more than 90 days ago' ) || false === strpos( $stale['limits'], 'php.net' ) ) { fwrite( STDERR, "FAIL stale list wording\n" ); exit( 1 ); }
+echo "PASS list older than 90 days says so in the summary, evidence and limits\n";
+$stale_behind = $php( '8.4.26', '', '', $listed + 120 * 86400 );
+$text         = implode( ' ', $stale_behind['evidence'] );
+if ( 'Potential weakness' !== $stale_behind['status'] || false === strpos( $text, 'more than 90 days ago' ) || 1 !== substr_count( $text, 'Patch list' ) ) { fwrite( STDERR, "FAIL stale list on a flagged site (one list line only)\n" ); exit( 1 ); }
+echo "PASS flagged site with a stale list shows one list line and keeps its status\n";
+$stale_eol = $php( '7.4.33', '', '', $listed + 120 * 86400 );
+if ( 1 !== substr_count( implode( ' ', $stale_eol['evidence'] ), 'Patch list' ) ) { fwrite( STDERR, "FAIL stale list on end-of-life branch\n" ); exit( 1 ); }
+echo "PASS end-of-life branch with a stale list shows one list line\n";
 $html = THRG_Site_Inspector::linkify( 'Open [[update-core.php|Dashboard > Updates]] or [[https://evil.example/|click]] <b>x</b>' );
 if ( false === strpos( $html, '<a href="http://x/wp-admin/update-core.php" target="_blank" rel="noopener noreferrer">Dashboard &gt; Updates' ) || false !== strpos( $html, 'evil.example' ) || false !== strpos( $html, '<b>' ) ) {
     fwrite( STDERR, "FAIL linkify $html\n" ); exit( 1 );

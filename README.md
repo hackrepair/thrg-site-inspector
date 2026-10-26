@@ -8,7 +8,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Current release: **2.3.2**. See [release notes](releases/v2.3.2.md).
+Current release: **2.4.0**. See [release notes](releases/v2.4.0.md).
 
 <p align="center">
   <strong>▶ Watch Site Inspector in 75 seconds</strong><br>
@@ -31,7 +31,7 @@ Current release: **2.3.2**. See [release notes](releases/v2.3.2.md).
 - Backups, `error_log` and debug logs, and leftover `wp-config.php` copies in the web folder
 - Must-use plugins and drop-ins
 - Unused plugins and themes
-- PHP version support, security keys and salts, the built-in code editor, and PHP error display
+- PHP version support and missing PHP security fixes, security keys and salts, the built-in code editor, and PHP error display
 - Registration privileges, HTTPS settings, and `wp-config.php` permissions
 
 Each finding says why it matters, what was observed, and what to do next, with the limits of the check one click away. Passing checks are collapsed, and most results link to the admin page where you can act on them.
@@ -39,6 +39,8 @@ Each finding says why it matters, what was observed, and what to do next, with t
 **Report history.** When history is enabled, inspections are saved on your own site (up to 25 reports within a 600,000-byte storage limit), with what is new and what is resolved since the previous report. Reopen, delete, clear or pause history at any time.
 
 **Share a report.** Copy it as plain text, download it, or print it (usernames are masked on paper), or email a plain-language "state of security" briefing to some or all of the site's administrators, with a subject line that says where things stand.
+
+**Monthly security email.** Off until you turn it on. On a day you choose, Site Inspector checks the site, saves the report and emails the statement to all administrators or the ones you pick, every month or only when something needs attention. Subjects say `Monthly Security Check`.
 
 **Support.** A Support container at the bottom of the screen links to the buy-Jim-a-coffee page and to GitHub Discussions.
 
@@ -56,9 +58,24 @@ The branded HTML email fills the available width and includes a plain-text alter
 
 Sending requires `manage_options`, a valid nonce, a retained report, and selected current administrator accounts. Emailing a newly generated report requires history to be enabled and that report saved. After at least one message is accepted, the sender must wait one minute before another send. Feedback can report full or partial failure; acceptance for sending does not guarantee inbox delivery. WordPress uses the site's configured mail transport; SMTP configuration may be needed. Local Mailpit capture verifies local receipt, not external delivery.
 
+## Monthly security email
+
+Under **Tools → Site Inspector**, the **Monthly security email** panel sits right below the share section. Tick **Email a security statement every month**, choose a day from 1 to 28 (about 8 am site time), choose **Every month** or **Only when something needs fixing or a second look**, and choose **All administrators** (including any added later) or specific administrators. An optional note goes out every month.
+
+- Off by default; nothing is scheduled until an administrator saves it turned on.
+- Each run inspects the site with nobody logged in, saves the report to history ("Run by: Monthly email"), and emails it using the same template as a one-off email, with a "Monthly" subject, an opening line saying what it is, and a footer line saying how to change or stop it. If history is paused, the email still goes out and links to the Site Inspector screen.
+- Recipients are checked against the current administrator list at every send. If none of the chosen administrators can be emailed when saving, the setting is saved as off with a warning.
+- Emails are signed with the name of the administrator who last saved the settings, and Reply-To is their address (the site name, with no Reply-To, if they are no longer an administrator).
+- It uses WordPress's own scheduler, one queued run at a time. On a quiet site or where WP-Cron is turned off, the run can be late; the panel shows the next due time, the last result, and an overdue warning. A server cron job for `wp-cron.php` fixes it.
+- Deactivating cancels the queued run (it returns on reactivation). Uninstalling always cancels it, and *Delete all plugin data* also removes its settings.
+
+## PHP security fixes
+
+The PHP version finding compares the running version with a built-in list of PHP security releases (first entry: PHP2Shell, CVE-2026-109618 and CVE-2026-109619, fixed in 8.2.35, 8.3.36, 8.4.27 and 8.5.12 on October 21, 2026). A plain PHP build below the fixed release is a **Potential weakness**; an operating-system package build (version suffix, `PHP_EXTRA_VERSION`, or a Debian, Red Hat or CloudLinux php.ini path) is marked **Review**, because those often carry the fix under the old number. The wording is dated and names the fix. No outside requests are made, so the finding says when the list is more than 90 days old.
+
 ## Privacy and scope
 
-The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names. Reports leave the site only when an administrator chooses to export or email them, and emails can only go to the site's own administrators. Plugin update discovery and package downloads contact GitHub independently of inspections. Those requests expose normal connection information, such as the server IP and HTTP headers; report content is not included in update requests.
+The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names. Reports leave the site only when an administrator chooses to export or email them, or turns on the monthly email, and emails can only go to the site's own administrators. Plugin update discovery and package downloads contact GitHub independently of inspections. Those requests expose normal connection information, such as the server IP and HTTP headers; report content is not included in update requests.
 
 It is not a malware scanner, firewall, vulnerability-feed client, or a complete replacement for every WordPress diagnostic. No overall security score is assigned, and "nothing found" applies only to the check described. Multisite registration policy is explicitly unverified.
 

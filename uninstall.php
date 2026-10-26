@@ -17,11 +17,13 @@ if ( ! function_exists( 'thrg_shc_uninstall_site' ) ) {
      * @return bool Whether this site opted in.
      */
     function thrg_shc_uninstall_site() {
+        // Never leave a monthly email queued for a plugin that is gone, whether or not data is kept.
+        wp_clear_scheduled_hook( 'thrg_si_scheduled_report' );
         $options = get_option( 'thrg_shc_options', array() );
         if ( ! is_array( $options ) || empty( $options['delete_data'] ) ) {
             return false;
         }
-        foreach ( array( 'thrg_shc_options', 'thrg_si_notice_dismissed', 'thrg_si_history', 'thrg_si_history_paused' ) as $name ) {
+        foreach ( array( 'thrg_shc_options', 'thrg_si_notice_dismissed', 'thrg_si_history', 'thrg_si_history_paused', 'thrg_si_schedule', 'thrg_si_schedule_log' ) as $name ) {
             delete_option( $name );
         }
         return true;

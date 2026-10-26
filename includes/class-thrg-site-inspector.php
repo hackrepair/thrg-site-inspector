@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/class-thrg-inspection-evidence.php';
 require_once __DIR__ . '/class-thrg-si-history.php';
 require_once __DIR__ . '/class-thrg-si-email.php';
+require_once __DIR__ . '/class-thrg-si-schedule.php';
 
 final class THRG_Site_Inspector {
 
@@ -34,6 +35,34 @@ final class THRG_Site_Inspector {
         '8.5' => '2029-12-31',
     );
 
+    /**
+     * Fixed releases for serious PHP flaws, newest last. Maintained by hand, like PHP_SUPPORT, so the
+     * inspection stays free of outbound requests. A site older than the fixed release for its branch is
+     * flagged; branches without a fixed release (older, end-of-life ones) only get a note.
+     * Sources: php.net release announcement of 2026-10-21 and the CERT-EU advisory 2026-018.
+     */
+    const PHP_ADVISORIES = array(
+        array(
+            'label'    => 'PHP2Shell',
+            'cves'     => 'CVE-2026-109618 and CVE-2026-109619',
+            'released' => '2026-10-21',
+            'summary'  => 'two critical remote-code-execution flaws that have been reported as exploited in the wild',
+            'fixed'    => array(
+                '8.2' => '8.2.35',
+                '8.3' => '8.3.36',
+                '8.4' => '8.4.27',
+                '8.5' => '8.5.12',
+            ),
+            'oldest'   => '5.4',
+        ),
+    );
+
+    /** When PHP_ADVISORIES was last reviewed. */
+    const PATCH_LIST_AS_OF = '2026-10-26';
+
+    /** After this many days the built-in patch list is described as possibly out of date. */
+    const PATCH_LIST_STALE_DAYS = 90;
+
     public static function boot() {
         add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
@@ -41,6 +70,7 @@ final class THRG_Site_Inspector {
         add_action( 'admin_post_thrg_si_clear_history', array( __CLASS__, 'handle_clear' ) );
         add_action( 'admin_post_thrg_si_toggle_history', array( __CLASS__, 'handle_toggle' ) );
         add_action( 'admin_post_thrg_si_email_report', array( __CLASS__, 'handle_email' ) );
+        THRG_SI_Schedule::boot();
     }
 
     const PAGE_URL = 'tools.php?page=thrg-site-inspector';
@@ -166,7 +196,9 @@ final class THRG_Site_Inspector {
             'config_exists'     => true,
             'config_writable'   => false,
             'config_mode'       => 0440,
-            'php_version'       => '8.3.0',
+            'php_version'       => '8.3.36',
+            'php_extra'         => '',
+            'php_ini'           => '',
             'weak_salts'        => 0,
             'accounts'          => null,
             'uploads'           => null,
@@ -209,6 +241,8 @@ final class THRG_Site_Inspector {
             'config_writable'   => is_file( $config ) && is_writable( $config ), // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable
             'config_mode'       => is_file( $config ) ? @fileperms( $config ) : false, // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
             'php_version'       => PHP_VERSION,
+            'php_extra'         => PHP_EXTRA_VERSION,
+            'php_ini'           => (string) php_ini_loaded_file(),
             'weak_salts'        => THRG_Inspection_Evidence::weak_salts(),
             'accounts'          => THRG_Inspection_Evidence::accounts(),
             'uploads'           => empty( $upload['error'] ) ? THRG_Inspection_Evidence::uploads( $upload['basedir'] ) : null,
@@ -456,20 +490,115 @@ final class THRG_Site_Inspector {
         return array( ( $end - $now ) < 180 * DAY_IN_SECONDS ? 'Review' : 'No issue observed', self::PHP_SUPPORT[ $branch ] );
     }
 
+    /** A readable date such as "October 21, 2026" from Y-m-d. */
+    private static function long_date( $ymd ) {
+        return gmdate( 'F j, Y', (int) strtotime( $ymd . ' 00:00:00 UTC' ) );
+    }
+
+    /**
+     * Compare a PHP version with the fixed releases of known advisories.
+     *
+     * Hosts on Debian, Ubuntu, Red Hat family or CloudLinux packages often apply fixes without changing
+     * the version number, so a package-style build is reported as "distro" and handled more gently.
+     *
+     * @param string $version PHP_VERSION.
+     * @param string $extra   PHP_EXTRA_VERSION.
+     * @param string $ini     Path of the loaded php.ini ('' when unknown).
+     * @param int    $now     Timestamp.
+     * @return array{behind:bool,distro:bool,unfixed:bool,advisory:?array,floor:string,number:string}
+     */
+    public static function php_patch( $version, $extra, $ini, $now ) {
+        $out = array(
+            'behind'   => false,
+            'distro'   => false,
+            'unfixed'  => false,
+            'advisory' => null,
+            'floor'    => '',
+            'number'   => '',
+        );
+        if ( ! preg_match( '/^(\d+)\.(\d+)\.(\d+)(.*)$/', trim( (string) $version ), $m ) ) {
+            return $out;
+        }
+        $branch        = $m[1] . '.' . $m[2];
+        $out['number'] = $branch . '.' . $m[3];
+        $suffix        = trim( $m[4] . (string) $extra );
+        $prerelease    = (bool) preg_match( '/^[-~+]?(?:dev|alpha|beta|rc)/i', $suffix );
+        $out['distro'] = ( '' !== $suffix && ! $prerelease ) || (bool) preg_match( '#^/etc/php/\d|^/etc/php(?:-fpm)?\.|^/opt/alt/php#', (string) $ini );
+
+        foreach ( self::PHP_ADVISORIES as $advisory ) {
+            if ( $now < strtotime( $advisory['released'] . ' 00:00:00 UTC' ) ) {
+                continue;
+            }
+            if ( isset( $advisory['fixed'][ $branch ] ) ) {
+                if ( version_compare( $out['number'], $advisory['fixed'][ $branch ], '<' ) && ! $prerelease ) {
+                    $out['behind']   = true;
+                    $out['advisory'] = $advisory;
+                    $out['floor']    = $advisory['fixed'][ $branch ];
+                    return $out;
+                }
+            } elseif ( version_compare( $branch, $advisory['oldest'], '>=' ) && version_compare( $branch, '8.2', '<' ) ) {
+                $out['unfixed']  = true;
+                $out['advisory'] = $advisory;
+            }
+        }
+        return $out;
+    }
+
     private static function php_finding( array $o ) {
         list( $status, $end ) = self::php_status( $o['php_version'], $o['now'] );
+        $patch                = self::php_patch( $o['php_version'], $o['php_extra'], $o['php_ini'], $o['now'] );
         $why                  = 'Potential weakness' === $status
             ? 'This PHP version no longer receives security fixes.'
             : ( 'Review' === $status ? 'This PHP version stops receiving security fixes soon.' : 'This PHP version still receives security fixes.' );
+        $evidence             = array( 'PHP ' . $o['php_version'] . ( $end ? '; security support ' . ( 'Potential weakness' === $status ? 'ended ' : 'ends ' ) . $end : '' ) . '.' );
+        $limits               = 'Based on php.net support dates built into this release. Some hosts and distributions backport fixes to older versions.';
+        $next                 = 'No issue observed' === $status ? '' : 'Test the site on a supported PHP version (8.3 or newer), then switch in cPanel > Select PHP Version or MultiPHP Manager.';
+
+        $adv            = $patch['advisory'];
+        $support_status = $status;
+        $list_age       = (int) floor( ( $o['now'] - (int) strtotime( self::PATCH_LIST_AS_OF . ' 00:00:00 UTC' ) ) / DAY_IN_SECONDS );
+        $stale          = $list_age > self::PATCH_LIST_STALE_DAYS;
+        $list_line      = $stale
+            ? 'Patch list last reviewed ' . self::long_date( self::PATCH_LIST_AS_OF ) . ', more than ' . self::PATCH_LIST_STALE_DAYS . ' days ago. Check php.net for newer PHP security releases.'
+            : 'Patch list current to ' . self::long_date( self::PATCH_LIST_AS_OF ) . '.';
+        if ( $patch['behind'] ) {
+            // The more serious of the two findings wins (lower STATUS_ORDER is worse).
+            $patch_status = $patch['distro'] ? 'Review' : 'Potential weakness';
+            if ( self::STATUS_ORDER[ $patch_status ] < self::STATUS_ORDER[ $status ] ) {
+                $status = $patch_status;
+            }
+            $fixed_on = self::long_date( $adv['released'] );
+            $why      = $patch['distro']
+                ? 'This PHP version number is older than the release that fixes ' . $adv['summary'] . '. It looks like an operating-system package, which often carries the fix under the old number, so it needs a quick check rather than an alarm.'
+                : 'This PHP version is older than the release that fixes ' . $adv['summary'] . '.';
+            if ( 'Review' === $support_status ) {
+                $why .= ' Support for this branch also ends soon.';
+            }
+            $evidence[] = sprintf( 'The fix for %s is in PHP %s, released %s.', $adv['cves'], $patch['floor'], $fixed_on );
+            $evidence[] = $list_line;
+            $limits    .= ' The patch list is built into this release and covers advisories known on the date shown. Site Inspector cannot see whether your host applied a fix without changing the version number.';
+            $fix_next   = 'Ask your host to update PHP to ' . $patch['floor'] . ' or newer and restart PHP afterwards, or to confirm in writing that the fix is already applied (their package changelog should list ' . $adv['cves'] . ').';
+            $next       = '' === $next ? $fix_next : $fix_next . ' ' . $next;
+        } elseif ( $patch['unfixed'] ) {
+            $evidence[] = sprintf( 'This branch is also affected by %s (%s, %s) and received no official PHP release.', $adv['label'], $adv['cves'], self::long_date( $adv['released'] ) );
+            $evidence[] = $list_line;
+        } elseif ( $stale ) {
+            $evidence[] = $list_line;
+        }
+        if ( $stale ) {
+            $why    .= ' The patch list built into this release is more than ' . self::PATCH_LIST_STALE_DAYS . ' days old, so newer PHP fixes may not be listed.';
+            $limits .= ' Check php.net for newer PHP security releases, or update Site Inspector.';
+        }
+
         return self::act(
             self::finding(
                 'php-version',
                 'PHP version',
                 $status,
                 $why,
-                array( 'PHP ' . $o['php_version'] . ( $end ? '; security support ' . ( 'Potential weakness' === $status ? 'ended ' : 'ends ' ) . $end : '' ) . '.' ),
-                'Based on php.net support dates built into this release. Some hosts and distributions backport fixes to older versions.',
-                'No issue observed' === $status ? '' : 'Test the site on a supported PHP version (8.3 or newer), then switch in cPanel > Select PHP Version or MultiPHP Manager.'
+                $evidence,
+                $limits,
+                $next
             ),
             array( array( 'PHP supported versions', 'https://www.php.net/supported-versions.php' ) )
         );
@@ -758,7 +887,11 @@ final class THRG_Site_Inspector {
             $flag = sanitize_key( wp_unslash( $_GET['thrg_si_done'] ) );
         }
         $history     = THRG_SI_History::all();
-        $recipients  = null === $rows ? array() : THRG_SI_Email::recipients();
+        $admins      = THRG_SI_Email::recipients();
+        $recipients  = null === $rows ? array() : $admins;
+        $schedule    = THRG_SI_Schedule::settings();
+        $next_run    = wp_next_scheduled( THRG_SI_Schedule::HOOK );
+        $last_run    = THRG_SI_Schedule::last_run();
         $sent        = isset( $_GET['thrg_si_sent'] ) ? absint( $_GET['thrg_si_sent'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- display-only count after our own redirect.
         $mail_failed = isset( $_GET['thrg_si_failed'] ) ? absint( $_GET['thrg_si_failed'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display-only count, never used to authorize a send.
         require __DIR__ . '/view-inspector.php';

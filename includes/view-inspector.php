@@ -88,18 +88,20 @@ $thrg_si_actions = static function ( $actions ) {
 
     <?php
     $thrg_si_notices = array(
-        'cleared'      => 'Report history cleared.',
-        'deleted'      => 'Report deleted.',
-        'missing'      => 'That report is no longer available.',
-        'paused'       => 'History is paused. New inspections will not be saved.',
-        'resumed'      => 'History resumed. New inspections will be saved.',
-        'emailed'      => THRG_SI_Email::feedback( $sent, $mail_failed ),
-        'mail-partial' => THRG_SI_Email::feedback( $sent, $mail_failed ) . ' Check your site\'s email setup for failed messages.',
-        'mail-failed'  => THRG_SI_Email::feedback( $sent, $mail_failed ) . ' Check your site\'s email setup for failed messages.',
-        'mail-none'    => 'Choose at least one administrator to email.',
-        'mail-wait'    => 'An email was just sent. Please wait a minute before sending another.',
+        'cleared'        => 'Report history cleared.',
+        'deleted'        => 'Report deleted.',
+        'missing'        => 'That report is no longer available.',
+        'paused'         => 'History is paused. New inspections will not be saved.',
+        'resumed'        => 'History resumed. New inspections will be saved.',
+        'emailed'        => THRG_SI_Email::feedback( $sent, $mail_failed ),
+        'mail-partial'   => THRG_SI_Email::feedback( $sent, $mail_failed ) . ' Check your site\'s email setup for failed messages.',
+        'mail-failed'    => THRG_SI_Email::feedback( $sent, $mail_failed ) . ' Check your site\'s email setup for failed messages.',
+        'mail-none'      => 'Choose at least one administrator to email.',
+        'mail-wait'      => 'An email was just sent. Please wait a minute before sending another.',
+        'schedule-saved' => $schedule['enabled'] ? 'Monthly email saved.' : 'Monthly email is off.',
+        'schedule-none'  => 'None of the chosen administrators can be emailed, so the monthly email is off. Choose at least one administrator with a valid email address.',
     );
-    $thrg_si_warn    = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait' );
+    $thrg_si_warn    = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait', 'schedule-none' );
     if ( isset( $thrg_si_notices[ $flag ] ) && ! in_array( $flag, array( 'emailed', 'mail-partial', 'mail-failed' ), true ) ) :
         ?>
         <div class="si-callout<?php echo in_array( $flag, $thrg_si_warn, true ) ? ' si-callout--warning' : ''; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
@@ -250,6 +252,15 @@ $thrg_si_actions = static function ( $actions ) {
                         <button type="button" class="button" id="si-email-toggle" aria-expanded="false" aria-controls="si-email"<?php disabled( ! $report_id || ! $recipients ); ?>>Email to administrators</button>
                         <span class="si-share-status" id="si-share-status" role="status" aria-live="polite"></span>
                     </div>
+                    <?php
+                    $thrg_si_nudge = ! $schedule['enabled'] && in_array( $flag, array( 'emailed', 'mail-partial' ), true );
+                    if ( $schedule['enabled'] ) :
+                        $thrg_si_who = 'all' === $schedule['who'] ? 'all administrators' : count( THRG_SI_Schedule::pick( $admins, $schedule ) ) . ' chosen administrator' . ( 1 === count( THRG_SI_Schedule::pick( $admins, $schedule ) ) ? '' : 's' );
+                        ?>
+                        <p class="si-schedule-link">Monthly email is on<?php echo $next_run ? ': next one due ' . esc_html( wp_date( get_option( 'date_format' ), (int) $next_run ) ) . ' to ' . esc_html( $thrg_si_who ) : ''; ?>. <a href="#si-schedule">Change</a> &darr;</p>
+                    <?php elseif ( ! $thrg_si_nudge ) : ?>
+                        <p class="si-schedule-link">Want this automatically? <a href="#si-schedule">Set up a monthly email</a> &darr;</p>
+                    <?php endif; ?>
                     <?php if ( ! $report_id ) : ?>
                         <p class="si-note">Emailing needs a saved report. Turn report history back on and run a new inspection to email it.</p>
                     <?php elseif ( ! $recipients ) : ?>
@@ -292,6 +303,9 @@ $thrg_si_actions = static function ( $actions ) {
                     <?php endif; ?>
                     <?php if ( in_array( $flag, array( 'emailed', 'mail-partial', 'mail-failed' ), true ) ) : ?>
                         <div class="si-callout<?php echo 'emailed' === $flag ? '' : ' si-callout--warning'; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
+                    <?php endif; ?>
+                    <?php if ( $thrg_si_nudge ) : ?>
+                        <p class="si-schedule-link">Send this every month instead? <a href="#si-schedule">Set up a monthly email</a> &darr;</p>
                     <?php endif; ?>
                     <textarea id="si-report-text" class="large-text si-report" readonly rows="12" aria-label="Plain-text report"><?php echo esc_textarea( THRG_Site_Inspector::plain_text( $rows, $thrg_si_site, $thrg_si_when ) ); ?></textarea>
                     <p class="si-note">Includes usernames, file names and update details for this site. Share it only with people you trust.</p>
@@ -339,6 +353,69 @@ $thrg_si_actions = static function ( $actions ) {
     $thrg_si_fmt = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
     $thrg_si_cur = $saved ? $saved['id'] : '';
     ?>
+    <?php
+    $thrg_si_tz      = wp_timezone_string();
+    $thrg_si_overdue = $schedule['enabled'] && $next_run && ( time() - (int) $next_run ) > THRG_SI_Schedule::LATE_SECONDS;
+    ?>
+    <section id="si-schedule" class="si-block si-schedule" aria-labelledby="si-schedule-title">
+        <h2 id="si-schedule-title" class="si-section">Monthly security email</h2>
+        <div class="si-card">
+        <p>Run an inspection once a month and email the &ldquo;state of security&rdquo; statement to this site&rsquo;s administrators. Each run is also saved to your reports history.</p>
+        <p class="si-schedule-status">
+            <strong><?php echo $schedule['enabled'] ? 'On.' : 'Off.'; ?></strong>
+            <?php if ( $schedule['enabled'] && $next_run ) : ?>
+                Next email due <?php echo esc_html( wp_date( $thrg_si_fmt, (int) $next_run ) ); ?>.
+            <?php endif; ?>
+            <?php echo esc_html( THRG_SI_Schedule::describe( $last_run, $last_run ? wp_date( $thrg_si_fmt, (int) $last_run['time'] ) : '' ) ); ?>
+        </p>
+        <?php if ( $thrg_si_overdue ) : ?>
+            <div class="si-callout si-callout--warning" role="status"><p>The monthly email is overdue. WordPress only runs scheduled jobs when someone visits the site, and some hosts turn them off. Ask your host to set up a server cron job for wp-cron.php so it runs on time.</p></div>
+        <?php endif; ?>
+        <?php if ( in_array( $flag, array( 'schedule-saved', 'schedule-none' ), true ) ) : ?>
+            <div class="si-callout<?php echo in_array( $flag, $thrg_si_warn, true ) ? ' si-callout--warning' : ''; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
+        <?php endif; ?>
+        <?php if ( ! $admins ) : ?>
+            <p class="si-note">No administrator accounts with a valid email address were found, so there is no one to email.</p>
+        <?php else : ?>
+        <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="si-email si-schedule-form">
+            <input type="hidden" name="action" value="thrg_si_schedule" />
+            <?php wp_nonce_field( 'thrg_si_schedule' ); ?>
+            <p><label><input type="checkbox" name="enabled" value="1" <?php checked( $schedule['enabled'] ); ?> /> <strong>Email a security statement every month</strong></label></p>
+            <p>
+                <label for="si-schedule-day">Send on day</label>
+                <select id="si-schedule-day" name="day">
+                    <?php for ( $thrg_si_d = 1; $thrg_si_d <= THRG_SI_Schedule::LAST_DAY; $thrg_si_d++ ) : ?>
+                        <option value="<?php echo (int) $thrg_si_d; ?>" <?php selected( $schedule['day'], $thrg_si_d ); ?>><?php echo (int) $thrg_si_d; ?></option>
+                    <?php endfor; ?>
+                </select>
+                of each month, around <?php echo esc_html( wp_date( get_option( 'time_format' ), gmmktime( THRG_SI_Schedule::HOUR, 0, 0 ), new DateTimeZone( 'UTC' ) ) ); ?> site time (<?php echo esc_html( $thrg_si_tz ); ?>).
+            </p>
+            <fieldset>
+                <legend>When to send</legend>
+                <label><input type="radio" name="only_issues" value="0" <?php checked( ! $schedule['only_issues'] ); ?> /> Every month, even when everything looks good</label><br />
+                <label><input type="radio" name="only_issues" value="1" <?php checked( (bool) $schedule['only_issues'] ); ?> /> Only when something needs fixing or a second look</label>
+            </fieldset>
+            <fieldset>
+                <legend>Send to</legend>
+                <label><input type="radio" name="who" value="all" <?php checked( 'all', $schedule['who'] ); ?> /> All administrators (<?php echo count( $admins ); ?>), including any added later</label><br />
+                <label><input type="radio" name="who" value="chosen" <?php checked( 'chosen', $schedule['who'] ); ?> /> Only these administrators:</label>
+                <div class="si-email-list">
+                <?php foreach ( $admins as $thrg_si_r ) : ?>
+                    <label><input type="checkbox" name="users[]" value="<?php echo (int) $thrg_si_r['id']; ?>" <?php checked( in_array( (int) $thrg_si_r['id'], $schedule['users'], true ) ); ?> /> <?php echo esc_html( $thrg_si_r['name'] ); ?> <span class="si-muted">&lt;<?php echo esc_html( $thrg_si_r['email'] ); ?>&gt;</span></label>
+                <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <p>
+                <label for="si-schedule-note">Note to include every month (optional)</label><br />
+                <textarea id="si-schedule-note" name="note" rows="2" maxlength="<?php echo (int) THRG_SI_Email::NOTE_LENGTH; ?>" class="large-text" placeholder="For example: Here's this month's check from your web team. Reply if you have questions."><?php echo esc_textarea( $schedule['note'] ); ?></textarea>
+            </p>
+            <p class="si-email-actions"><button type="submit" class="button button-primary">Save monthly email</button></p>
+        </form>
+        <?php endif; ?>
+        <p class="si-note">Emails come from this site, signed with the name of the administrator who last saved these settings. WordPress runs scheduled jobs when someone visits the site, so on a quiet site the email can arrive a little late. If emails don&rsquo;t arrive, check your site&rsquo;s email setup; an SMTP plugin usually fixes it.</p>
+        </div>
+    </section>
+
     <section id="si-history" class="si-block si-history" aria-labelledby="si-history-title">
         <h2 id="si-history-title" class="si-section">Your reports history and changes over time</h2>
         <div class="si-card">
@@ -399,7 +476,7 @@ $thrg_si_actions = static function ( $actions ) {
                 </table>
             </div>
         <?php endif; ?>
-        <p class="si-note">Up to <?php echo (int) THRG_SI_History::MAX_ENTRIES; ?> reports are kept, newest first, in this site's database. They include usernames and file names. Nothing is sent unless you email a report.</p>
+        <p class="si-note">Up to <?php echo (int) THRG_SI_History::MAX_ENTRIES; ?> reports are kept, newest first, in this site's database. They include usernames and file names. Nothing is sent unless you email a report or turn on the monthly email.</p>
         <div class="si-history-controls">
             <?php if ( $history ) : ?>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="si-inline" onsubmit="return window.confirm('Delete every saved report? This cannot be undone.');">

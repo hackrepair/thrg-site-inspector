@@ -18,6 +18,12 @@ final class THRG_SI_Email {
     const TABLE_ROWS     = 8;
     const WAIT_SECONDS   = 60;
 
+    /** Shown at the top of scheduled emails. */
+    const SCHEDULED_INTRO = 'This is your monthly security statement from Site Inspector.';
+
+    /** Shown in the footer of scheduled emails. */
+    const SCHEDULED_FOOTER = 'You get this email because an administrator scheduled it in Tools > Site Inspector, where it can be changed or turned off.';
+
     /* ---------- Pure builders ---------- */
 
     /** Group findings by what the reader should do with them. */
@@ -70,9 +76,10 @@ final class THRG_SI_Email {
      *
      * @param array[]    $rows   Findings.
      * @param string     $site   Site host.
-     * @param array|null $change Output of THRG_SI_History::change(), or null.
+     * @param array|null $change    Output of THRG_SI_History::change(), or null.
+     * @param bool       $scheduled Whether this is the scheduled monthly email.
      */
-    public static function subject( array $rows, $site, $change = null ) {
+    public static function subject( array $rows, $site, $change = null, $scheduled = false ) {
         $g    = self::groups( $rows );
         $fix  = count( $g['fix'] );
         $look = count( $g['look'] );
@@ -92,7 +99,7 @@ final class THRG_SI_Email {
         if ( ! $fix && $done ) {
             $s .= sprintf( ' (%d fixed since last check)', $done );
         }
-        return '[' . $site . '] [Site Inspector] ' . $s;
+        return '[' . $site . '] [Site Inspector] ' . ( $scheduled ? 'Monthly ' : '' ) . $s;
     }
 
     /** The opening "state of security" paragraph. */
@@ -224,14 +231,15 @@ final class THRG_SI_Email {
     /**
      * The HTML email.
      *
-     * @param array $a {rows, site, when, change, older_when, note, sender, recipient, view_url}
+     * @param array $a {rows, site, when, change, older_when, note, sender, recipient, view_url, scheduled?}
      */
     public static function html( array $a ) {
+        $a   += array( 'scheduled' => false );
         $rows = $a['rows'];
         $g    = self::groups( $rows );
         $site = (string) $a['site'];
 
-        $h  = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . self::e( self::subject( $rows, $site, $a['change'] ) ) . '</title></head>';
+        $h  = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . self::e( self::subject( $rows, $site, $a['change'], $a['scheduled'] ) ) . '</title></head>';
         $h .= '<body style="margin:0;padding:0;background:#f3eee9;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;">';
         $h .= '<div style="display:none;max-height:0;overflow:hidden;">' . self::e( self::narrative( $rows, $site ) ) . '</div>';
         $h .= '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3eee9;"><tr><td align="center" style="padding:24px 12px;">';
@@ -254,6 +262,9 @@ final class THRG_SI_Email {
             $h .= '</td></tr></table>';
         }
 
+        if ( $a['scheduled'] ) {
+            $h .= '<p style="font-size:14px;line-height:1.6;color:#50575e;margin:0 0 10px;">' . self::e( self::SCHEDULED_INTRO ) . '</p>';
+        }
         $h .= '<p style="font-size:15px;line-height:1.6;color:#1d2327;margin:0 0 10px;">' . self::e( self::narrative( $rows, $site ) ) . '</p>';
         $h .= '<p style="font-size:14px;line-height:1.6;color:#50575e;margin:0 0 18px;">' . self::e( self::change_line( $a['change'], $a['older_when'] ) ) . '</p>';
 
@@ -307,6 +318,9 @@ final class THRG_SI_Email {
         // Footer.
         $h .= '<tr><td style="padding:16px 24px;font-size:12px;line-height:1.6;color:#646970;">';
         $h .= 'Sent by ' . self::e( $a['sender'] ) . ' from ' . self::e( $site ) . ' with The Hack Repair Guy&rsquo;s Site Inspector. Usernames are partly hidden in this email. ';
+        if ( $a['scheduled'] ) {
+            $h .= self::e( self::SCHEDULED_FOOTER ) . ' ';
+        }
         $h .= 'This is a read-only look at the site&rsquo;s own files and settings. It does not test what the public can reach, match known vulnerabilities, or scan for malware. ';
         $h .= 'Need a deeper look? Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" style="color:#8f3a00;">The Hack Repair Guy</a>.';
         $h .= '</td></tr></table></td></tr></table></body></html>';
@@ -315,6 +329,7 @@ final class THRG_SI_Email {
 
     /** Plain-text version for mail clients that don't show HTML. */
     public static function text( array $a ) {
+        $a   += array( 'scheduled' => false );
         $rows = $a['rows'];
         $g    = self::groups( $rows );
         $site = (string) $a['site'];
@@ -323,6 +338,9 @@ final class THRG_SI_Email {
             $out .= 'A note from ' . $a['sender'] . ":\n" . trim( $a['note'] ) . "\n\n";
         }
         $out .= 'STATE OF SECURITY: ' . $site . ' (' . $a['when'] . ")\n\n";
+        if ( $a['scheduled'] ) {
+            $out .= self::SCHEDULED_INTRO . "\n\n";
+        }
         $out .= self::narrative( $rows, $site ) . "\n" . self::change_line( $a['change'], $a['older_when'] ) . "\n\n";
         $out .= count( $g['fix'] ) . ' need attention · ' . count( $g['look'] ) . ' worth a look · ' . count( $g['good'] ) . " looking good\n";
         foreach ( array(
@@ -358,7 +376,7 @@ final class THRG_SI_Email {
         if ( '' !== (string) $a['view_url'] ) {
             $out .= "\nOpen the full report (administrator login required):\n" . $a['view_url'] . "\n";
         }
-        $out .= "\n--\nSent by " . $a['sender'] . ' from ' . $site . " with The Hack Repair Guy's Site Inspector. Usernames are partly hidden. This is a read-only look at the site's own files and settings; it does not test what the public can reach, match known vulnerabilities, or scan for malware. Need a deeper look? https://hackrepair.com/\n";
+        $out .= "\n--\nSent by " . $a['sender'] . ' from ' . $site . " with The Hack Repair Guy's Site Inspector. Usernames are partly hidden. " . ( $a['scheduled'] ? self::SCHEDULED_FOOTER . ' ' : '' ) . "This is a read-only look at the site's own files and settings; it does not test what the public can reach, match known vulnerabilities, or scan for malware. Need a deeper look? https://hackrepair.com/\n";
         return $out;
     }
 
@@ -398,11 +416,13 @@ final class THRG_SI_Email {
      * @param array  $older    Next older report, or null.
      * @param int[]  $user_ids Chosen user IDs (validated against recipients()).
      * @param string $note     Optional note from the sender.
+     * @param array  $from     Optional {name, email} sender, for runs with nobody logged in.
+     * @param bool   $scheduled Whether this is the scheduled monthly email.
      * @return array{sent:int,failed:int}
      */
-    public static function send( array $entry, $older, array $user_ids, $note ) {
-        $wanted  = array_map( 'intval', $user_ids );
-        $to      = array_values(
+    public static function send( array $entry, $older, array $user_ids, $note, $from = null, $scheduled = false ) {
+        $wanted = array_map( 'intval', $user_ids );
+        $to     = array_values(
             array_filter(
                 self::recipients(),
                 static function ( $r ) use ( $wanted ) {
@@ -410,7 +430,14 @@ final class THRG_SI_Email {
                 }
             )
         );
-        $sender  = wp_get_current_user();
+        if ( ! is_array( $from ) ) {
+            $user = wp_get_current_user();
+            $from = array(
+                'name'  => $user->display_name ? $user->display_name : $user->user_login,
+                'email' => $user->user_email,
+            );
+        }
+        $page    = admin_url( THRG_Site_Inspector::PAGE_URL );
         $fmt     = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
         $change  = THRG_SI_History::change( $entry, $older );
         $base    = array(
@@ -420,12 +447,13 @@ final class THRG_SI_Email {
             'change'     => $change,
             'older_when' => is_array( $older ) ? wp_date( get_option( 'date_format' ), (int) $older['time'] ) : '',
             'note'       => $note,
-            'sender'     => $sender->display_name ? $sender->display_name : $sender->user_login,
-            'view_url'   => add_query_arg( 'thrg_report', $entry['id'], admin_url( THRG_Site_Inspector::PAGE_URL ) ),
+            'sender'     => (string) $from['name'],
+            'view_url'   => '' !== (string) $entry['id'] ? add_query_arg( 'thrg_report', $entry['id'], $page ) : $page,
+            'scheduled'  => (bool) $scheduled,
         );
-        $subject = self::subject( $entry['rows'], $base['site'], $change );
+        $subject = self::subject( $entry['rows'], $base['site'], $change, $scheduled );
         $headers = array( 'Content-Type: text/html; charset=UTF-8' );
-        $reply   = self::reply_to( $base['sender'], $sender->user_email );
+        $reply   = self::reply_to( $base['sender'], (string) $from['email'] );
         if ( '' !== $reply ) {
             $headers[] = $reply;
         }

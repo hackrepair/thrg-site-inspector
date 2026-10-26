@@ -2,11 +2,11 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.3.2**, tag `v2.3.2`, October 26, 2026. See `releases/v2.3.2.md`.
+Current release: **2.4.0**, tag `v2.4.0`, October 26, 2026. See `releases/v2.4.0.md`.
 
 ## Scope
 
-A targeted, read-only inspection of conditions that may enable exploitation, plus the original Site Health controls. It does not classify files or activity as malicious, fix anything, simulate exploits, or assign a security score. Every observation carries its context and uncertainty. Reports are kept on the site only, unless an administrator emails one.
+A targeted, read-only inspection of conditions that may enable exploitation, plus the original Site Health controls. It does not classify files or activity as malicious, fix anything, simulate exploits, or assign a security score. Every observation carries its context and uncertainty. Reports are kept on the site only, unless an administrator emails one or turns on the monthly email.
 
 ## Architecture
 
@@ -15,15 +15,16 @@ A targeted, read-only inspection of conditions that may enable exploitation, plu
 - `includes/class-thrg-inspection-evidence.php`: bounded, read-only collectors (accounts, uploads, sensitive files, software, must-use code, salts). No file contents are read, symlinks are skipped, and results say when coverage is partial.
 - `includes/class-thrg-si-history.php`: report history in one non-autoloaded option (25 reports, about 600 KB cap, identical results within five minutes saved once).
 - `includes/class-thrg-si-email.php`: emails a saved report to chosen administrators as a "state of security" briefing. Pure builders (`subject()`, `narrative()`, `change_line()`, `html()`, `text()`) plus `recipients()` and `send()`. Recipients are looked up server-side from administrator user IDs, never typed in; one personal email each via `wp_mail()` with a plain-text alternative; usernames masked; Reply-To is the sender; one send per user per minute. Handler: `admin_post_thrg_si_email_report` (manage_options + nonce).
+- `includes/class-thrg-si-schedule.php`: the opt-in monthly email (`THRG_SI_Schedule`). Settings in `thrg_si_schedule`, last result in `thrg_si_schedule_log`, one queued single event `thrg_si_scheduled_report` at a time (day 1–28, 8:00 site time), a ten-minute run lock, and `heal()` on `admin_init` to restore a lost queue. Pure helpers: `normalize()`, `next_run()`, `pick()`, `worth_sending()`, `describe()`. Handler: `admin_post_thrg_si_schedule` (manage_options + nonce). Uses `THRG_SI_Email::send()` with a `$from` sender and `$scheduled` flag.
 - `includes/view-inspector.php`, `assets/inspector.css`: the interface. Shared by the Site Health Controls page, modeled on [The Hack Repair Guy's Plugin Detective](https://github.com/hackrepair/hackrepair-plugin-detective "Plugin Detective on GitHub"). The mascot uses the updated 2026 THRG heart artwork.
 - `includes/class-thrg-si-updater.php` and `plugin-update-checker/`: GitHub release updates, independent of the inspector. A release needs tag `vX.Y.Z` and an uploaded `thrg-site-inspector.X.Y.Z.zip` whose top-level folder is `thrg-site-inspector/`.
 - `includes/class-thrg-si-update-notices.php`: plain-language messages when a manual update check fails, including a confirmed GitHub rate limit; technical details stay in a disclosure.
 - `includes/companion-plugins.php`: adds the **Other THRG Plugins** tab (five companion tools) to this plugin's native View Details dialog.
-- `uninstall.php`: removes settings, report history, the history-paused flag, the notice dismissal and update-checker leftovers only when *Delete all plugin data* is ticked.
+- `uninstall.php`: always cancels a queued monthly email; removes settings, report history, the history-paused flag, the notice dismissal, the monthly-email settings and last result, and update-checker leftovers only when *Delete all plugin data* is ticked. `index.php` also cancels the queued run on deactivation.
 
 ## Design rules
 
-- Collection is bounded (200 privileged accounts, newest first; 20,000 upload entries, five seconds, 50 results) and read-only. No outbound requests, scheduled jobs, file writes or remediation handlers in the inspector.
+- Collection is bounded (200 privileged accounts, newest first; 20,000 upload entries, five seconds, 50 results) and read-only. No outbound requests, file writes or remediation handlers in the inspector. The only scheduled job is the opt-in monthly email, which is off by default.
 - Findings use plain language: why it matters, what was observed, what to do, and the limits of the check. A clean baseline produces zero Review items.
 - Output is escaped. Links come from an allowlist: admin pages matching a strict pattern plus two reference URLs. Anything else renders as plain text, and dynamic names cannot create links. Links to other pages open in a new tab (except the way back to Site Inspector from Site Health Controls).
 - Reports contain usernames and file names, so the page and docs say to share them only with people you trust. Printing masks usernames.
@@ -49,6 +50,7 @@ The local `phpcs.xml.dist` checks shipped first-party PHP against WordPress Extr
 - No public-exposure verification, advisory feed, custom signup flow inspection, malware scan or server enforcement test. Permission bits do not establish ACLs or exploitability; HTTPS settings do not establish redirects or certificate validity.
 - Multisite behavior and cross-version compatibility need dedicated tests.
 - Inspector strings are not yet translatable.
+- `PHP_ADVISORIES` and `PATCH_LIST_AS_OF` are maintained by hand. When PHP ships a security release, add an entry (label, CVEs, release date, fixed version per branch, oldest affected branch), set `PATCH_LIST_AS_OF` to the review date, and add tests in `tests/inspector.php`. A weekly scheduled task prepares such entries on a `php-patch-list-YYYY-MM-DD` branch for approval; it never merges or releases. CVE-2026-115560 (disclosed October 23, 2026) is pending published fixed versions.
 - `PHP_SUPPORT` dates are maintained by hand. Add new PHP branches as they ship, and expect each branch to move from Review to Potential weakness on its end date (8.2 on January 1, 2027).
 
 ## 2.2.4 email format update — October 18, 2026
@@ -146,3 +148,14 @@ A full review of 2.3.1 found no security bugs. These fixes shipped in 2.3.2:
 - Docs: current-release line, Architecture list, stale 2.2.4 notes, companion-guide status and version-specific subject wording brought up to date.
 
 Tests: new checks for the account query, PHP 8.5, Reply-To, uninstall leftovers, readme metadata (including readme/header agreement) and update-details sanitizing. All `tests/` pass.
+
+## Release 2.4.0 — October 26, 2026: monthly email and PHP security fixes
+
+Two features, built and tested on the Zendogs sandbox before entering the repo.
+
+**PHP security fixes.** `PHP_ADVISORIES` (first entry PHP2Shell, CVE-2026-109618/109619, fixed 8.2.35, 8.3.36, 8.4.27, 8.5.12 on October 21, 2026) and pure `php_patch()`. An advisory applies only once its release date has passed. Plain builds below the fix are a Potential weakness; package builds (version suffix, `PHP_EXTRA_VERSION`, php.ini under `/etc/php/N`, `/etc/php.ini`, `/etc/php-fpm.*` or `/opt/alt/php`) are Review; release candidates are never flagged; branches older than 8.2 get a note only. New observations `php_extra` and `php_ini` (the ini path is used only for the decision, never shown or stored). Wording is dated, names the fix and CVEs, and tells the owner to ask the host to update and restart PHP or confirm the fix in writing; no instructions for self-managed servers (Jim's decision). After 90 days (`PATCH_LIST_STALE_DAYS`) the finding says the list may be out of date, without changing the status.
+
+**Monthly email.** See Architecture. Decisions with Jim: monthly only with a day choice; every month by default with an "only when something needs fixing or a second look" option; all administrators or chosen ones; off by default; "Monthly" in the subject; no separate "send now" button (one-off sends stay in the share section). The share section shows whether the monthly email is on, with a link to the panel, and suggests it after a one-off send while it is off. The panel sits directly below the share section.
+
+**Evidence.** All 10 test files pass on PHP 8.3 and 7.4.33 (new `tests/schedule.php`; new checks in `tests/inspector.php`, `tests/uninstall.php`, `tests/smoke.php`). Shared PHPCS: 0 errors, 0 warnings. On Zendogs (WordPress 7.1.3, PHP 8.2.33), through the real `wp-cron.php` with nobody logged in and Mailpit capture: all-admins run sent 6 emails, saved the report as "Monthly email" and queued the next run; chosen recipients with one deleted ID sent exactly 1; deactivation cleared the queue and reactivation restored it; the subject reads `Monthly Security Check`. The PHP finding showed Potential weakness for upstream 8.2.33, Review with a Debian-style ini path, and no patch note at 8.2.35. The share-card line and panel order were checked by rendering the screen as an administrator in each state.
+
