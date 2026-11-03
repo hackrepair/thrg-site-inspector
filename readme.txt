@@ -38,7 +38,7 @@ Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
 
 Administrator emails use a full-width branded HTML layout with a plain-text alternative. Subjects follow `[example.com] [Site Inspector] Security Check: 2 issues need attention`, retaining the report status and change counts. The configured home URL supplies the domain, preserving subdomains and explicit ports such as `localhost:8081`. The subject preview matches the sent message.
 
-**More tools from The Hack Repair Guy.** The plugin's View Details window includes an Other THRG Plugins guide to five companion tools.
+**More tools from The Hack Repair Guy.** The plugin's View Details window includes an Other THRG Plugins guide to six companion tools.
 
 = Privacy =
 
