@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -149,6 +149,10 @@ Plugin update discovery and package downloads contact GitHub independently of in
 By default nothing is deleted, so a reinstall picks up where you left off. Any queued monthly email is always cancelled. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.4.1 =
+* The Other THRG Plugins tab in View Details now lists Bunker and Stickies and ends with a donation note.
+* The footer now offers help with updates and security.
 
 = 2.4.0 =
 * New monthly security email: on a day you choose, Site Inspector checks the site, saves the report and emails it to all administrators or the ones you pick. Off until you turn it on. Send every month, or only when something needs fixing or a second look.

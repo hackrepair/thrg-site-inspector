@@ -2,7 +2,7 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.4.0**, tag `v2.4.0`, October 26, 2026. See `releases/v2.4.0.md`.
+Current release: **2.4.1**, tag `v2.4.1`, November 3, 2026. See `releases/v2.4.1.md`.
 
 ## Scope
 
