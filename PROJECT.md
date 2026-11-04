@@ -19,7 +19,7 @@ A targeted, read-only inspection of conditions that may enable exploitation, plu
 - `includes/view-inspector.php`, `assets/inspector.css`: the interface. Shared by the Site Health Controls page, modeled on [The Hack Repair Guy's Plugin Detective](https://github.com/hackrepair/hackrepair-plugin-detective "Plugin Detective on GitHub"). The mascot uses the updated 2026 THRG heart artwork.
 - `includes/class-thrg-si-updater.php` and `plugin-update-checker/`: GitHub release updates, independent of the inspector. A release needs tag `vX.Y.Z` and an uploaded `thrg-site-inspector.X.Y.Z.zip` whose top-level folder is `thrg-site-inspector/`.
 - `includes/class-thrg-si-update-notices.php`: plain-language messages when a manual update check fails, including a confirmed GitHub rate limit; technical details stay in a disclosure.
-- `includes/companion-plugins.php`: adds the **Other THRG Plugins** tab (six companion tools) to this plugin's native View Details dialog.
+- `includes/companion-plugins.php`: adds the **Other THRG Plugins** tab (seven companion tools) to this plugin's native View Details dialog.
 - `uninstall.php`: always cancels a queued monthly email; removes settings, report history, the history-paused flag, the notice dismissal, the monthly-email settings and last result, and update-checker leftovers only when *Delete all plugin data* is ticked. `index.php` also cancels the queued run on deactivation.
 
 ## Design rules
@@ -110,7 +110,7 @@ Release rule: `docs/` is not part of the plugin. `scripts/build-release.py` alre
 
 ## Companion-plugin guide — October 25, 2026 (released in 2.3.1)
 
-The native View Details **Other THRG Plugins** tab lists the five other tools: Disable Other Plugin Notices, Group Password Reset, Plugin Detective, Post Update Email Notifier and Plugin Archiver. The same guide in each sibling plugin lists Site Inspector and excludes itself. Plugin Archiver always links to https://wordpress.org/plugins/hackrepair-plugin-archiver/; the GitHub-distributed tools link to their own repositories. Cards are informational links, with no automatic installs or external requests. Archiver retains WordPress.org updates and metadata. Shipped in 2.3.1.
+The native View Details **Other THRG Plugins** tab lists the seven other tools: Disable Other Plugin Notices, Group Password Reset, Plugin Detective, Post Update Email Notifier, Plugin Archiver, Bunker and Stickies. The same guide in each sibling plugin lists Site Inspector and excludes itself. Plugin Archiver always links to https://wordpress.org/plugins/hackrepair-plugin-archiver/; the GitHub-distributed tools link to their own repositories. Cards are informational links, with no automatic installs or external requests. Archiver retains WordPress.org updates and metadata. Shipped in 2.3.1.
 
 Verification: shared PHPCS and `php tests/companion-plugins.php` pass for this checkout. Native WordPress View Details on Zendogs renders five distinct companion cards, with no self-link and Archiver linked only to WordPress.org. Archiver uses `plugins_api_result` for official metadata and preserves ratings/version/update controls; the test used a temporary loader beside the older installed Archiver, not a full upgrade. Temporary preview files are restored after testing; no reset, archive, delete or email action was performed. Published releases remain unchanged.
 
