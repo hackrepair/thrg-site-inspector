@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1.3
-Stable tag: 2.4.1
+Stable tag: 2.4.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -149,6 +149,9 @@ Plugin update discovery and package downloads contact GitHub independently of in
 By default nothing is deleted, so a reinstall picks up where you left off. Any queued monthly email is always cancelled. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.4.2 =
+* Notices from other plugins and WordPress are tucked away on the Site Inspector and Site Health Controls screens, with a link to show them. Site Inspector's own messages stay visible.
 
 = 2.4.1 =
 * The Other THRG Plugins tab in View Details now lists Bunker and Stickies and ends with a donation note.

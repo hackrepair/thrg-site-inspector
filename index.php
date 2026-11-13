@@ -3,7 +3,7 @@
  * Plugin Name:       The Hack Repair Guy's Site Inspector
  * Plugin URI:        https://github.com/hackrepair/thrg-site-inspector
  * Description:       Your friendly WordPress security inspector. Keeps a history of your reports and shows what changed. Includes optional Site Health controls.
- * Version:           2.4.1
+ * Version:           2.4.2
  * Author:            The Hack Repair Guy
  * Author URI:        https://hackrepair.com/
  * Update URI:        https://github.com/hackrepair/thrg-site-inspector
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const THRG_SI_VERSION = '2.4.1';
+const THRG_SI_VERSION = '2.4.2';
 
 /*
  * GitHub release updates. Deliberately NOT gated by is_admin(): WordPress's
@@ -716,7 +716,7 @@ function thrg_shc_admin_notice() {
         return;
     }
     $dismiss = wp_nonce_url( add_query_arg( 'thrg_si_dismiss', '1' ), 'thrg_si_dismiss' );
-    echo '<div class="notice notice-info"><p><strong>' . esc_html__( 'Site Inspector is ready.', 'thrg-site-inspector' ) . '</strong> ';
+    echo '<div class="thrg-si-own notice notice-info"><p><strong>' . esc_html__( 'Site Inspector is ready.', 'thrg-site-inspector' ) . '</strong> ';
     echo esc_html__( 'Check updates, admin accounts, uploads, exposed backups and more in a few seconds.', 'thrg-site-inspector' ) . ' ';
     echo '<a href="' . esc_url( admin_url( 'tools.php?page=thrg-site-inspector' ) ) . '">' . esc_html__( 'Run your first inspection', 'thrg-site-inspector' ) . '</a></p>';
     echo '<p><a href="' . esc_url( $dismiss ) . '">' . esc_html__( 'Dismiss', 'thrg-site-inspector' ) . '</a></p></div>';

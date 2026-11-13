@@ -2,7 +2,7 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.4.1**, tag `v2.4.1`, November 3, 2026. See `releases/v2.4.1.md`.
+Current release: **2.4.1**, tag `v2.4.1`, November 3, 2026. **2.4.2** is built locally, not released: other plugins' admin notices are tucked away on the plugin screens behind a "Show" bar (`admin_body_class` marker `thrg-si-screen`, CSS in `assets/inspector.css`, `assets/js/thrg-si-notices.js`; own notices carry `thrg-si-own`). See `releases/v2.4.2.md`.
 
 ## Scope
 

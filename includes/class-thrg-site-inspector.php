@@ -66,6 +66,7 @@ final class THRG_Site_Inspector {
     public static function boot() {
         add_action( 'admin_menu', array( __CLASS__, 'menu' ) );
         add_action( 'admin_enqueue_scripts', array( __CLASS__, 'assets' ) );
+        add_filter( 'admin_body_class', array( __CLASS__, 'body_class' ) );
         add_action( 'admin_post_thrg_si_delete_report', array( __CLASS__, 'handle_delete' ) );
         add_action( 'admin_post_thrg_si_clear_history', array( __CLASS__, 'handle_clear' ) );
         add_action( 'admin_post_thrg_si_toggle_history', array( __CLASS__, 'handle_toggle' ) );
@@ -157,10 +158,36 @@ final class THRG_Site_Inspector {
         return defined( 'THRG_SI_VERSION' ) ? THRG_SI_VERSION : 'dev';
     }
 
+    /**
+     * Mark this plugin's screens so its stylesheet can tuck other plugins' notices away.
+     *
+     * @param string $classes Space-separated body classes.
+     * @return string
+     */
+    public static function body_class( $classes ) {
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+        if ( $screen && in_array( $screen->id, array( 'tools_page_thrg-site-inspector', 'settings_page_thrg-site-health-controls' ), true ) ) {
+            $classes .= ' thrg-si-screen';
+        }
+        return $classes;
+    }
+
     public static function assets( $hook ) {
         if ( in_array( $hook, array( 'tools_page_thrg-site-inspector', 'settings_page_thrg-site-health-controls' ), true ) ) {
             wp_enqueue_style( 'thrg-si-brand', plugins_url( '../assets/brand/thrg-brand.css', __FILE__ ), array(), self::version() );
             wp_enqueue_style( 'thrg-inspector', plugins_url( '../assets/inspector.css', __FILE__ ), array(), self::version() );
+            wp_enqueue_script( 'thrg-si-notices', plugins_url( '../assets/js/thrg-si-notices.js', __FILE__ ), array(), self::version(), true );
+            wp_localize_script(
+                'thrg-si-notices',
+                'thrgSiNotices',
+                array(
+                    'noticesOne'  => __( '1 notice from another plugin or WordPress is hidden on this page.', 'thrg-site-inspector' ),
+                    /* translators: %d: number of hidden notices */
+                    'noticesMany' => __( '%d notices from other plugins or WordPress are hidden on this page.', 'thrg-site-inspector' ),
+                    'show'        => __( 'Show', 'thrg-site-inspector' ),
+                    'hide'        => __( 'Hide', 'thrg-site-inspector' ),
+                )
+            );
         }
     }
 

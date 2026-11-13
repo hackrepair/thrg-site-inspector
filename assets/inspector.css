@@ -206,3 +206,32 @@ a.si-sum:hover { filter: brightness(.96); box-shadow: 0 0 0 2px currentColor ins
 .si-schedule-status { font-size: 14px; }
 .thrg-inspector .si-schedule-link { font-size: 13px; margin: 8px 0 12px; color: var(--ink-soft); }
 .si-schedule-link a { font-weight: 600; }
+
+/* Tuck other plugins' admin notices away on this plugin's screens (shown again with the Show link). Needs JavaScript so the notices stay visible without it. */
+body.js.thrg-si-screen:not(.thrg-si-notices-shown) #wpbody-content > .notice:not(.thrg-si-own):not(.settings-error),
+body.js.thrg-si-screen:not(.thrg-si-notices-shown) #wpbody-content > .update-nag,
+body.js.thrg-si-screen:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .notice:not(.thrg-si-own):not(.settings-error),
+body.js.thrg-si-screen:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .updated:not(.thrg-si-own):not(.settings-error),
+body.js.thrg-si-screen:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .error:not(.thrg-si-own):not(.settings-error) {
+	display: none !important;
+}
+
+.thrg-si-notice-bar {
+	margin: 0 0 16px;
+	padding: 8px 14px;
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-left: 4px solid #ff9933;
+	border-radius: 4px;
+	color: #50575e;
+	font-size: 13px;
+}
+
+.thrg-si-notice-bar[hidden] {
+	display: none;
+}
+
+.thrg-si-notice-bar .button-link {
+	margin-left: 6px;
+	font-weight: 600;
+}
