@@ -8,7 +8,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Current release: **2.4.1**; **2.4.2** is in preparation. See [release notes](releases/v2.4.2.md).
+Version **2.4.3**. See [release notes](releases/v2.4.3.md).
 
 <p align="center">
   <strong>▶ Watch Site Inspector in 75 seconds</strong><br>
@@ -71,7 +71,9 @@ Under **Tools → Site Inspector**, the **Monthly security email** panel sits ri
 
 ## PHP security fixes
 
-The PHP version finding compares the running version with a built-in list of PHP security releases (first entry: PHP2Shell, CVE-2026-109618 and CVE-2026-109619, fixed in 8.2.35, 8.3.36, 8.4.27 and 8.5.12 on October 21, 2026). A plain PHP build below the fixed release is a **Potential weakness**; an operating-system package build (version suffix, `PHP_EXTRA_VERSION`, or a Debian, Red Hat or CloudLinux php.ini path) is marked **Review**, because those often carry the fix under the old number. The wording is dated and names the fix. No outside requests are made, so the finding says when the list is more than 90 days old.
+The PHP version finding uses a built-in list reviewed on November 23, 2026. It includes the October PHP2Shell fixes and the November 19 security releases: PHP 8.2.36, 8.3.37, 8.4.28 and 8.5.13. The latest applicable fixed release is shown first. The support table includes PHP 8.6; branches absent from the table are marked **Unable to verify**.
+
+An upstream build below a listed fix is a **Potential weakness**. An operating-system package is marked **Review**, because a host may have backported fixes without changing the version number. Advisory impact can depend on configuration and enabled extensions. This is a dated patch list, not a complete vulnerability feed or a test of the running server's exploitability. No outside requests are made during inspection, and a warning appears after the list is more than 90 days old. Sources: [PHP changelog](https://www.php.net/ChangeLog-8.php) and [support dates](https://www.php.net/supported-versions.php).
 
 ## Privacy and scope
 
@@ -82,6 +84,8 @@ It is not a malware scanner, firewall, vulnerability-feed client, or a complete 
 ## Install
 
 Upload the plugin ZIP under **Plugins → Add New → Upload Plugin**, or place the `thrg-site-inspector` folder in `wp-content/plugins/`, then activate it and open **Tools → Site Inspector**.
+
+On Site Inspector and Site Health Controls screens, other notices can be expanded with **Show**. Late notices join the panel automatically. If the panel cannot initialize, notices remain visible.
 
 The plugin lives in the `thrg-site-inspector` folder and starts from `index.php`. Updates come from this repository's [GitHub releases](https://github.com/hackrepair/thrg-site-inspector/releases "All Site Inspector releases and download files").
 
@@ -95,10 +99,19 @@ The plugin lives in the `thrg-site-inspector` folder and starts from `index.php`
 
 [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2"). Started from a 2019 plugin by Louis Fico, used under the GPLv2-or-later license; the original attribution is retained.
 
-Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") by Jānis Elsts (MIT license), included unmodified.
+Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") by Jānis Elsts (MIT license), 6.0, including Parsedown 1.8.0, included unmodified. Output from remote release notes remains sanitized before display.
 
 Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair").
 
 ## Changelog
 
-See the **Changelog** section of [`readme.txt`](readme.txt).
+### 2.4.3
+
+- Keep late admin notices recoverable, and leave notices visible if the notice-panel script cannot initialize.
+- Update the bundled Plugin Update Checker to unmodified upstream 6.0, including Parsedown 1.8.0; retain remote markup sanitization and release-only ZIP checks.
+- Refresh the built-in PHP security-fix list through November 19, 2026, add PHP 8.6 support dates, and mark unknown branches as unverified.
+- Remove database-backed email throttle transients and the schedule lock during opt-in uninstall cleanup.
+- Build a compact install ZIP with explicit 0644 permissions and no development docs, workflow files or project video; preserve the last good ZIP/checksum pair if rebuilding fails.
+- Correct current-release and dependency documentation. Existing settings and saved reports are retained on upgrade.
+
+Older entries are in the **Changelog** section of [`readme.txt`](readme.txt).

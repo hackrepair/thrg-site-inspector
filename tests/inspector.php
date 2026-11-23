@@ -119,7 +119,7 @@ foreach ( $patch_cases as $c ) {
 }
 $behind = $php( '8.2.33' );
 $text   = implode( ' ', $behind['evidence'] ) . ' ' . $behind['next'] . ' ' . $behind['why'];
-foreach ( array( 'The fix for CVE-2026-109618 and CVE-2026-109619 is in PHP 8.2.35, released October 21, 2026', '8.2.35', 'released October 21, 2026', 'CVE-2026-109618 and CVE-2026-109619', 'Patch list current to October 26, 2026', 'restart PHP', 'Support for this branch also ends soon' ) as $needle ) {
+foreach ( array( 'The fix for CVE-2026-109618 and CVE-2026-109619 is in PHP 8.2.35, released October 21, 2026', '8.2.35', 'released October 21, 2026', 'CVE-2026-109618 and CVE-2026-109619', 'Patch list current to November 23, 2026', 'restart PHP', 'Support for this branch also ends soon' ) as $needle ) {
     if ( false === strpos( $text, $needle ) ) { fwrite( STDERR, "FAIL patch wording missing: $needle\n" ); exit( 1 ); }
 }
 foreach ( array( 'server you manage', 'PHP-FPM', 'LiteSpeed', 'update the PHP packages' ) as $absent ) {
@@ -141,13 +141,13 @@ if ( $p['behind'] || $p['unfixed'] ) { fwrite( STDERR, "FAIL unparseable version
 echo "PASS unparseable version is ignored\n";
 
 // A patch list that has not been reviewed for a while says so, without changing the status.
-$listed  = strtotime( '2026-10-26 00:00:00 UTC' );
-$fresh   = $php( '8.3.36', '', '', $listed + 89 * 86400 );
-$stale   = $php( '8.3.36', '', '', $listed + 91 * 86400 );
+$listed  = strtotime( THRG_Site_Inspector::PATCH_LIST_AS_OF . ' 00:00:00 UTC' );
+$fresh   = $php( '8.3.37', '', '', $listed + 89 * 86400 );
+$stale   = $php( '8.3.37', '', '', $listed + 91 * 86400 );
 if ( 'No issue observed' !== $stale['status'] || 'No issue observed' !== $fresh['status'] ) { fwrite( STDERR, "FAIL stale list must not change the status\n" ); exit( 1 ); }
 if ( false !== strpos( implode( ' ', $fresh['evidence'] ) . $fresh['why'], 'days old' ) || array() !== $fresh['evidence'] && false !== strpos( implode( ' ', $fresh['evidence'] ), 'last reviewed' ) ) { fwrite( STDERR, "FAIL fresh list should not warn\n" ); exit( 1 ); }
 echo "PASS list reviewed within 90 days does not warn\n";
-if ( false === strpos( $stale['why'], 'more than 90 days old' ) || false === strpos( implode( ' ', $stale['evidence'] ), 'last reviewed October 26, 2026, more than 90 days ago' ) || false === strpos( $stale['limits'], 'php.net' ) ) { fwrite( STDERR, "FAIL stale list wording\n" ); exit( 1 ); }
+if ( false === strpos( $stale['why'], 'more than 90 days old' ) || false === strpos( implode( ' ', $stale['evidence'] ), 'last reviewed November 23, 2026, more than 90 days ago' ) || false === strpos( $stale['limits'], 'php.net' ) ) { fwrite( STDERR, "FAIL stale list wording\n" ); exit( 1 ); }
 echo "PASS list older than 90 days says so in the summary, evidence and limits\n";
 $stale_behind = $php( '8.4.26', '', '', $listed + 120 * 86400 );
 $text         = implode( ' ', $stale_behind['evidence'] );
@@ -198,3 +198,14 @@ $txt = THRG_Site_Inspector::plain_text( THRG_Site_Inspector::evaluate( $worst ),
 if ( false !== strpos( $txt, '[[' ) ) { fwrite( STDERR, "FAIL plain text keeps tokens\n" ); exit( 1 ); }
 if ( false !== strpos( $txt, 'Check again' ) ) { fwrite( STDERR, "FAIL plain text keeps link-only wording\n" ); exit( 1 ); }
 echo "PASS plain-text copy has no link tokens or link-only wording\n";
+
+// Current patch floors are selected newest first, without changing historical observations.
+$today = strtotime( '2026-11-23 12:00:00 UTC' );
+foreach ( array( '8.2' => '8.2.36', '8.3' => '8.3.37', '8.4' => '8.4.28', '8.5' => '8.5.13' ) as $branch => $fixed ) {
+    $old = THRG_Site_Inspector::php_patch( $branch . '.0', '', '', $today );
+    if ( ! $old['behind'] || $fixed !== $old['floor'] ) { throw new RuntimeException( 'Newest patch floor not selected' ); }
+    $patched = THRG_Site_Inspector::php_patch( $fixed, '', '', $today );
+    if ( $patched['behind'] ) { throw new RuntimeException( 'Fixed build still flagged' ); }
+}
+if ( array( 'No issue observed', '2030-12-31' ) !== THRG_Site_Inspector::php_status( '8.6.0', $today ) || array( 'Unable to verify', null ) !== THRG_Site_Inspector::php_status( '9.9.0', $today ) ) { throw new RuntimeException( 'Support table/unknown branch incorrect' ); }
+echo "PASS November patch floors, fixed releases, PHP 8.6 and unknown branches\n";

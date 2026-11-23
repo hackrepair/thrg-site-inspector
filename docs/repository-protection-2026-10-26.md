@@ -1,5 +1,7 @@
 # Repository protections — October 26, 2026
 
+Historical record: the dependency versions and alert counts below describe October 26. Site Inspector 2.4.3 upgrades the updater/parser; see [current dependency coverage](dependency-coverage.md) and [release verification](release-verification-2.4.3.md).
+
 User authorized secret scanning, push protection and establishing verified dependency coverage across the six THRG plugin repositories.
 
 ## Settings

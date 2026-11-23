@@ -61,7 +61,7 @@ def inventory():
                                         'source_sha256': hashlib.sha256(parser.read_bytes()).hexdigest()}}
         readme = ROOT / 'plugin-update-checker/vendor/PucReadmeParser.php'
         if readme.exists():
-            manual.append({'path': str(readme.relative_to(ROOT)), 'reason': 'Modified readme parser has no declared package version; manual review required.',
+            manual.append({'path': str(readme.relative_to(ROOT)), 'reason': 'Bundled readme parser has no declared package version; verify upstream provenance manually.',
                            'sha256': hashlib.sha256(readme.read_bytes()).hexdigest()})
     # Only committed workflows are relevant. No YAML execution or third-party parser is needed.
     workflows = git('ls-files', '.github/workflows').splitlines()

@@ -5,6 +5,14 @@ function is_multisite() { return false; }
 function get_option( $k, $d = false ) { return array_key_exists( $k, $GLOBALS['opts'] ) ? $GLOBALS['opts'][ $k ] : $d; }
 function delete_option( $k ) { unset( $GLOBALS['opts'][ $k ] ); return true; }
 function delete_site_option( $k ) { $GLOBALS['site_deleted'][] = $k; return true; }
+function delete_transient( $k ) { $GLOBALS['transient_deleted'][] = $k; return true; }
+class Review_DB {
+    public $options = 'wp_options';
+    function esc_like( $v ) { return addcslashes( $v, '_%\\' ); }
+    function prepare( $sql, $v ) { return str_replace( '%s', "'" . $v . "'", $sql ); }
+    function get_col( $sql ) { return array( '_transient_thrg_si_mail_7' ); }
+}
+$GLOBALS['wpdb'] = new Review_DB();
 function delete_site_transient( $k ) { $GLOBALS['site_deleted'][] = 'transient:' . $k; return true; }
 function wp_clear_scheduled_hook( $h ) { $GLOBALS['cleared'][] = $h; return 1; }
 function check( $c, $n ) { if ( ! $c ) { fwrite( STDERR, "FAIL $n\n" ); exit( 1 ); } echo "PASS $n\n"; }
@@ -22,3 +30,5 @@ check( array( 'external_updates-' . basename( dirname( __DIR__ ) ), 'transient:t
 $GLOBALS['opts'] = array( 'thrg_si_history' => array( 1 ) );
 include __DIR__ . '/../uninstall.php';
 check( array( 'thrg_si_history' => array( 1 ) ) === $GLOBALS['opts'], 'never-saved settings mean keep' );
+
+check( in_array( 'thrg_si_schedule_lock', $GLOBALS['transient_deleted'], true ) && in_array( 'thrg_si_mail_7', $GLOBALS['transient_deleted'], true ), 'opt-in cleanup removes lock and database-backed mail throttles' );

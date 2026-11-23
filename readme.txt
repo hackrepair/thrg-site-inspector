@@ -3,8 +3,8 @@ Contributors: hackrepair
 Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
-Tested up to: 7.1.3
-Stable tag: 2.4.2
+Tested up to: 7.1
+Stable tag: 2.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -62,6 +62,8 @@ Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-
 
 Started from a 2019 plugin by Louis Fico, used under the [GPLv2-or-later license](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2").
 
+On Site Inspector and Site Health Controls screens, choose Show to expand other notices. Late notices are included automatically, and notices stay visible if the panel cannot initialize.
+
 == Installation ==
 
 1. In WordPress, open Plugins > Add New > Upload Plugin and select the plugin ZIP. You can also upload the thrg-site-inspector folder to wp-content/plugins/.
@@ -118,7 +120,7 @@ It is off by default. Each run inspects the site, saves the report to your histo
 
 = Why does the PHP version check mention a security fix? =
 
-Being on a supported PHP branch is not the same as being patched. Site Inspector has a built-in list of recent PHP security releases (starting with the PHP2Shell fixes of October 21, 2026). If the site's PHP version is older than the release with the fix, the check says so, with the date and the advisory numbers. Plain PHP builds are marked as a potential weakness. Operating-system packages (Debian, Ubuntu, Red Hat, CloudLinux) often carry the fix under the old version number, so those are marked for review instead. The check makes no outside requests, so the list is only as current as the plugin; it says when the list is more than 90 days old.
+Being on a supported PHP branch is not the same as being patched. Site Inspector has a built-in list of recent PHP security releases (reviewed November 23, 2026, covering the October PHP2Shell fixes and November 19 security releases). If the site's PHP version is older than the release with the fix, the check says so, with the date and the advisory numbers. Plain PHP builds are marked as a potential weakness. Operating-system packages (Debian, Ubuntu, Red Hat, CloudLinux) often carry the fix under the old version number, so those are marked for review instead. The latest applicable fixed release is selected first. PHP 8.6 support dates are included; unknown branches are marked Unable to verify. Impact depends on configuration and extensions. The check makes no outside requests, so the list is only as current as the plugin; it says when the list is more than 90 days old.
 
 = What format do the email subjects use? =
 
@@ -146,9 +148,17 @@ Plugin update discovery and package downloads contact GitHub independently of in
 
 = What happens to my data if I uninstall? =
 
-By default nothing is deleted, so a reinstall picks up where you left off. Any queued monthly email is always cancelled. To remove everything, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
+By default nothing is deleted, so a reinstall picks up where you left off. Any queued monthly email is always cancelled. Opt-in cleanup also removes the schedule lock and database-backed email throttle transients; any external-cache throttle entries expire after one minute. To remove saved plugin data, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.4.3 =
+* Keep late admin notices recoverable, and leave notices visible if the notice-panel script cannot initialize.
+* Update the bundled Plugin Update Checker to unmodified upstream 6.0, including Parsedown 1.8.0; retain remote markup sanitization and release-only ZIP checks.
+* Refresh the built-in PHP security-fix list through November 19, 2026, add PHP 8.6 support dates, and mark unknown branches as unverified.
+* Remove database-backed email throttle transients and the schedule lock during opt-in uninstall cleanup.
+* Build a compact install ZIP with explicit 0644 permissions and no development docs, workflow files or project video; preserve the last good ZIP/checksum pair if rebuilding fails.
+* Correct current-release and dependency documentation. Existing settings and saved reports are retained on upgrade.
 
 = 2.4.2 =
 * Notices from other plugins and WordPress are tucked away on the Site Inspector and Site Health Controls screens, with a link to show them. Site Inspector's own messages stay visible.

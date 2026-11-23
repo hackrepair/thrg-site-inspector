@@ -7,8 +7,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
-use YahnisElsts\PluginUpdateChecker\v5p7\Vcs\Api;
+use YahnisElsts\PluginUpdateChecker\v6\PucFactory;
+use YahnisElsts\PluginUpdateChecker\v6p0\Vcs\Api;
 
 /**
  * Points WordPress at GitHub releases for this plugin's updates.
@@ -104,8 +104,7 @@ final class THRG_SI_Updater {
 			1
 		);
 
-		// The bundled Markdown renderer (Parsedown 1.6.0, unmodified upstream) predates its
-		// XSS and class-injection fixes. Clean what it produces before WordPress shows it.
+		// Keep remote release/readme markup restricted even with the updated renderer.
 		$this->checker->addFilter( 'request_info_result', array( __CLASS__, 'clean_info' ), 20, 2 );
 	}
 

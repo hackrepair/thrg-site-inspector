@@ -2,7 +2,7 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.4.1**, tag `v2.4.1`, November 3, 2026. **2.4.2** is built locally, not released: other plugins' admin notices are tucked away on the plugin screens behind a "Show" bar (`admin_body_class` marker `thrg-si-screen`, CSS in `assets/inspector.css`, `assets/js/thrg-si-notices.js`; own notices carry `thrg-si-own`). See `releases/v2.4.2.md`.
+Version **2.4.3**, intended tag `v2.4.3`, November 23, 2026. See `releases/v2.4.3.md` and `docs/release-verification-2.4.3.md` for final validation/publication evidence. Published 2.4.2 is the upgrade baseline; earlier statements below describe historical work.
 
 ## Scope
 
@@ -43,14 +43,14 @@ The local `phpcs.xml.dist` checks shipped first-party PHP against WordPress Extr
 
 ## Third-party code
 
-- `plugin-update-checker/` is [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") 5.7 by Jānis Elsts (MIT license, `plugin-update-checker/license.txt`). It is the unmodified upstream copy, kept whole on purpose so it can be replaced by a straight folder swap when a new version is released. Do not edit or trim it. Check the upstream releases page whenever this plugin is released.
+- `plugin-update-checker/` is [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") 6.0 by Jānis Elsts (MIT license, `plugin-update-checker/license.txt`). It is the unmodified upstream copy, kept whole on purpose so it can be replaced by a straight folder swap when a new version is released. Do not edit or trim it. Check the upstream releases page whenever this plugin is released.
 
 ## Limits and open work
 
 - No public-exposure verification, advisory feed, custom signup flow inspection, malware scan or server enforcement test. Permission bits do not establish ACLs or exploitability; HTTPS settings do not establish redirects or certificate validity.
 - Multisite behavior and cross-version compatibility need dedicated tests.
 - Inspector strings are not yet translatable.
-- `PHP_ADVISORIES` and `PATCH_LIST_AS_OF` are maintained by hand. When PHP ships a security release, add an entry (label, CVEs, release date, fixed version per branch, oldest affected branch), set `PATCH_LIST_AS_OF` to the review date, and add tests in `tests/inspector.php`. A weekly scheduled task prepares such entries on a `php-patch-list-YYYY-MM-DD` branch for approval; it never merges or releases. CVE-2026-115560 (disclosed October 23, 2026) is pending published fixed versions.
+- `PHP_ADVISORIES` and `PATCH_LIST_AS_OF` are maintained by hand. When PHP ships a security release, add an entry (label, CVEs, release date, fixed version per branch, oldest affected branch), set `PATCH_LIST_AS_OF` to the review date, and add tests in `tests/inspector.php`. A weekly scheduled task prepares such entries on a `php-patch-list-YYYY-MM-DD` branch for approval; it never merges or releases. The November 19, 2026 security releases are now included, with representative advisory IDs and configuration/backport qualifications. Keep entries oldest first; evaluation checks them newest first.
 - `PHP_SUPPORT` dates are maintained by hand. Add new PHP branches as they ship, and expect each branch to move from Review to Potential weakness on its end date (8.2 on January 1, 2027).
 
 ## 2.2.4 email format update — October 18, 2026
@@ -159,3 +159,16 @@ Two features, built and tested on the Zendogs sandbox before entering the repo.
 
 **Evidence.** All 10 test files pass on PHP 8.3 and 7.4.33 (new `tests/schedule.php`; new checks in `tests/inspector.php`, `tests/uninstall.php`, `tests/smoke.php`). Shared PHPCS: 0 errors, 0 warnings. On Zendogs (WordPress 7.1.3, PHP 8.2.33), through the real `wp-cron.php` with nobody logged in and Mailpit capture: all-admins run sent 6 emails, saved the report as "Monthly email" and queued the next run; chosen recipients with one deleted ID sent exactly 1; deactivation cleared the queue and reactivation restored it; the subject reads `Monthly Security Check`. The PHP finding showed Potential weakness for upstream 8.2.33, Review with a Debian-style ini path, and no patch note at 8.2.35. The share-card line and panel order were checked by rendering the screen as an administrator in each state.
 
+
+## 2.4.3 review fixes and release process — November 23, 2026
+
+The full 2.4.2 security review confirmed no exploitable vulnerability in its stated scope. The follow-up identified notice recovery and failed-build correctness defects plus dependency, data-freshness and documentation work. The reports and raw evidence remain beside the repository under `review-work/`; this record summarizes the disposition without claiming production clearance.
+
+- Notices collapse only after the plugin installs a working Show control. A debounced observer is confined to the admin content and ignores the panel's own mutations. Missing JavaScript, observer support or page anchor leaves notices visible. Uses Baseline Widely available DOM APIs; the fallback is ordinary WordPress notices.
+- The whole upstream 6.0 updater folder replaces 5.7; the versioned imports now use v6/v6p0. Parsedown declares 1.8.0. Keep `clean_info()` and the latest-release-only, required matching ZIP checks. Dependency inventory reads the new declarations. Verify coexistence with older updater versions in sibling plugins.
+- PHP patch data is reviewed November 23 and includes November 19 security releases. Evaluate newest applicable entries first so a host behind multiple advisories is directed to the latest listed fix. PHP 8.6 has a support-end date; unknown branches are unverified. Host backports and configuration-dependent exposure remain qualified.
+- Opt-in uninstall cleanup removes the schedule-lock transient and database-backed per-sender mail throttles. Persistent external-cache mail throttles expire after one minute. Saved settings/history remain unchanged on upgrade.
+- The builder checks required input, stages and validates the complete ZIP, writes explicit 0644 file modes, and replaces the ZIP/checksum pair with rollback on replacement errors. Development directories, media and review artifacts are excluded. Older release ZIPs are preserved. Regression tests cover missing/excluded required input and a failed checksum replacement.
+- Run shared PHPCS/PHPCompatibilityWP, PHP regression/lint, notice DOM tests, build failure tests, final-package Plugin Check, and a full second pass of the candidate diff. Record the exact reviewed commit and ZIP checksum. Consider the separate Codex Security review reminder; it is not run automatically.
+
+Browser and WordPress release validation, package checksum, review coverage and publication status are recorded in `docs/release-verification-2.4.3.md`. The release flow remains GitHub-only; no WordPress.org SVN submission is involved.

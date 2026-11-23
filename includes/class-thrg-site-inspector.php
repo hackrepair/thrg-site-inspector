@@ -33,13 +33,14 @@ final class THRG_Site_Inspector {
         '8.3' => '2027-12-31',
         '8.4' => '2028-12-31',
         '8.5' => '2029-12-31',
+        '8.6' => '2030-12-31',
     );
 
     /**
      * Fixed releases for serious PHP flaws, newest last. Maintained by hand, like PHP_SUPPORT, so the
      * inspection stays free of outbound requests. A site older than the fixed release for its branch is
      * flagged; branches without a fixed release (older, end-of-life ones) only get a note.
-     * Sources: php.net release announcement of 2026-10-21 and the CERT-EU advisory 2026-018.
+     * Sources: php.net/archive/2026.php and php.net/ChangeLog-8.php (October 21 and November 19 releases).
      */
     const PHP_ADVISORIES = array(
         array(
@@ -55,10 +56,24 @@ final class THRG_Site_Inspector {
             ),
             'oldest'   => '5.4',
         ),
+        array(
+            'label'    => 'November 2026 PHP security releases',
+            'cves'     => 'CVE-2026-126714 and CVE-2026-115560 (among other fixes)',
+            'released' => '2026-11-19',
+            'summary'  => 'security issues in PHP components, some allowing code execution under particular configurations',
+            'fixed'    => array(
+                '8.2' => '8.2.36',
+                '8.3' => '8.3.37',
+                '8.4' => '8.4.28',
+                '8.5' => '8.5.13',
+                '8.6' => '8.6.0',
+            ),
+            'oldest'   => '5.4',
+        ),
     );
 
     /** When PHP_ADVISORIES was last reviewed. */
-    const PATCH_LIST_AS_OF = '2026-10-26';
+    const PATCH_LIST_AS_OF = '2026-11-23';
 
     /** After this many days the built-in patch list is described as possibly out of date. */
     const PATCH_LIST_STALE_DAYS = 90;
@@ -223,7 +238,7 @@ final class THRG_Site_Inspector {
             'config_exists'     => true,
             'config_writable'   => false,
             'config_mode'       => 0440,
-            'php_version'       => '8.3.36',
+            'php_version'       => '8.3.37',
             'php_extra'         => '',
             'php_ini'           => '',
             'weak_salts'        => 0,
@@ -508,7 +523,7 @@ final class THRG_Site_Inspector {
             return array( 'Potential weakness', null );
         }
         if ( ! isset( self::PHP_SUPPORT[ $branch ] ) ) {
-            return array( 'No issue observed', null );
+            return array( 'Unable to verify', null );
         }
         $end = strtotime( self::PHP_SUPPORT[ $branch ] . ' 23:59:59 UTC' );
         if ( $now > $end ) {
@@ -552,7 +567,7 @@ final class THRG_Site_Inspector {
         $prerelease    = (bool) preg_match( '/^[-~+]?(?:dev|alpha|beta|rc)/i', $suffix );
         $out['distro'] = ( '' !== $suffix && ! $prerelease ) || (bool) preg_match( '#^/etc/php/\d|^/etc/php(?:-fpm)?\.|^/opt/alt/php#', (string) $ini );
 
-        foreach ( self::PHP_ADVISORIES as $advisory ) {
+        foreach ( array_reverse( self::PHP_ADVISORIES ) as $advisory ) {
             if ( $now < strtotime( $advisory['released'] . ' 00:00:00 UTC' ) ) {
                 continue;
             }
@@ -576,7 +591,7 @@ final class THRG_Site_Inspector {
         $patch                = self::php_patch( $o['php_version'], $o['php_extra'], $o['php_ini'], $o['now'] );
         $why                  = 'Potential weakness' === $status
             ? 'This PHP version no longer receives security fixes.'
-            : ( 'Review' === $status ? 'This PHP version stops receiving security fixes soon.' : 'This PHP version still receives security fixes.' );
+            : ( 'Unable to verify' === $status ? 'This PHP branch is not in the support table bundled with this release.' : ( 'Review' === $status ? 'This PHP version stops receiving security fixes soon.' : 'This PHP version still receives security fixes.' ) );
         $evidence             = array( 'PHP ' . $o['php_version'] . ( $end ? '; security support ' . ( 'Potential weakness' === $status ? 'ended ' : 'ends ' ) . $end : '' ) . '.' );
         $limits               = 'Based on php.net support dates built into this release. Some hosts and distributions backport fixes to older versions.';
         $next                 = 'No issue observed' === $status ? '' : 'Test the site on a supported PHP version (8.3 or newer), then switch in cPanel > Select PHP Version or MultiPHP Manager.';

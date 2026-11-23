@@ -21,17 +21,17 @@ The Dependency inventory workflow submits snapshots on pushes to main or a manua
 ## Coverage
 
 - Where bundled, Plugin Update Checker is identified from its source header and Parsedown from its declared version. Both use verified Composer package identities so GitHub can match advisory records. These version declarations can identify an upstream baseline even if the bundled copy is modified; advisory findings require source review rather than automatic dismissal.
-- The modified, unversioned `PucReadmeParser.php`, where present, is tracked as a manual-review item with its SHA-256. No package identity or version is invented for it.
+- The unversioned `PucReadmeParser.php`, where present, is tracked as a manual-review item with its SHA-256. No package identity or version is invented for it.
 - External GitHub Actions refs are inventoried from committed workflow YAML. Existing floating version tags are declared refs, not immutable artifact identities. The new inventory workflow itself pins its checkout action.
 - Plugin Archiver does not bundle this updater. Its inventory covers its workflow dependencies; this does not imply zero security risk in its PHP code.
 
-## Parsedown advisories (assessed October 26, 2026)
+## Current bundled dependencies — 2.4.3
 
-Dependabot reports two open alerts on the bundled Parsedown 1.6.0: GHSA-qgpv-86r3-87fh (CVE-2018-1000162, XSS, fixed in 1.7.0) and GHSA-62m3-fc7f-jpp8 (CVE-2019-10905, class-name injection, fixed in 1.7.2). Plugin Update Checker 5.7, the newest upstream release, still bundles 1.6.0, so there is no newer upstream copy to swap in, and the vendored folder stays unmodified by policy.
+Plugin Update Checker **6.0** and its Parsedown **1.8.0** renderer are the complete, unmodified [upstream v6.0 distribution](https://github.com/YahnisElsts/plugin-update-checker/releases/tag/v6.0), checked byte for byte during release validation. The unversioned readme parser remains a manually tracked component with a SHA-256; its lack of a standalone package version is not evidence that it was locally modified.
 
-Exposure: Parsedown only renders Markdown from this plugin's own GitHub release notes or readme, and shows the result in the update details dialog to administrators. Nothing a site visitor, report or inspection supplies reaches it. Abusing it would need write access to the plugin's GitHub releases, which would also let an attacker replace the update package, so the advisories add little beyond that existing trust.
+The earlier Parsedown 1.6.0 alerts, GHSA-qgpv-86r3-87fh and GHSA-62m3-fc7f-jpp8, were dismissed as tolerable risk before this release. The old October evidence below other records is historical. Version 1.8.0 is outside those advisories' affected version ranges; a dismissed alert by itself does not prove a code fix or current dependency coverage. Re-run the inventory verifier after the new main-branch snapshot is indexed.
 
-Mitigation (source, after 2.3.1): `THRG_SI_Updater::clean_info()` runs on the update checker's `request_info_result` filter and passes every text section through `wp_kses` with WordPress's post allowlist minus `class` attributes. Checked on WordPress 6.9.4 / PHP 7.4.33 with hostile Markdown: `<script>`, event-handler attributes and `javascript:` links are removed and class attributes dropped, while bold, links and code survive. `tests/updater-sanitize.php` covers the filter. The alerts remain open because GitHub matches on the declared library version; dismiss them as "vulnerable code is not used" only after this ships, or when upstream bundles a fixed Parsedown (then replace the whole folder).
+Only publisher-provided GitHub release/readme Markdown enters the updater parser. First-party `THRG_SI_Updater::clean_info()` still sanitizes every rendered text section with WordPress's post allowlist minus class attributes. The dependency update does not remove that boundary. A sibling plugin can load its own older global Parsedown class first; that mixed-plugin case was tested with 5.7/1.6.0 as well as the new 6.0/1.8.0 combination, and sanitization remained effective. The inventory describes bundled files, not a guarantee about which global class another plugin loads. New vulnerabilities and upstream updates still require review; this is not a complete dependency/security audit.
 
 ## Limits and maintenance
 

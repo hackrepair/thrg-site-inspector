@@ -1,7 +1,4 @@
-/**
- * Other plugins' admin notices are tucked away on this plugin's screens; this
- * adds a small bar that says how many are hidden and lets the user show them.
- */
+/** Keep other notices recoverable, including notices inserted after page load. */
 ( function () {
     'use strict';
 
@@ -9,60 +6,72 @@
     var body = document.body;
     var own = ':not(.thrg-si-own):not(.settings-error)';
     var selector = '#wpbody-content > .notice' + own + ', #wpbody-content > .update-nag, .wrap.thrg-inspector > .notice' + own + ', .wrap.thrg-inspector > .updated' + own + ', .wrap.thrg-inspector > .error' + own;
+    var readyClass = 'thrg-si-notices-ready';
     var shownClass = 'thrg-si-notices-shown';
-    var bar = null;
-    var message = null;
-    var toggle = null;
 
-    if ( ! body || ! body.classList.contains( 'thrg-si-screen' ) ) {
+    if ( ! body || ! body.classList.contains( 'thrg-si-screen' ) || ! window.MutationObserver ) {
         return;
     }
 
-    function hiddenCount() {
-        var count = 0;
-        Array.prototype.forEach.call( document.querySelectorAll( selector ), function ( node ) {
-            if ( node.hasAttribute( 'hidden' ) || node.classList.contains( 'hidden' ) || ( node.style && 'none' === node.style.display ) ) {
-                return;
-            }
-            count++;
-        } );
-        return count;
-    }
-
-    function refresh() {
-        var count = hiddenCount();
-        var shown = body.classList.contains( shownClass );
-        if ( ! bar ) {
-            if ( 0 === count ) {
-                return;
-            }
-            var anchor = document.querySelector( '.wrap.thrg-inspector > .wp-header-end' );
-            if ( ! anchor ) {
-                return;
-            }
-            bar = document.createElement( 'div' );
-            bar.className = 'thrg-si-notice-bar';
-            message = document.createElement( 'span' );
-            toggle = document.createElement( 'button' );
-            toggle.type = 'button';
-            toggle.className = 'button-link';
-            toggle.addEventListener( 'click', function () {
-                body.classList.toggle( shownClass );
-                refresh();
-            } );
-            bar.appendChild( message );
-            bar.appendChild( toggle );
-            anchor.parentNode.insertBefore( bar, anchor.nextSibling );
+    function initialize() {
+        var anchor = document.querySelector( '.wrap.thrg-inspector > .wp-header-end' );
+        var region = document.getElementById( 'wpbody-content' );
+        if ( ! anchor || ! region ) {
+            return;
         }
-        bar.hidden = 0 === count;
-        message.textContent = ( 1 === count ? ( cfg.noticesOne || '' ) : ( cfg.noticesMany || '%d' ).replace( '%d', count ) );
-        toggle.textContent = shown ? ( cfg.hide || 'Hide' ) : ( cfg.show || 'Show' );
-        toggle.setAttribute( 'aria-expanded', shown ? 'true' : 'false' );
+        var bar = document.createElement( 'div' );
+        var message = document.createElement( 'span' );
+        var toggle = document.createElement( 'button' );
+        var pending = false;
+        bar.className = 'thrg-si-notice-bar';
+        bar.hidden = true;
+        toggle.type = 'button';
+        toggle.className = 'button-link';
+        bar.appendChild( message );
+        bar.appendChild( toggle );
+
+        function refresh() {
+            pending = false;
+            try {
+                var count = 0;
+                Array.prototype.forEach.call( document.querySelectorAll( selector ), function ( node ) {
+                    if ( ! node.hasAttribute( 'hidden' ) && ! node.classList.contains( 'hidden' ) && 'none' !== node.style.display ) {
+                        count++;
+                    }
+                } );
+                var shown = body.classList.contains( shownClass );
+                message.textContent = 1 === count ? ( cfg.noticesOne || '1 notice is hidden on this page.' ) : ( cfg.noticesMany || '%d notices are hidden on this page.' ).replace( '%d', count );
+                toggle.textContent = shown ? ( cfg.hide || 'Hide' ) : ( cfg.show || 'Show' );
+                toggle.setAttribute( 'aria-expanded', shown ? 'true' : 'false' );
+                bar.hidden = 0 === count;
+                body.classList.toggle( readyClass, count > 0 );
+            } catch ( error ) {
+                body.classList.remove( readyClass );
+                bar.hidden = true;
+            }
+        }
+        toggle.addEventListener( 'click', function () {
+            body.classList.toggle( shownClass );
+            refresh();
+        } );
+        anchor.parentNode.insertBefore( bar, anchor.nextSibling );
+        var observer = new window.MutationObserver( function ( mutations ) {
+            var relevant = mutations.some( function ( mutation ) {
+                return mutation.target !== bar && ! bar.contains( mutation.target );
+            } );
+            if ( relevant && ! pending ) {
+                pending = true;
+                window.setTimeout( refresh, 0 );
+            }
+        } );
+        // Observe only the admin content; ignore the control's own updates above.
+        observer.observe( region, { childList: true, subtree: true, attributes: true, attributeFilter: [ 'class', 'style', 'hidden' ] } );
+        refresh();
     }
 
-    document.addEventListener( 'DOMContentLoaded', function () {
-        refresh();
-        window.setTimeout( refresh, 1500 );
-    } );
-    window.addEventListener( 'load', refresh );
+    if ( 'loading' === document.readyState ) {
+        document.addEventListener( 'DOMContentLoaded', initialize );
+    } else {
+        initialize();
+    }
 }() );

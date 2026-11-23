@@ -207,12 +207,12 @@ a.si-sum:hover { filter: brightness(.96); box-shadow: 0 0 0 2px currentColor ins
 .thrg-inspector .si-schedule-link { font-size: 13px; margin: 8px 0 12px; color: var(--ink-soft); }
 .si-schedule-link a { font-weight: 600; }
 
-/* Tuck other plugins' admin notices away on this plugin's screens (shown again with the Show link). Needs JavaScript so the notices stay visible without it. */
-body.js.thrg-si-screen:not(.thrg-si-notices-shown) #wpbody-content > .notice:not(.thrg-si-own):not(.settings-error),
-body.js.thrg-si-screen:not(.thrg-si-notices-shown) #wpbody-content > .update-nag,
-body.js.thrg-si-screen:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .notice:not(.thrg-si-own):not(.settings-error),
-body.js.thrg-si-screen:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .updated:not(.thrg-si-own):not(.settings-error),
-body.js.thrg-si-screen:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .error:not(.thrg-si-own):not(.settings-error) {
+/* Collapse only after this plugin has installed a working Show control. */
+body.thrg-si-screen.thrg-si-notices-ready:not(.thrg-si-notices-shown) #wpbody-content > .notice:not(.thrg-si-own):not(.settings-error),
+body.thrg-si-screen.thrg-si-notices-ready:not(.thrg-si-notices-shown) #wpbody-content > .update-nag,
+body.thrg-si-screen.thrg-si-notices-ready:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .notice:not(.thrg-si-own):not(.settings-error),
+body.thrg-si-screen.thrg-si-notices-ready:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .updated:not(.thrg-si-own):not(.settings-error),
+body.thrg-si-screen.thrg-si-notices-ready:not(.thrg-si-notices-shown) .wrap.thrg-inspector > .error:not(.thrg-si-own):not(.settings-error) {
 	display: none !important;
 }
 

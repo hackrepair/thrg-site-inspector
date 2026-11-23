@@ -1,0 +1,17 @@
+# Runtime dependencies are kept complete by the builder.
+/.git
+/.github
+/.review
+/docs
+/tests
+/scripts
+/dist
+/releases
+/other plugins
+/node_modules
+/README.md
+/PROJECT.md
+/SECURITY.md
+/phpcs.xml.dist
+__pycache__
+*.pyc
