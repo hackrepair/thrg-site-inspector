@@ -9,3 +9,5 @@ Choose **Email immediately** to receive a message when WordPress grants the admi
 The daily check uses WP-Cron, so timing depends on site traffic or the host’s scheduler. An addition removed between checks may leave no daily entry. Immediate alerts depend on WordPress role hooks. The inventory covers standard plugins and themes visible to WordPress. This feature does not inspect modified file contents.
 
 Inventory and recent changes stay in site-local WordPress options. Disabling monitoring clears both and cancels the daily check. Enabling it again starts fresh. Monthly inspection emails have their own settings and schedule.
+
+In 2.5.1, Last monitoring email shows the latest attempt’s time, alert type, accepted count and failed count. The site stores one record without recipient addresses or message contents. Acceptance does not confirm delivery. Turning monitoring off clears the record.

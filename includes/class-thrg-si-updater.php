@@ -33,7 +33,7 @@ final class THRG_SI_Updater {
 	const ASSET_PATTERN  = '/^thrg-site-inspector\.[0-9]+(?:\.[0-9]+){2}\.zip$/';
 
 	/**
-	 * @var \YahnisElsts\PluginUpdateChecker\v5\Vcs\Api|null
+	 * @var \YahnisElsts\PluginUpdateChecker\v6p0\Vcs\PluginUpdateChecker|null
 	 */
 	private $checker = null;
 
@@ -145,7 +145,7 @@ final class THRG_SI_Updater {
 	/**
 	 * Expose the underlying checker instance, mostly for debugging.
 	 *
-	 * @return \YahnisElsts\PluginUpdateChecker\v5\Vcs\Api|null
+	 * @return \YahnisElsts\PluginUpdateChecker\v6p0\Vcs\PluginUpdateChecker|null
 	 */
 	public function checker() {
 		return $this->checker;

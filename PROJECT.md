@@ -2,7 +2,9 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.5.0**, tag `v2.5.0`, published November 23, 2026, with optional site change monitoring. See `releases/v2.5.0.md` and the [feature guide](docs/site-change-monitoring.md).
+Current release: **2.5.1**, tag `v2.5.1`, published November 23, 2026. See `releases/v2.5.1.md`.
+
+Previous release: **2.5.0**, tag `v2.5.0`, published November 23, 2026, with optional site change monitoring. See `releases/v2.5.0.md` and the [feature guide](docs/site-change-monitoring.md).
 
 Previous release: **2.4.3**, tag `v2.4.3`, published November 23, 2026. Release commit: `105060981cd5cecbdcf49bad0fff96184d539126`. See `releases/v2.4.3.md` and `docs/release-verification-2.4.3.md` for validation/publication evidence. Published 2.4.2 is the verified upgrade baseline; earlier statements below describe historical work.
 

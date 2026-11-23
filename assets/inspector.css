@@ -155,7 +155,7 @@ a.si-sum:hover { filter: brightness(.96); box-shadow: 0 0 0 2px currentColor ins
 	.si-checklist { columns: 1; }
 	.si-coverage { grid-template-columns: 1fr; gap: 10px; }
 	.si-meta { text-align: left; }
-	.si-head h1 { font-size: 24px; }
+	.thrg-inspector .si-head h1 { font-size: 24px; }
 	.thrg-inspector .si-table thead { display: none; }
 	.thrg-inspector .si-table, .thrg-inspector .si-table tbody, .thrg-inspector .si-table tr, .thrg-inspector .si-table td { display: block; width: 100%; }
 	.thrg-inspector .si-table tr { border-bottom: 1px solid var(--line); padding: 6px 0; }
@@ -173,7 +173,7 @@ a.si-sum:hover { filter: brightness(.96); box-shadow: 0 0 0 2px currentColor ins
 	.si-finding, .si-passed details { break-inside: avoid; }
 	.si-table-wrap { max-height: none; overflow: visible; }
 	.si-full { display: none; }
-	.si-actions, .si-share, .si-sharelink, .si-create, .si-history { display: none; }
+	.si-actions, .si-share, .si-sharelink, .si-create, .si-history, #si-schedule, #si-monitor { display: none; }
 	.si-masked { display: inline; }
 }
 

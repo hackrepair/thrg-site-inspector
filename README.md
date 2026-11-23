@@ -8,7 +8,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Version **2.5.0**. See [release notes](releases/v2.5.0.md).
+Version **2.5.1**. See [release notes](releases/v2.5.1.md).
 
 <p align="center">
   <strong>▶ Watch Site Inspector in 75 seconds</strong><br>
@@ -111,7 +111,11 @@ Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: Word
 
 ## Changelog
 
-### 2.5.0 (preview)
+### 2.5.1
+
+Monitoring now shows the time, alert type, and accepted/failed counts for the latest email attempt. Acceptance does not confirm delivery. Turning monitoring off clears this status. Copy feedback handles failed clipboard attempts, printed reports omit the email and monitoring settings panels, and mobile headings use the intended size. Removed the unused legacy logo and corrected updater type comments.
+
+### 2.5.0
 
 Added optional daily monitoring for new administrators, plugins and themes, with immediate administrator alerts and a daily email when additions are found.
 

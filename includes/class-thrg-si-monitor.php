@@ -165,6 +165,7 @@ final class THRG_SI_Monitor {
         delete_option( 'thrg_si_monitor' );
         wp_clear_scheduled_hook( self::HOOK );
         delete_option( 'thrg_si_inventory' );
+        delete_option( 'thrg_si_monitor_mail' );
         self::back( 'monitor-off' );
     }
 
@@ -237,9 +238,15 @@ final class THRG_SI_Monitor {
                 }
             }
         }
-        return array(
-            'sent'   => $sent,
-            'failed' => $failed,
+        update_option(
+            'thrg_si_monitor_mail',
+            array(
+                'time'   => time(),
+                'title'  => $title,
+                'sent'   => $sent,
+                'failed' => $failed,
+            ),
+            false
         );
     }
 }

@@ -67,7 +67,7 @@ function wp_mail( $to, $subject, $message ) {
         'subject' => $subject,
         'message' => $message,
     );
-    return true;
+    return $GLOBALS['mail_results'][ $to ] ?? true;
 }
 
 class Fake_Theme {
@@ -243,3 +243,21 @@ check(
     ! isset( $GLOBALS['options']['thrg_si_inventory'] ) && 0 === count( $GLOBALS['mails'] ),
     'daily aborts saving inventory and emailing if monitoring was disabled mid-run'
 );
+
+
+// Latest monitoring email status must reflect the actual transport result.
+$GLOBALS['options']['thrg_si_monitor'] = array( 'users' => array( 1, 2 ), 'immediate' => true );
+foreach ( array(
+    array( array(), 2, 0 ),
+    array( array( 'bob@example.com' => false ), 1, 1 ),
+    array( array( 'alice@example.com' => false, 'bob@example.com' => false ), 0, 2 ),
+) as $case ) {
+    $GLOBALS['mail_results'] = $case[0];
+    THRG_SI_Monitor::grant( 5, 'administrator' );
+    $status = $GLOBALS['options']['thrg_si_monitor_mail'];
+    check( $status['sent'] === $case[1] && $status['failed'] === $case[2] && $status['time'] > 0 && $status['title'] === 'Administrator access granted', 'latest monitoring attempt records accepted and failed counts' );
+}
+$GLOBALS['options']['thrg_si_monitor']['users'] = array( 99 );
+THRG_SI_Monitor::grant( 5, 'administrator' );
+$status = $GLOBALS['options']['thrg_si_monitor_mail'];
+check( 0 === $status['sent'] && 0 === $status['failed'], 'no eligible recipients replaces stale success counts' );

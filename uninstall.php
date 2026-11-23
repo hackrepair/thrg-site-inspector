@@ -32,7 +32,7 @@ if ( ! function_exists( 'thrg_shc_uninstall_site' ) ) {
         foreach ( $mail_keys as $mail_key ) {
             delete_transient( substr( $mail_key, strlen( '_transient_' ) ) );
         }
-        foreach ( array( 'thrg_shc_options', 'thrg_si_notice_dismissed', 'thrg_si_history', 'thrg_si_history_paused', 'thrg_si_schedule', 'thrg_si_schedule_log', 'thrg_si_monitor', 'thrg_si_inventory' ) as $name ) {
+        foreach ( array( 'thrg_shc_options', 'thrg_si_notice_dismissed', 'thrg_si_history', 'thrg_si_history_paused', 'thrg_si_schedule', 'thrg_si_schedule_log', 'thrg_si_monitor', 'thrg_si_inventory', 'thrg_si_monitor_mail' ) as $name ) {
             delete_option( $name );
         }
         return true;

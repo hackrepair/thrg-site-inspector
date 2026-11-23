@@ -101,7 +101,7 @@ $thrg_si_actions = static function ( $actions ) {
         'schedule-saved' => $schedule['enabled'] ? 'Monthly email setting has been enabled.' : 'Monthly email setting has been disabled (and will not be sent).',
         'schedule-none'  => 'None of the chosen administrators can be emailed, so the monthly email is off. Choose at least one administrator with a valid email address.',
         'monitor-saved'  => 'Site change monitoring settings saved.',
-        'monitor-off'    => 'Site change monitoring turned off. Its inventory and recent changes have been cleared.',
+        'monitor-off'    => 'Site change monitoring turned off. Its inventory, recent changes, and email status have been cleared.',
         'monitor-none'   => 'Choose at least one administrator with a valid email address to receive monitoring emails.',
     );
     $thrg_si_warn    = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait', 'schedule-none', 'monitor-none' );
@@ -330,11 +330,18 @@ $thrg_si_actions = static function ( $actions ) {
                 (function () {
                     var box = document.getElementById('si-report-text'), status = document.getElementById('si-share-status');
                     function say(t) { status.textContent = t; setTimeout(function () { status.textContent = ''; }, 3000); }
+                    function copyFallback() {
+                        try {
+                            say(document.execCommand('copy') ? 'Copied to clipboard' : 'Press Ctrl+C or Cmd+C to copy');
+                        } catch (error) {
+                            say('Press Ctrl+C or Cmd+C to copy');
+                        }
+                    }
                     document.getElementById('si-copy').addEventListener('click', function () {
                         box.select();
                         var done = function () { say('Copied to clipboard'); };
-                        if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(box.value).then(done, function () { document.execCommand('copy'); done(); }); }
-                        else { try { document.execCommand('copy'); done(); } catch (e) { say('Press Ctrl+C or Cmd+C to copy'); } }
+                        if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(box.value).then(done, copyFallback); }
+                        else { copyFallback(); }
                     });
                     document.getElementById('si-download').addEventListener('click', function () {
                         var a = document.createElement('a'), url = URL.createObjectURL(new Blob([box.value], { type: 'text/plain' }));

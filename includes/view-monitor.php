@@ -7,6 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 $thrg_si_monitor        = THRG_SI_Monitor::normalize_settings( get_option( 'thrg_si_monitor' ) );
+$thrg_si_mail           = get_option( 'thrg_si_monitor_mail', array() );
 $thrg_si_inventory      = get_option( 'thrg_si_inventory', array() );
 $thrg_si_admin_ids      = array_map( 'intval', array_column( $admins, 'id' ) );
 $thrg_si_active_monitor = $thrg_si_monitor ? array_intersect( $thrg_si_monitor['users'], $thrg_si_admin_ids ) : array();
@@ -39,9 +40,17 @@ $thrg_si_active_monitor = $thrg_si_monitor ? array_intersect( $thrg_si_monitor['
             ?>
         <?php endif; ?>
         </fieldset>
-        <p>Turning monitoring off clears its inventory and recent changes.</p>
+        <p>Turning monitoring off clears its inventory, recent changes, and email status.</p>
         <button class="button button-primary" type="submit">Save monitoring settings</button>
     </form>
+    <?php if ( $thrg_si_monitor && is_array( $thrg_si_mail ) && isset( $thrg_si_mail['time'], $thrg_si_mail['title'], $thrg_si_mail['sent'], $thrg_si_mail['failed'] ) ) : ?>
+        <h3>Last monitoring email</h3>
+        <p><?php echo esc_html( $thrg_si_mail['title'] . ' — ' . wp_date( $thrg_si_fmt, (int) $thrg_si_mail['time'] ) ); ?></p>
+        <p><?php echo esc_html( THRG_SI_Email::feedback( (int) $thrg_si_mail['sent'], (int) $thrg_si_mail['failed'] ) ); ?></p>
+        <?php if ( 0 === (int) $thrg_si_mail['sent'] && 0 === (int) $thrg_si_mail['failed'] ) : ?>
+            <p>No selected administrator was eligible to receive this alert. Review the recipients above.</p>
+        <?php endif; ?>
+    <?php endif; ?>
     <?php if ( $thrg_si_monitor && is_array( $thrg_si_inventory ) && isset( $thrg_si_inventory['time'] ) ) : ?>
         <h3>Recent additions</h3>
         <p>Last inventory: <?php echo esc_html( wp_date( $thrg_si_fmt, (int) $thrg_si_inventory['time'] ) ); ?>.<?php echo empty( $thrg_si_inventory['log'] ) ? ' No additions recorded since monitoring began.' : ''; ?></p>

@@ -16,7 +16,7 @@ $GLOBALS['wpdb'] = new Review_DB();
 function delete_site_transient( $k ) { $GLOBALS['site_deleted'][] = 'transient:' . $k; return true; }
 function wp_clear_scheduled_hook( $h ) { $GLOBALS['cleared'][] = $h; return 1; }
 function check( $c, $n ) { if ( ! $c ) { fwrite( STDERR, "FAIL $n\n" ); exit( 1 ); } echo "PASS $n\n"; }
-$all = array( 'thrg_shc_options' => array( 'delete_data' => 0 ), 'thrg_si_notice_dismissed' => 1, 'thrg_si_history' => array( 1 ), 'thrg_si_history_paused' => 1, 'thrg_si_schedule' => array( 'enabled' => 1 ), 'thrg_si_schedule_log' => array( 'result' => 'sent' ), 'thrg_si_monitor' => array( 'users' => array( 1 ) ), 'thrg_si_inventory' => array( 'time' => 1 ), 'other' => 1 );
+$all = array( 'thrg_shc_options' => array( 'delete_data' => 0 ), 'thrg_si_notice_dismissed' => 1, 'thrg_si_history' => array( 1 ), 'thrg_si_history_paused' => 1, 'thrg_si_schedule' => array( 'enabled' => 1 ), 'thrg_si_schedule_log' => array( 'result' => 'sent' ), 'thrg_si_monitor' => array( 'users' => array( 1 ) ), 'thrg_si_inventory' => array( 'time' => 1 ), 'thrg_si_monitor_mail' => array( 'sent' => 1 ), 'other' => 1 );
 $GLOBALS['opts'] = $all;
 $GLOBALS['site_deleted'] = array();
 include __DIR__ . '/../uninstall.php';
