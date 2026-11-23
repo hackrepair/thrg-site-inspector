@@ -2,7 +2,9 @@
 
 Developer notes for contributors. For what the plugin does, see [README.md](README.md "What the plugin does and how to install it").
 
-Current release: **2.4.3**, tag `v2.4.3`, published November 23, 2026. Release commit: `105060981cd5cecbdcf49bad0fff96184d539126`. See `releases/v2.4.3.md` and `docs/release-verification-2.4.3.md` for validation/publication evidence. Published 2.4.2 is the verified upgrade baseline; earlier statements below describe historical work.
+Current release: **2.5.0**, tag `v2.5.0`, published November 23, 2026, with optional site change monitoring. See `releases/v2.5.0.md` and the [feature guide](docs/site-change-monitoring.md).
+
+Previous release: **2.4.3**, tag `v2.4.3`, published November 23, 2026. Release commit: `105060981cd5cecbdcf49bad0fff96184d539126`. See `releases/v2.4.3.md` and `docs/release-verification-2.4.3.md` for validation/publication evidence. Published 2.4.2 is the verified upgrade baseline; earlier statements below describe historical work.
 
 ## Scope
 
@@ -178,3 +180,5 @@ Browser and WordPress release validation, package checksum, review coverage and 
 Published https://github.com/hackrepair/thrg-site-inspector/releases/tag/v2.4.3 with the versioned ZIP and SHA-256 sidecar. Downloaded bytes match the tested ZIP. The existing Zendogs updater discovered the matching release asset; WordPress upgraded 2.4.2 to 2.4.3, kept the plugin active and preserved settings, pause state, monthly schedule and seven saved reports. All 144 installed files match the published ZIP and have mode 0644; stylesheet/script HTTP responses match. The main screen and native View Details were verified in the browser, including version, banner and companion tab. No inspection or email was run on Zendogs. The disposable review lab was removed.
 
 The final candidate second pass reviewed all 16 selected files with zero skipped and no unresolved finding. Forty-seven upstream-library paths were excluded from that selection and checked by byte provenance plus targeted compatibility/sanitizer tests; six Markdown records were checked separately. Dependency inventory and Pages workflows passed; live repository protection/security-policy verifiers passed. The release remains subject to the documented testing limits, not production security clearance.
+
+The [site change monitoring project](docs/site-change-monitoring.md) describes the optional daily inventory and immediate administrator alerts in the Zendogs preview.

@@ -3,7 +3,7 @@
  * Plugin Name:       The Hack Repair Guy's Site Inspector
  * Plugin URI:        https://github.com/hackrepair/thrg-site-inspector
  * Description:       Your friendly WordPress security inspector. Keeps a history of your reports and shows what changed. Includes optional Site Health controls.
- * Version:           2.4.3
+ * Version:           2.5.0
  * Author:            The Hack Repair Guy
  * Author URI:        https://hackrepair.com/
  * Update URI:        https://github.com/hackrepair/thrg-site-inspector
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const THRG_SI_VERSION = '2.4.3';
+const THRG_SI_VERSION = '2.5.0';
 
 /*
  * GitHub release updates. Deliberately NOT gated by is_admin(): WordPress's
@@ -48,6 +48,7 @@ register_deactivation_hook(
     __FILE__,
     static function () {
         wp_clear_scheduled_hook( THRG_SI_Schedule::HOOK );
+        wp_clear_scheduled_hook( THRG_SI_Monitor::HOOK );
     }
 );
 
@@ -445,7 +446,7 @@ function thrg_shc_render_settings_page() {
                         <input type="checkbox" name="<?php echo esc_attr( THRG_SHC_OPTION . '[delete_data]' ); ?>" value="1" <?php checked( ! empty( $options['delete_data'] ) ); ?> />
                         <?php esc_html_e( 'Delete all plugin data from the database when the plugin is deleted', 'thrg-site-inspector' ); ?>
                     </label>
-                    <p class="description"><?php esc_html_e( 'Removes these settings, the saved Site Inspector report history, and the notice dismissal. Leave unchecked to keep everything in case you reinstall. Deactivating the plugin never deletes data.', 'thrg-site-inspector' ); ?></p>
+                    <p class="description"><?php esc_html_e( 'Removes these settings, the saved Site Inspector report history, monthly email settings, change monitoring data, and the notice dismissal. Leave unchecked to keep everything in case you reinstall. Deactivating the plugin never deletes data.', 'thrg-site-inspector' ); ?></p>
                 </div>
             </section>
             <?php submit_button(); ?>

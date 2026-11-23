@@ -19,18 +19,20 @@ if ( ! function_exists( 'thrg_shc_uninstall_site' ) ) {
     function thrg_shc_uninstall_site() {
         // Never leave a monthly email queued for a plugin that is gone, whether or not data is kept.
         wp_clear_scheduled_hook( 'thrg_si_scheduled_report' );
+        wp_clear_scheduled_hook( 'thrg_si_monitor_daily' );
         $options = get_option( 'thrg_shc_options', array() );
         if ( ! is_array( $options ) || empty( $options['delete_data'] ) ) {
             return false;
         }
         delete_transient( 'thrg_si_schedule_lock' );
+        delete_transient( 'thrg_si_monitor_lock' );
         global $wpdb;
         // Per-sender throttle keys are plugin-owned and expire after one minute.
         $mail_keys = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( '_transient_thrg_si_mail_' ) . '%' ) );
         foreach ( $mail_keys as $mail_key ) {
             delete_transient( substr( $mail_key, strlen( '_transient_' ) ) );
         }
-        foreach ( array( 'thrg_shc_options', 'thrg_si_notice_dismissed', 'thrg_si_history', 'thrg_si_history_paused', 'thrg_si_schedule', 'thrg_si_schedule_log' ) as $name ) {
+        foreach ( array( 'thrg_shc_options', 'thrg_si_notice_dismissed', 'thrg_si_history', 'thrg_si_history_paused', 'thrg_si_schedule', 'thrg_si_schedule_log', 'thrg_si_monitor', 'thrg_si_inventory' ) as $name ) {
             delete_option( $name );
         }
         return true;

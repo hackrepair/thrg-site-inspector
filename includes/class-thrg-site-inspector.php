@@ -9,6 +9,7 @@ defined( 'ABSPATH' ) || exit;
 require_once __DIR__ . '/class-thrg-inspection-evidence.php';
 require_once __DIR__ . '/class-thrg-si-history.php';
 require_once __DIR__ . '/class-thrg-si-email.php';
+require_once __DIR__ . '/class-thrg-si-monitor.php';
 require_once __DIR__ . '/class-thrg-si-schedule.php';
 
 final class THRG_Site_Inspector {
@@ -86,6 +87,7 @@ final class THRG_Site_Inspector {
         add_action( 'admin_post_thrg_si_clear_history', array( __CLASS__, 'handle_clear' ) );
         add_action( 'admin_post_thrg_si_toggle_history', array( __CLASS__, 'handle_toggle' ) );
         add_action( 'admin_post_thrg_si_email_report', array( __CLASS__, 'handle_email' ) );
+        THRG_SI_Monitor::boot();
         THRG_SI_Schedule::boot();
     }
 
@@ -354,7 +356,7 @@ final class THRG_Site_Inspector {
                 'Configured HTTPS URLs',
                 $https_ok ? 'No issue observed' : ( $o['local_environment'] ? 'Review' : 'Potential weakness' ),
                 $https_ok ? 'Both site addresses are set to HTTPS.' : ( $o['local_environment'] ? 'This looks like a local copy, where HTTP is expected.' : 'Logins and cookies can travel unencrypted when the site address uses HTTP.' ),
-                array( ( $o['local_environment'] ? 'Local/development environment detected. ' : '' ) . 'Site address HTTPS: ' . ( $o['home_https'] ? 'yes' : 'no' ) . '; WordPress address HTTPS: ' . ( $o['site_https'] ? 'yes' : 'no' ) . '.' ),
+                array( ( $o['local_environment'] ? 'Local/development environment detected. ' : '' ) . 'Site address HTTPS: ' . ( $o['home_https'] ? 'Enabled' : 'Not enabled' ) . '; WordPress address HTTPS: ' . ( $o['site_https'] ? 'Enabled' : 'Not enabled' ) . '.' ),
                 'Settings do not prove the certificate is valid or that HTTP redirects to HTTPS.',
                 $https_ok ? '' : ( $o['local_environment'] ? 'HTTP is normal on a local copy. Run this inspection on the live site to check its settings.' : 'Install a certificate and switch both addresses under [[options-general.php|Settings > General]] to https://.' )
             ),
@@ -468,7 +470,7 @@ final class THRG_Site_Inspector {
             $status = 'Review';
             $why    = $unusual
                 ? 'Some accounts have administrator-level power without the Administrator role, a pattern often seen after a compromise.'
-                : 'A powerful account was created recently. Make sure you know who created it.';
+                : 'An administrator account was created recently. Make sure you know who created it.';
         } else {
             $status = $a['partial'] ? 'Partial inspection' : 'No issue observed';
             $why    = count( $a['items'] ) . ' account' . ( 1 === count( $a['items'] ) ? '' : 's' ) . ' can change site settings, users, or code. None look unusual.';
@@ -497,7 +499,7 @@ final class THRG_Site_Inspector {
                 }
             }
         }
-        $line = 'DISALLOW_FILE_EDIT or DISALLOW_FILE_MODS set: ' . ( $o['editor_disabled'] ? 'yes' : 'no' ) . '.';
+        $line = 'Code editing in the WordPress configuration: ' . ( $o['editor_disabled'] ? 'Disallowed' : 'Allowed' ) . '.';
         if ( ! $o['editor_disabled'] && is_array( $o['accounts'] ) ) {
             $line .= ' [[users.php|Accounts able to edit plugin or theme code]]: ' . $editors . '.';
         }
@@ -919,7 +921,23 @@ final class THRG_Site_Inspector {
         } elseif ( isset( $_GET['thrg_report'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only view, capability checked above.
             $saved = THRG_SI_History::find( sanitize_key( wp_unslash( $_GET['thrg_report'] ) ) );
             if ( $saved ) {
-                $rows      = $saved['rows'];
+                $rows = $saved['rows'];
+                // Present older snapshots with the current configuration labels.
+                foreach ( $rows as $index => $row ) {
+                    if ( 'https-config' === $row['id'] ) {
+                        foreach ( $row['evidence'] as $line => $text ) {
+                            $rows[ $index ]['evidence'][ $line ] = str_replace( array( 'HTTPS: yes', 'HTTPS: no', 'HTTPS: Disabled' ), array( 'HTTPS: Enabled', 'HTTPS: Not enabled', 'HTTPS: Not enabled' ), $text );
+                        }
+                    } elseif ( 'file-editor' === $row['id'] && isset( $row['evidence'][0] ) ) {
+                        $rows[ $index ]['evidence'][0] = strtr(
+                            $row['evidence'][0],
+                            array(
+                                'DISALLOW_FILE_EDIT or DISALLOW_FILE_MODS set: yes.' => 'Code editing in the WordPress configuration: Disallowed.',
+                                'DISALLOW_FILE_EDIT or DISALLOW_FILE_MODS set: no.' => 'Code editing in the WordPress configuration: Allowed.',
+                            )
+                        );
+                    }
+                }
                 $report_id = $saved['id'];
             } else {
                 $flag = 'missing';

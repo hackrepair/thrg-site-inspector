@@ -8,7 +8,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Version **2.4.3**. See [release notes](releases/v2.4.3.md).
+Version **2.5.0**. See [release notes](releases/v2.5.0.md).
 
 <p align="center">
   <strong>▶ Watch Site Inspector in 75 seconds</strong><br>
@@ -58,6 +58,10 @@ The branded HTML email fills the available width and includes a plain-text alter
 
 Sending requires `manage_options`, a valid nonce, a retained report, and selected current administrator accounts. Emailing a newly generated report requires history to be enabled and that report saved. After at least one message is accepted, the sender must wait one minute before another send. Feedback can report full or partial failure; acceptance for sending does not guarantee inbox delivery. WordPress uses the site's configured mail transport; SMTP configuration may be needed. Local Mailpit capture verifies local receipt, not external delivery.
 
+## Monitor and report site changes
+
+Monitoring is off by default. Under Tools → Site Inspector, turn on **Monitor this site daily** to record the current administrators, plugins and themes. Each daily check lists additions since the previous inventory, including inactive plugins and themes. You can email selected administrators immediately when WordPress grants administrator access, send a daily email when additions appear, or just review changes in the dashboard. For timing, coverage and examples, see the [monitoring guide](docs/site-change-monitoring.md).
+
 ## Monthly security email
 
 Under **Tools → Site Inspector**, the **Monthly security email** panel sits right below the share section. Tick **Email a security statement every month**, choose a day from 1 to 28 (about 8 am site time), choose **Every month** or **Only when something needs fixing or a second look**, and choose **All administrators** (including any added later) or specific administrators. An optional note goes out every month.
@@ -76,6 +80,8 @@ The PHP version finding uses a built-in list reviewed on November 23, 2026. It i
 An upstream build below a listed fix is a **Potential weakness**. An operating-system package is marked **Review**, because a host may have backported fixes without changing the version number. Advisory impact can depend on configuration and enabled extensions. This is a dated patch list, not a complete vulnerability feed or a test of the running server's exploitability. No outside requests are made during inspection, and a warning appears after the list is more than 90 days old. Sources: [PHP changelog](https://www.php.net/ChangeLog-8.php) and [support dates](https://www.php.net/supported-versions.php).
 
 ## Privacy and scope
+
+Monitoring stores the inventory and the latest 50 additions locally. Monitoring emails may include the administrator’s login or the name and location of an added plugin or theme. Turning monitoring off clears the inventory and its change history.
 
 The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names. Reports leave the site only when an administrator chooses to export or email them, or turns on the monthly email, and emails can only go to the site's own administrators. Plugin update discovery and package downloads contact GitHub independently of inspections. Those requests expose normal connection information, such as the server IP and HTTP headers; report content is not included in update requests.
 
@@ -104,6 +110,10 @@ Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-
 Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair").
 
 ## Changelog
+
+### 2.5.0 (preview)
+
+Added optional daily monitoring for new administrators, plugins and themes, with immediate administrator alerts and a daily email when additions are found.
 
 ### 2.4.3
 

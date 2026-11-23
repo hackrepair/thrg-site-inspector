@@ -77,7 +77,7 @@ $thrg_si_actions = static function ( $actions ) {
     <section class="si-block si-start">
         <h2 class="si-section"><?php echo $saved ? 'Saved report' : 'Inspect this site'; ?></h2>
         <div class="si-card si-toolbar">
-            <form method="post" onsubmit="var b=this.querySelector('button');b.disabled=true;b.textContent='Inspecting…';">
+            <form method="post" action="<?php echo esc_url( admin_url( THRG_Site_Inspector::PAGE_URL ) ); ?>" onsubmit="var b=this.querySelector('button');b.disabled=true;b.textContent='Inspecting…';">
                 <?php wp_nonce_field( 'thrg_si_inspect' ); ?>
                 <button class="button button-primary" name="inspect" type="submit"><?php echo null === $rows ? 'Inspect this site' : ( $saved ? 'Run new inspection' : 'Run inspection again' ); ?></button>
             </form>
@@ -98,10 +98,13 @@ $thrg_si_actions = static function ( $actions ) {
         'mail-failed'    => THRG_SI_Email::feedback( $sent, $mail_failed ) . ' Check your site\'s email setup for failed messages.',
         'mail-none'      => 'Choose at least one administrator to email.',
         'mail-wait'      => 'An email was just sent. Please wait a minute before sending another.',
-        'schedule-saved' => $schedule['enabled'] ? 'Monthly email saved.' : 'Monthly email is off.',
+        'schedule-saved' => $schedule['enabled'] ? 'Monthly email setting has been enabled.' : 'Monthly email setting has been disabled (and will not be sent).',
         'schedule-none'  => 'None of the chosen administrators can be emailed, so the monthly email is off. Choose at least one administrator with a valid email address.',
+        'monitor-saved'  => 'Site change monitoring settings saved.',
+        'monitor-off'    => 'Site change monitoring turned off. Its inventory and recent changes have been cleared.',
+        'monitor-none'   => 'Choose at least one administrator with a valid email address to receive monitoring emails.',
     );
-    $thrg_si_warn    = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait', 'schedule-none' );
+    $thrg_si_warn    = array( 'missing', 'mail-partial', 'mail-failed', 'mail-none', 'mail-wait', 'schedule-none', 'monitor-none' );
     if ( isset( $thrg_si_notices[ $flag ] ) && ! in_array( $flag, array( 'emailed', 'mail-partial', 'mail-failed' ), true ) ) :
         ?>
         <div class="si-callout<?php echo in_array( $flag, $thrg_si_warn, true ) ? ' si-callout--warning' : ''; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
@@ -198,7 +201,13 @@ $thrg_si_actions = static function ( $actions ) {
                 <?php foreach ( $thrg_si_issues as $thrg_si_row ) : ?>
                     <?php $thrg_si_t = $thrg_si_tone( $thrg_si_row['status'] ); ?>
                     <article id="<?php echo esc_attr( $thrg_si_row['id'] ); ?>" class="si-block si-finding si-<?php echo esc_attr( $thrg_si_t ); ?>">
-                        <h2 class="si-section"><span><?php echo esc_html( $thrg_si_row['title'] ); ?></span> <span class="si-chip si-chip--<?php echo esc_attr( $thrg_si_t ); ?>"><?php echo esc_html( $thrg_si_row['status'] ); ?></span></h2>
+                        <h2 class="si-section"><span><?php echo esc_html( $thrg_si_row['title'] ); ?>
+                            <?php if ( 'https-config' === $thrg_si_row['id'] && 'Unknown' !== $thrg_si_row['status'] ) : ?>
+                                <span class="si-chip si-chip--attention">Not enabled</span>
+                            <?php elseif ( 'file-editor' === $thrg_si_row['id'] && 'Unknown' !== $thrg_si_row['status'] ) : ?>
+                                <span class="si-chip si-chip--review">Allowed</span>
+                            <?php endif; ?>
+                        </span> <span class="si-chip si-chip--<?php echo esc_attr( $thrg_si_t ); ?>"><?php echo esc_html( $thrg_si_row['status'] ); ?></span></h2>
                         <div class="si-card">
                         <p class="si-why"><?php echo wp_kses_post( THRG_Site_Inspector::linkify( $thrg_si_row['why'] ) ); ?></p>
                         <div class="si-evidence">
@@ -224,7 +233,13 @@ $thrg_si_actions = static function ( $actions ) {
                         <div class="si-card">
                         <?php foreach ( $thrg_si_passed as $thrg_si_row ) : ?>
                             <details id="<?php echo esc_attr( $thrg_si_row['id'] ); ?>">
-                                <summary><span class="si-check" aria-hidden="true">✓</span> <strong><?php echo esc_html( $thrg_si_row['title'] ); ?></strong> <span><?php echo wp_kses_post( THRG_Site_Inspector::linkify( $thrg_si_row['why'] ) ); ?></span></summary>
+                                <summary><span class="si-check" aria-hidden="true">✓</span> <strong><?php echo esc_html( $thrg_si_row['title'] ); ?></strong>
+                                    <?php if ( 'https-config' === $thrg_si_row['id'] ) : ?>
+                                        <span class="si-chip si-chip--observed">Enabled</span>
+                                    <?php elseif ( 'file-editor' === $thrg_si_row['id'] ) : ?>
+                                        <span class="si-chip si-chip--observed">Disallowed</span>
+                                    <?php endif; ?>
+                                    <span><?php echo wp_kses_post( THRG_Site_Inspector::linkify( $thrg_si_row['why'] ) ); ?></span></summary>
                                 <div class="si-passed-body">
                                     <?php foreach ( $thrg_si_row['evidence'] as $thrg_si_line ) : ?>
                                         <p><?php echo wp_kses_post( THRG_Site_Inspector::linkify( $thrg_si_line ) ); ?></p>
@@ -358,11 +373,12 @@ $thrg_si_actions = static function ( $actions ) {
     $thrg_si_overdue = $schedule['enabled'] && $next_run && ( time() - (int) $next_run ) > THRG_SI_Schedule::LATE_SECONDS;
     ?>
     <section id="si-schedule" class="si-block si-schedule" aria-labelledby="si-schedule-title">
-        <h2 id="si-schedule-title" class="si-section">Monthly security email</h2>
+        <h2 id="si-schedule-title" class="si-section">
+            <span>Monthly security email <span class="si-chip si-chip--<?php echo $schedule['enabled'] ? 'observed' : 'attention'; ?>"><?php echo $schedule['enabled'] ? 'On' : 'Off'; ?></span></span>
+        </h2>
         <div class="si-card">
         <p>Run an inspection once a month and email the &ldquo;state of security&rdquo; statement to this site&rsquo;s administrators. Each run is also saved to your reports history.</p>
         <p class="si-schedule-status">
-            <strong><?php echo $schedule['enabled'] ? 'On.' : 'Off.'; ?></strong>
             <?php if ( $schedule['enabled'] && $next_run ) : ?>
                 Next email due <?php echo esc_html( wp_date( $thrg_si_fmt, (int) $next_run ) ); ?>.
             <?php endif; ?>
@@ -399,11 +415,10 @@ $thrg_si_actions = static function ( $actions ) {
                 <legend>Send to</legend>
                 <label><input type="radio" name="who" value="all" <?php checked( 'all', $schedule['who'] ); ?> /> All administrators (<?php echo count( $admins ); ?>), including any added later</label><br />
                 <label><input type="radio" name="who" value="chosen" <?php checked( 'chosen', $schedule['who'] ); ?> /> Only these administrators:</label>
-                <div class="si-email-list">
-                <?php foreach ( $admins as $thrg_si_r ) : ?>
-                    <label><input type="checkbox" name="users[]" value="<?php echo (int) $thrg_si_r['id']; ?>" <?php checked( in_array( (int) $thrg_si_r['id'], $schedule['users'], true ) ); ?> /> <?php echo esc_html( $thrg_si_r['name'] ); ?> <span class="si-muted">&lt;<?php echo esc_html( $thrg_si_r['email'] ); ?>&gt;</span></label>
-                <?php endforeach; ?>
-                </div>
+                <?php
+                $thrg_si_selected_ids = 'chosen' === $schedule['who'] ? $schedule['users'] : array();
+                require __DIR__ . '/view-admin-recipients.php';
+                ?>
             </fieldset>
             <p>
                 <label for="si-schedule-note">Note to include every month (optional)</label><br />
@@ -411,10 +426,26 @@ $thrg_si_actions = static function ( $actions ) {
             </p>
             <p class="si-email-actions"><button type="submit" class="button button-primary">Save monthly email</button></p>
         </form>
+        <script>
+        (function () {
+            var form = document.querySelector('.si-schedule-form');
+            form.addEventListener('change', function (event) {
+                if (event.target.name === 'users[]') {
+                    form.querySelector('[name="who"][value="chosen"]').checked = true;
+                } else if (event.target.name === 'who' && event.target.value === 'all') {
+                    form.querySelectorAll('[name="users[]"]').forEach(function (box) {
+                        box.checked = false;
+                    });
+                }
+            });
+        }());
+        </script>
         <?php endif; ?>
         <p class="si-note">Emails come from this site, signed with the name of the administrator who last saved these settings. WordPress runs scheduled jobs when someone visits the site, so on a quiet site the email can arrive a little late. If emails don&rsquo;t arrive, check your site&rsquo;s email setup; an SMTP plugin usually fixes it.</p>
         </div>
     </section>
+
+    <?php require __DIR__ . '/view-monitor.php'; ?>
 
     <section id="si-history" class="si-block si-history" aria-labelledby="si-history-title">
         <h2 id="si-history-title" class="si-section">Your reports history and changes over time</h2>
@@ -476,7 +507,7 @@ $thrg_si_actions = static function ( $actions ) {
                 </table>
             </div>
         <?php endif; ?>
-        <p class="si-note">Up to <?php echo (int) THRG_SI_History::MAX_ENTRIES; ?> reports are kept, newest first, in this site's database. They include usernames and file names. Nothing is sent unless you email a report or turn on the monthly email.</p>
+        <p class="si-note">Up to <?php echo (int) THRG_SI_History::MAX_ENTRIES; ?> reports are kept, newest first, in this site's database. They include usernames and file names. Saved reports are shared when you export or email them, or enable monthly emails. Change monitoring has separate alert settings.</p>
         <div class="si-history-controls">
             <?php if ( $history ) : ?>
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="si-inline" onsubmit="return window.confirm('Delete every saved report? This cannot be undone.');">

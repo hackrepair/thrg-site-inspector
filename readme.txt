@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.4.3
+Stable tag: 2.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -34,6 +34,8 @@ Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
 
 **Email a "state of security" briefing.** From any report, send a friendly, plain-language summary to some or all of the site's administrators: what needs fixing first, what's worth a second look, what's already in good shape, and what changed since the last check, with a subject line that tells them where things stand before they open it. You can add a personal note, each administrator gets their own copy, and replies come back to you.
 
+**Monitor and report site changes.** Monitoring is off by default. Under Tools → Site Inspector, turn on **Monitor this site daily** to record the current administrators, plugins and themes. Each daily check lists additions since the previous inventory, including inactive plugins and themes. You can email selected administrators immediately when WordPress grants administrator access, send a daily email when additions appear, or just review changes in the dashboard.
+
 **Get a monthly security statement.** Turn on the monthly email to have Site Inspector check the site on a day you choose and send the statement to all administrators or the ones you pick. It is off until you turn it on. Send it every month, or only when something needs fixing or a second look.
 
 Administrator emails use a full-width branded HTML layout with a plain-text alternative. Subjects follow `[example.com] [Site Inspector] Security Check: 2 issues need attention`, retaining the report status and change counts. The configured home URL supplies the domain, preserving subdomains and explicit ports such as `localhost:8081`. The subject preview matches the sent message.
@@ -41,6 +43,8 @@ Administrator emails use a full-width branded HTML layout with a plain-text alte
 **More tools from The Hack Repair Guy.** The plugin's View Details window includes an Other THRG Plugins guide to seven companion tools.
 
 = Privacy =
+
+Monitoring stores the inventory and the latest 50 additions locally. Monitoring emails may include the administrator’s login or the name and location of an added plugin or theme. Turning monitoring off clears the inventory and its change history.
 
 The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names, so share them only with people you trust. Reports leave the site only when you choose to export or email them, or when you turn on the monthly email, and emails can only go to the site's own administrators, with usernames partly hidden. Optionally, you can have all plugin data deleted when the plugin is deleted (see below).
 
@@ -148,9 +152,13 @@ Plugin update discovery and package downloads contact GitHub independently of in
 
 = What happens to my data if I uninstall? =
 
-By default nothing is deleted, so a reinstall picks up where you left off. Any queued monthly email is always cancelled. Opt-in cleanup also removes the schedule lock and database-backed email throttle transients; any external-cache throttle entries expire after one minute. To remove saved plugin data, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
+By default nothing is deleted, so a reinstall picks up where you left off. Uninstall cancels the monthly email and the daily monitoring check. Opt-in cleanup also removes the schedule lock and database-backed email throttle transients; any external-cache throttle entries expire after one minute. To remove saved plugin data, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.5.0 =
+
+* Added optional daily monitoring for new administrators, plugins and themes, with immediate administrator alerts and a daily email when additions are found.
 
 = 2.4.3 =
 * Keep late admin notices recoverable, and leave notices visible if the notice-panel script cannot initialize.
