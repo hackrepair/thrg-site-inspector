@@ -1,6 +1,6 @@
 # Site Inspector 2.4.3 release verification
 
-Date: November 23, 2026. Distribution: GitHub. Upgrade baseline: `v2.4.2` (`bb5d98054ddc680570d431f1aa6b406c98326a37`). Publication evidence is added below after the reviewed candidate is published.
+Date: November 23, 2026. Distribution: GitHub. Upgrade baseline: `v2.4.2` (`bb5d98054ddc680570d431f1aa6b406c98326a37`). The release is published and the Zendogs upgrade is verified below.
 
 ## Changes and review disposition
 
@@ -28,4 +28,16 @@ No production security clearance, external email-delivery claim, full vendor aud
 
 ## Publication and installed-package verification
 
-Pending final candidate review and publication. This section will record the release commit/tag, ZIP SHA-256, published-asset match and actual WordPress update/install result.
+Published: https://github.com/hackrepair/thrg-site-inspector/releases/tag/v2.4.3 at 2026-11-23 18:58:30 UTC. Tag `v2.4.3` points to reviewed commit `105060981cd5cecbdcf49bad0fff96184d539126`.
+
+ZIP: `thrg-site-inspector.2.4.3.zip`, 653,936 bytes, 144 files. SHA-256: `a11fa5e0efe36b74d8506ee79152513e2344e29dbd67d76b7951f2ccbe2f097e`. The matching checksum sidecar is attached. Both the GitHub asset digest and a downloaded ZIP match the tested artifact. Older releases were retained.
+
+The existing registered updater on Zendogs (`localhost:8081`) detected 2.4.3 and offered this exact GitHub release asset. The standard WordPress plugin updater installed it over 2.4.2, retained activation, settings, history pause state, monthly-email configuration and all seven saved reports. Every installed file matches the published ZIP, every installed file is 0644, and stylesheet/script responses are HTTP 200 with matching hashes. Browser verification confirmed the styled 2.4.3 screen and native View Details version, banner, requirements and companion tab. No inspection or email was triggered on Zendogs.
+
+An initial extra diagnostic helper failed while constructing a second checker; it was discarded and the already-registered updater was used for discovery. The subsequent normal discovery and upgrade passed. No helper is installed in the plugin; temporary diagnostic scripts were removed. A pre-upgrade folder backup remains at `/tmp/thrg-si-before-2.4.3-2026-11-23.tgz` inside the Zendogs container.
+
+The final second pass reviewed 16 selected files, skipped 0 and found no unresolved defect. Of 53 excluded paths, 47 are upstream-library changes separately verified for byte provenance/integration and 6 are Markdown records separately checked. The baseline full review and release-delta evidence remain under the outer project directory, outside the install ZIP.
+
+Dependency inventory workflow passed: https://github.com/hackrepair/thrg-site-inspector/actions/runs/45243963514. Pages deployment passed: https://github.com/hackrepair/thrg-site-inspector/actions/runs/45243961712. Read-only repository-protection, indexed 6.0/1.8.0 dependency coverage and private-reporting policy checks passed after publication. Open Dependabot alerts returned zero at this check; that is an observation, not a security guarantee.
+
+Real-browser lab checks also covered late-notice recovery and desktop/390px native details without horizontal overflow. The disposable containers/network were removed after the tests.
