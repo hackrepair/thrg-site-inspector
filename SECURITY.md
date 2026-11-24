@@ -39,7 +39,3 @@ Test only systems and accounts you own or are explicitly authorized to assess. P
 Inspections make bounded observations about local settings and filesystem metadata; they do not apply fixes or establish that a site is secure. Optional report history is stored in the site database and can include usernames and file names. Reports can leave the site when an administrator exports or emails them. This is not a malware scanner, firewall or complete vulnerability assessment; no findings means only that the checks performed found none.
 
 Security controls, automated checks and code reviews reduce risk; they are not a guarantee that the plugin or a WordPress site is free of vulnerabilities. Repository documentation describes intended behavior, not independent security certification.
-
-## Verify the reporting route
-
-From a local checkout, run `python3 scripts/verify-security-policy.py --local` for document checks, or `python3 scripts/verify-security-policy.py` to also verify the published files and live GitHub setting. A successful check does not prove email delivery or application security.
