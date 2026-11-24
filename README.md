@@ -81,7 +81,7 @@ An upstream build below a listed fix is a **Potential weakness**. An operating-s
 
 ## Privacy and scope
 
-Monitoring stores the inventory and the latest 50 additions locally. Monitoring emails may include the administrator’s login or the name and location of an added plugin or theme. Turning monitoring off clears the inventory and its change history.
+Monitoring stores the inventory, the latest 50 additions, and the latest monitoring email attempt status locally. Monitoring emails may include the administrator’s login or the name and location of an added plugin or theme. Turning monitoring off clears the inventory, its change history, and the email status.
 
 The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names. Reports leave the site only when an administrator chooses to export or email them, or turns on the monthly email, and emails can only go to the site's own administrators. Plugin update discovery and package downloads contact GitHub independently of inspections. Those requests expose normal connection information, such as the server IP and HTTP headers; report content is not included in update requests.
 
