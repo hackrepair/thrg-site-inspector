@@ -111,7 +111,7 @@ Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: Word
 
 ### 2.6.0 (WordPress.org-ready build, test release)
 
-Prepared for the WordPress.org plugin directory: the main file is now `thrg-site-inspector.php`, the GitHub updater and the Other THRG Plugins tab are not included, and Site Health Controls start switched off. The share-box and monthly-email scripts load from a script file instead of inline code. Requires WordPress 6.9 or newer.
+Prepared for the WordPress.org plugin directory: the main file is now `thrg-site-inspector.php`, the GitHub updater and the Other THRG Plugins tab are not included, and Site Health Controls start switched off. The welcome notice appears once, on the Plugins screen and Site Health Controls. The share-box and monthly-email scripts load from a script file instead of inline code. Requires WordPress 6.9 or newer.
 
 ### 2.5.2
 

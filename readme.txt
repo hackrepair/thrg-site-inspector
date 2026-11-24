@@ -1,5 +1,6 @@
 === The Hack Repair Guy's Site Inspector ===
-Contributors: hackrepair
+Contributors: hackrepair, tvcnet
+Donate link: https://hackrepair.com/donations/buy-jim-a-coffee
 Tags: security, audit, site health, report, hardening
 Requires at least: 6.9
 Requires PHP: 7.4
@@ -71,16 +72,6 @@ On Site Inspector and Site Health Controls screens, choose Show to expand other 
 4. To email a saved report, open it and choose Email to administrators under Send this report to your designer or developer. Review recipients and Subject, optionally add a note, then choose Send email.
 5. Optional: under Settings > Site Health Controls, choose any Site Health features you want switched off. Nothing is switched off until you save a choice there.
 
-== Support ==
-
-For questions and help, use the plugin's support forum on WordPress.org. Ideas and discussion are also welcome on GitHub Discussions:
-https://github.com/hackrepair/thrg-site-inspector/discussions
-
-Report reproducible bugs through Issues:
-https://github.com/hackrepair/thrg-site-inspector/issues
-
-Report security concerns privately to Jim Walker at jim@hackrepair.com. Do not include credentials or sensitive site information in public posts.
-
 == Frequently Asked Questions ==
 
 = Does the inspection change anything or contact outside services? =
@@ -149,9 +140,20 @@ No. Site Inspector makes no outside requests, needs no account or license key, a
 
 By default nothing is deleted, so a reinstall picks up where you left off. Uninstall cancels the monthly email and the daily monitoring check. Opt-in cleanup also removes the schedule and monitoring locks, monitoring email status, and database-backed email throttle transients; any external-cache throttle entries expire after one minute. To remove saved plugin data, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
+= Where can I get help? =
+
+For questions and help, use the plugin's support forum on WordPress.org. Ideas and discussion are also welcome on GitHub Discussions:
+https://github.com/hackrepair/thrg-site-inspector/discussions
+
+Report reproducible bugs through Issues:
+https://github.com/hackrepair/thrg-site-inspector/issues
+
+Report security concerns privately to Jim Walker at jim@hackrepair.com. Do not include credentials or sensitive site information in public posts.
+
 == Changelog ==
 
 = 2.6.0 =
+* The welcome notice appears once, on the Plugins screen and Site Health Controls, and retires after your first visit to Tools > Site Inspector.
 * First release in the WordPress.org plugin directory.
 * Site Health Controls start switched off; nothing in Site Health changes until you choose it under Settings > Site Health Controls.
 * The share-box and monthly-email scripts now load from a script file instead of inline code.

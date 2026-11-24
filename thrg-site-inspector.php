@@ -358,7 +358,7 @@ add_action( 'admin_menu', 'thrg_shc_add_settings_page' );
 function thrg_shc_action_links( $links ) {
     $url = admin_url( 'options-general.php?page=thrg-site-health-controls' );
     array_unshift( $links, '<a href="' . esc_url( $url ) . '">' . esc_html__( 'Settings', 'thrg-site-inspector' ) . '</a>' );
-    array_unshift( $links, '<a href="' . esc_url( admin_url( 'tools.php?page=thrg-site-inspector' ) ) . '" style="font-weight:600">' . esc_html__( 'Run inspection', 'thrg-site-inspector' ) . '</a>' );
+    array_unshift( $links, '<a href="' . esc_url( admin_url( 'tools.php?page=thrg-site-inspector' ) ) . '">' . esc_html__( 'Run inspection', 'thrg-site-inspector' ) . '</a>' );
     return $links;
 }
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'thrg_shc_action_links' );
@@ -460,16 +460,17 @@ function thrg_shc_render_settings_page() {
 }
 
 /**
- * One-time notice after installing or upgrading to 2.x: point to the inspector.
+ * One-time welcome notice on the Plugins screen and Site Health Controls: point to the inspector.
  *
  * @return void
  */
 function thrg_shc_admin_notice() {
-    if ( ! current_user_can( 'manage_options' ) || THRG_SI_VERSION === get_option( 'thrg_si_notice_dismissed' ) ) {
+    // Shown once: any saved dismissal counts, so updates never bring it back.
+    if ( ! current_user_can( 'manage_options' ) || get_option( 'thrg_si_notice_dismissed' ) ) {
         return;
     }
     $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-    if ( ! $screen || ! in_array( $screen->id, array( 'dashboard', 'plugins', 'settings_page_thrg-site-health-controls' ), true ) ) {
+    if ( ! $screen || ! in_array( $screen->id, array( 'plugins', 'settings_page_thrg-site-health-controls' ), true ) ) {
         return;
     }
     $dismiss = wp_nonce_url( add_query_arg( 'thrg_si_dismiss', '1' ), 'thrg_si_dismiss' );
@@ -479,6 +480,18 @@ function thrg_shc_admin_notice() {
     echo '<p><a href="' . esc_url( $dismiss ) . '">' . esc_html__( 'Dismiss', 'thrg-site-inspector' ) . '</a></p></div>';
 }
 add_action( 'admin_notices', 'thrg_shc_admin_notice' );
+
+/**
+ * The first visit to Tools > Site Inspector retires the welcome notice: it has done its job.
+ *
+ * @return void
+ */
+function thrg_shc_mark_notice_seen() {
+    if ( current_user_can( 'manage_options' ) && ! get_option( 'thrg_si_notice_dismissed' ) ) {
+        update_option( 'thrg_si_notice_dismissed', THRG_SI_VERSION, false );
+    }
+}
+add_action( 'load-tools_page_thrg-site-inspector', 'thrg_shc_mark_notice_seen' );
 
 /**
  * Handle the notice dismissal link.
