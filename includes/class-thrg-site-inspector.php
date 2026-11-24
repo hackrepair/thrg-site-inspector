@@ -137,8 +137,9 @@ final class THRG_Site_Inspector {
         if ( ! $entry ) {
             $back( 'missing' );
         }
+        // Nested arrays stay arrays under map_deep() and are then dropped, so they can never turn into user ID 1.
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- guard() verifies this action's nonce before form data is read.
-        $ids = isset( $_POST['recipients'] ) ? array_filter( array_map( 'absint', array_filter( (array) wp_unslash( $_POST['recipients'] ), 'is_scalar' ) ) ) : array();
+        $ids = isset( $_POST['recipients'] ) && is_array( $_POST['recipients'] ) ? array_values( array_filter( array_filter( map_deep( wp_unslash( $_POST['recipients'] ), 'absint' ), 'is_int' ) ) ) : array();
         if ( ! $ids ) {
             $back( 'mail-none' );
         }
@@ -171,6 +172,11 @@ final class THRG_Site_Inspector {
         self::back( $on ? 'paused' : 'resumed' );
     }
 
+    /** The HTTP method of the current request, upper case ('' when unknown). */
+    public static function request_method() {
+        return isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : '';
+    }
+
     public static function version() {
         return defined( 'THRG_SI_VERSION' ) ? THRG_SI_VERSION : 'dev';
     }
@@ -194,6 +200,9 @@ final class THRG_Site_Inspector {
             wp_enqueue_style( 'thrg-si-brand', plugins_url( '../assets/brand/thrg-brand.css', __FILE__ ), array(), self::version() );
             wp_enqueue_style( 'thrg-inspector', plugins_url( '../assets/inspector.css', __FILE__ ), array(), self::version() );
             wp_enqueue_script( 'thrg-si-notices', plugins_url( '../assets/js/thrg-si-notices.js', __FILE__ ), array(), self::version(), true );
+            if ( 'tools_page_thrg-site-inspector' === $hook ) {
+                wp_enqueue_script( 'thrg-si-inspector', plugins_url( '../assets/js/thrg-si-inspector.js', __FILE__ ), array(), self::version(), true );
+            }
             wp_localize_script(
                 'thrg-si-notices',
                 'thrgSiNotices',
@@ -217,7 +226,7 @@ final class THRG_Site_Inspector {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( esc_html__( 'You do not have permission to inspect this site.', 'thrg-site-inspector' ), '', array( 'response' => 403 ) );
         }
-        if ( 'POST' === ( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' ) ) {
+        if ( 'POST' === self::request_method() ) {
             check_admin_referer( 'thrg_si_inspect' );
         }
     }
@@ -913,7 +922,7 @@ final class THRG_Site_Inspector {
         $saved     = null;
         $flag      = '';
         $report_id = null;
-        if ( 'POST' === ( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' ) ) {
+        if ( 'POST' === self::request_method() ) {
             check_admin_referer( 'thrg_si_inspect' );
             $rows      = self::evaluate( self::collect() );
             $user      = wp_get_current_user();

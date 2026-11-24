@@ -1,13 +1,12 @@
 === The Hack Repair Guy's Site Inspector ===
 Contributors: hackrepair
 Tags: security, audit, site health, report, hardening
-Requires at least: 6.9.4
+Requires at least: 6.9
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.5.2
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
 
 Your friendly WordPress security inspector. Keeps a history of every report, so you can see what's new, what's fixed, and what's next.
 
@@ -40,8 +39,6 @@ Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
 
 Administrator emails use a full-width branded HTML layout with a plain-text alternative. Subjects follow `[example.com] [Site Inspector] Security Check: 2 issues need attention`, retaining the report status and change counts. The configured home URL supplies the domain, preserving subdomains and explicit ports such as `localhost:8081`. The subject preview matches the sent message.
 
-**More tools from The Hack Repair Guy.** The plugin's View Details window includes an Other THRG Plugins guide to seven companion tools.
-
 = Privacy =
 
 Monitoring stores the inventory, the latest 50 additions, and the latest monitoring email attempt status locally. Monitoring emails may include the administrator’s login or the name and location of an added plugin or theme. Turning monitoring off clears the inventory, its change history, and the email status.
@@ -54,7 +51,7 @@ Site Inspector is not a malware scanner, a firewall or a vulnerability database.
 
 = Site Health Controls =
 
-Under **Settings > Site Health Controls** you can choose which parts of WordPress Site Health to switch off: the Tools menu item, direct visits to the screen, the dashboard widget, the background tests (including loopback and REST self-checks), the weekly cron check, the wp-site-health/v1 REST routes and the Site Health AJAX actions. All seven are on until you save your own choices; saved choices are always preserved. These options turn off real diagnostics, so uncheck any you want back.
+Under **Settings > Site Health Controls** you can choose which parts of WordPress Site Health to switch off: the Tools menu item, direct visits to the screen, the dashboard widget, the background tests (including loopback and REST self-checks), the weekly cron check, the wp-site-health/v1 REST routes and the Site Health AJAX actions. All seven are off until you tick them and save, so Site Health keeps working until you decide otherwise. These options turn off real diagnostics, so switch on only the ones you need.
 
 You can exempt administrators or specific user IDs, define THRG_SHC_ALLOW_ADMINS in wp-config.php, or use the thrg_shc_is_exempt and thrg_shc_redirect_url filters. Network admin Site Health is handled on multisite.
 
@@ -62,23 +59,21 @@ The same page has an **Uninstall** option: tick "Delete all plugin data" and del
 
 = Credits =
 
-Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") by Jānis Elsts (MIT license), included unmodified.
-
 Started from a 2019 plugin by Louis Fico, used under the [GPLv2-or-later license](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2").
 
 On Site Inspector and Site Health Controls screens, choose Show to expand other notices. Late notices are included automatically, and notices stay visible if the panel cannot initialize.
 
 == Installation ==
 
-1. In WordPress, open Plugins > Add New > Upload Plugin and select the plugin ZIP. You can also upload the thrg-site-inspector folder to wp-content/plugins/.
+1. In WordPress, open Plugins > Add New Plugin, search for "Site Inspector Hack Repair Guy" and click Install Now. You can also upload the thrg-site-inspector folder to wp-content/plugins/.
 2. Activate The Hack Repair Guy's Site Inspector.
 3. Open Tools > Site Inspector and click Inspect this site.
 4. To email a saved report, open it and choose Email to administrators under Send this report to your designer or developer. Review recipients and Subject, optionally add a note, then choose Send email.
-5. Optional: review Settings > Site Health Controls to choose which Site Health features stay off.
+5. Optional: under Settings > Site Health Controls, choose any Site Health features you want switched off. Nothing is switched off until you save a choice there.
 
 == Support ==
 
-For questions, ideas and community support, visit GitHub Discussions:
+For questions and help, use the plugin's support forum on WordPress.org. Ideas and discussion are also welcome on GitHub Discussions:
 https://github.com/hackrepair/thrg-site-inspector/discussions
 
 Report reproducible bugs through Issues:
@@ -132,7 +127,7 @@ Subjects use `[domain] [Site Inspector] Security Check: …`, for example `[exam
 
 = Will it disable WordPress background health checks? =
 
-Only if you leave the Site Health controls on. New installs start with all seven Site Health controls switched on, including the tests and the weekly Site Health cron check. Restore any of them under Settings > Site Health Controls. General WordPress updates and other cron jobs are unaffected.
+Not unless you ask it to. All seven Site Health controls start switched off, so the tests and the weekly Site Health cron check keep running. Switch any of them on under Settings > Site Health Controls. General WordPress updates and other cron jobs are unaffected.
 
 = What happens if someone opens /wp-admin/site-health.php directly? =
 
@@ -144,17 +139,23 @@ Uncheck the options you want back under Settings > Site Health Controls and save
 
 = Does this protect server information from unauthorized access? =
 
-WordPress normally restricts the Site Health screen to authorized users. This plugin removes that interface for administrators too; it does not add a security boundary.
+WordPress normally restricts the Site Health screen to authorized users. If you switch the controls on, the interface is removed for administrators too unless you exempt them; it does not add a security boundary.
 
-= Does the plugin need an outside service or GitHub access? =
+= Does the plugin need an outside service or an account? =
 
-Plugin update discovery and package downloads contact GitHub independently of inspections ([hackrepair/thrg-site-inspector](https://github.com/hackrepair/thrg-site-inspector/releases "Site Inspector releases and source code on GitHub")). Update requests expose standard connection information such as server IP and HTTP headers; report contents are not included. The plugin has a local readme/artwork fallback for View details when remote information is unavailable.
+No. Site Inspector makes no outside requests, needs no account or license key, and every feature works out of the box. Emails go out through your site's own WordPress mail setup, only to the site's administrators. Updates come through WordPress.org like any other plugin.
 
 = What happens to my data if I uninstall? =
 
 By default nothing is deleted, so a reinstall picks up where you left off. Uninstall cancels the monthly email and the daily monitoring check. Opt-in cleanup also removes the schedule and monitoring locks, monitoring email status, and database-backed email throttle transients; any external-cache throttle entries expire after one minute. To remove saved plugin data, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.6.0 =
+* First release in the WordPress.org plugin directory.
+* Site Health Controls start switched off; nothing in Site Health changes until you choose it under Settings > Site Health Controls.
+* The share-box and monthly-email scripts now load from a script file instead of inline code.
+* Requires WordPress 6.9 or newer.
 
 = 2.5.2 =
 
@@ -170,86 +171,5 @@ By default nothing is deleted, so a reinstall picks up where you left off. Unins
 
 * Added optional daily monitoring for new administrators, plugins and themes, with immediate administrator alerts and a daily email when additions are found.
 
-= 2.4.3 =
-* Keep late admin notices recoverable, and leave notices visible if the notice-panel script cannot initialize.
-* Update the bundled Plugin Update Checker to unmodified upstream 6.0, including Parsedown 1.8.0; retain remote markup sanitization and release-only ZIP checks.
-* Refresh the built-in PHP security-fix list through November 19, 2026, add PHP 8.6 support dates, and mark unknown branches as unverified.
-* Remove database-backed email throttle transients and the schedule lock during opt-in uninstall cleanup.
-* Build a compact install ZIP with explicit 0644 permissions and no development docs, workflow files or project video; preserve the last good ZIP/checksum pair if rebuilding fails.
-* Correct current-release and dependency documentation. Existing settings and saved reports are retained on upgrade.
-
-= 2.4.2 =
-* Notices from other plugins and WordPress are tucked away on the Site Inspector and Site Health Controls screens, with a link to show them. Site Inspector's own messages stay visible.
-
-= 2.4.1 =
-* The Other THRG Plugins tab in View Details now lists Bunker and Stickies and ends with a donation note.
-* The footer now offers help with updates and security.
-
-= 2.4.0 =
-* New monthly security email: on a day you choose, Site Inspector checks the site, saves the report and emails it to all administrators or the ones you pick. Off until you turn it on. Send every month, or only when something needs fixing or a second look.
-* The Send this report section now shows whether the monthly email is on, with a link to set it up.
-* The PHP version check now says when the site runs a PHP version older than the release that fixes a known security flaw, starting with PHP2Shell (CVE-2026-109618 and CVE-2026-109619, fixed October 21, 2026). Operating-system PHP packages are marked for review, since they often carry the fix under the old number.
-* The PHP check says when its built-in list of PHP security fixes is more than 90 days old.
-
-= 2.3.2 =
-* Site Inspector now checks the newest accounts with administrator-level access first, so the 200-account limit can no longer hide a recently added admin on a large site.
-* Added PHP 8.5 to the supported-version check.
-* Update details from GitHub are cleaned before WordPress shows them.
-* Reply-To names in emailed reports are quoted safely.
-* View Details reads its WordPress and PHP requirements from this readme, and no longer shows a misleading last-updated date.
-* Deleting the plugin with "Delete all plugin data" ticked now also removes the update checker's saved data.
-
-= 2.3.1 =
-* Expanded Other THRG Plugins in View Details to show five companion tools, excluding the current plugin.
-* Plugin Archiver links to its official WordPress.org page.
-
-
-= 2.3.0 =
-* Added a Support container at the bottom of the Tools > Site Inspector screen: a link to buy Jim a cup of coffee and a link to GitHub Discussions for questions, ideas and help.
-
-= 2.2.6 =
-* Fixed ZIP file permissions that could prevent the web server from serving inspector.css, leaving the admin page unstyled.
-* All packaged files now use 0644 permissions, verified during every build.
-
-
-= 2.2.5 =
-* Updated 2026 THRG heart branding with a gentle two-cycle animation and matching native View Details banner.
-* Respects reduced motion and printing; local PNG/CSS assets require no animation library.
-
-
-= 2.2.4 =
-* Show accepted-for-sending and failed email counts below the administrator form, clarifying that acceptance does not confirm delivery.
-* Place the admin-screen version beside the Site Inspector heading.
-* Use [domain] [Site Inspector] subject tags while retaining the security-check status and change counts. Include explicit local ports and match the on-screen subject preview.
-* Expand the HTML report email to the available width while preserving the plain-text alternative and existing branding.
-
-
-= 2.2.3 =
-* Explain temporary update-check failures clearly and move diagnostic errors into Technical details.
-* Show a retry time for confirmed GitHub rate limits.
-
-= 2.2.2 =
-* Match the compact companion-plugin cards and sidebar layout used by Disable Other Plugin Notices.
-* Display the installed version in View Details.
-
-= 2.2.1 =
-* Restore bundled updater parser dependencies required by View Details.
-
-= 2.2.0 =
-* Added an Other THRG Plugins tab to View Details with companion tools and project links.
-
-= 2.1.0 =
-* New: Email to administrators on every saved report. Send a "state of security" briefing to some or all administrators, with a descriptive subject line, an optional personal note and what changed since the last check. Each administrator gets a personal copy, usernames are partly hidden, replies go to you, and sending is limited to once a minute.
-* Refined wording across the inspector, the share box and the plain-text report.
-
-= 2.0.0 =
-* New name: The Hack Repair Guy's Site Inspector.
-* New Tools > Site Inspector: read-only checks for pending updates, administrator accounts, PHP files in uploads, exposed backups and logs, must-use plugins and drop-ins, unused plugins and themes, PHP version support, security keys, code editor, error display, registration, HTTPS and wp-config.php permissions.
-* Plain-language findings with what was observed, what to do next and the limits of each check. Passing checks are collapsed, and results link to the related admin pages.
-* Report history: the 25 most recent reports are kept on your site, with what is new and what is resolved since the previous one. View, delete, clear or pause history.
-* Share a report: copy as plain text, download, or print with usernames masked.
-* New Delete all plugin data option under Settings > Site Health Controls. Uninstalling keeps your settings and reports unless it is ticked.
-* Site Health Controls and the inspector share a new look. Added a Run inspection link on the Plugins screen and a one-time notice that points to Site Inspector.
-* Updated artwork and plugin details.
-* Upgrade note: sites that never saved Site Health settings now have all seven options on, including disabling tests, the weekly check, REST routes and AJAX actions. Saved choices are unchanged.
-* Installed folder, entry point, settings and updater are unchanged, so updates keep working.
+= Earlier releases =
+* Versions 2.0.0 to 2.4.3 were published on GitHub: https://github.com/hackrepair/thrg-site-inspector/releases

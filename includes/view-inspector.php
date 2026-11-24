@@ -77,7 +77,7 @@ $thrg_si_actions = static function ( $actions ) {
     <section class="si-block si-start">
         <h2 class="si-section"><?php echo $saved ? 'Saved report' : 'Inspect this site'; ?></h2>
         <div class="si-card si-toolbar">
-            <form method="post" action="<?php echo esc_url( admin_url( THRG_Site_Inspector::PAGE_URL ) ); ?>" onsubmit="var b=this.querySelector('button');b.disabled=true;b.textContent='Inspecting…';">
+            <form method="post" action="<?php echo esc_url( admin_url( THRG_Site_Inspector::PAGE_URL ) ); ?>" class="si-inspect-form">
                 <?php wp_nonce_field( 'thrg_si_inspect' ); ?>
                 <button class="button button-primary" name="inspect" type="submit"><?php echo null === $rows ? 'Inspect this site' : ( $saved ? 'Run new inspection' : 'Run inspection again' ); ?></button>
             </form>
@@ -326,47 +326,6 @@ $thrg_si_actions = static function ( $actions ) {
                     <p class="si-note">Includes usernames, file names and update details for this site. Share it only with people you trust.</p>
                     </div>
                 </section>
-                <script>
-                (function () {
-                    var box = document.getElementById('si-report-text'), status = document.getElementById('si-share-status');
-                    function say(t) { status.textContent = t; setTimeout(function () { status.textContent = ''; }, 3000); }
-                    function copyFallback() {
-                        try {
-                            say(document.execCommand('copy') ? 'Copied to clipboard' : 'Press Ctrl+C or Cmd+C to copy');
-                        } catch (error) {
-                            say('Press Ctrl+C or Cmd+C to copy');
-                        }
-                    }
-                    document.getElementById('si-copy').addEventListener('click', function () {
-                        box.select();
-                        var done = function () { say('Copied to clipboard'); };
-                        if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(box.value).then(done, copyFallback); }
-                        else { copyFallback(); }
-                    });
-                    document.getElementById('si-download').addEventListener('click', function () {
-                        var a = document.createElement('a'), url = URL.createObjectURL(new Blob([box.value], { type: 'text/plain' }));
-                        a.href = url; a.download = this.getAttribute('data-filename'); document.body.appendChild(a); a.click();
-                        setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 500); say('Download started');
-                    });
-                    document.getElementById('si-print').addEventListener('click', function () { window.print(); });
-                    var toggle = document.getElementById('si-email-toggle'), form = document.getElementById('si-email');
-                    if (toggle && form) {
-                        toggle.addEventListener('click', function () {
-                            form.hidden = !form.hidden;
-                            toggle.setAttribute('aria-expanded', form.hidden ? 'false' : 'true');
-                            if (!form.hidden) { form.querySelector('input[name="recipients[]"]').focus(); }
-                        });
-                        var all = document.getElementById('si-email-all'), boxes = form.querySelectorAll('input[name="recipients[]"]');
-                        all.addEventListener('change', function () { boxes.forEach(function (b) { b.checked = all.checked; }); });
-                        boxes.forEach(function (b) { b.addEventListener('change', function () { var n = form.querySelectorAll('input[name="recipients[]"]:checked').length; all.checked = n === boxes.length; all.indeterminate = n > 0 && n < boxes.length; }); });
-                        form.addEventListener('submit', function (e) {
-                            if (!form.querySelector('input[name="recipients[]"]:checked')) { e.preventDefault(); say('Choose at least one administrator'); return; }
-                            var b = form.querySelector('button[type="submit"]'); b.disabled = true; b.textContent = 'Sending…';
-                        });
-                        if (/[?&]thrg_si_done=mail-/.test(location.search)) { form.hidden = false; toggle.setAttribute('aria-expanded', 'true'); }
-                    }
-                })();
-                </script>
             </section>
         </div>
     <?php endif; ?>
@@ -433,20 +392,6 @@ $thrg_si_actions = static function ( $actions ) {
             </p>
             <p class="si-email-actions"><button type="submit" class="button button-primary">Save monthly email</button></p>
         </form>
-        <script>
-        (function () {
-            var form = document.querySelector('.si-schedule-form');
-            form.addEventListener('change', function (event) {
-                if (event.target.name === 'users[]') {
-                    form.querySelector('[name="who"][value="chosen"]').checked = true;
-                } else if (event.target.name === 'who' && event.target.value === 'all') {
-                    form.querySelectorAll('[name="users[]"]').forEach(function (box) {
-                        box.checked = false;
-                    });
-                }
-            });
-        }());
-        </script>
         <?php endif; ?>
         <p class="si-note">Emails come from this site, signed with the name of the administrator who last saved these settings. WordPress runs scheduled jobs when someone visits the site, so on a quiet site the email can arrive a little late. If emails don&rsquo;t arrive, check your site&rsquo;s email setup; an SMTP plugin usually fixes it.</p>
         </div>
@@ -517,7 +462,7 @@ $thrg_si_actions = static function ( $actions ) {
         <p class="si-note">Up to <?php echo (int) THRG_SI_History::MAX_ENTRIES; ?> reports are kept, newest first, in this site's database. They include usernames and file names. Saved reports are shared when you export or email them, or enable monthly emails. Change monitoring has separate alert settings.</p>
         <div class="si-history-controls">
             <?php if ( $history ) : ?>
-                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="si-inline" onsubmit="return window.confirm('Delete every saved report? This cannot be undone.');">
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="si-inline si-clear-form" data-confirm="Delete every saved report? This cannot be undone.">
                     <input type="hidden" name="action" value="thrg_si_clear_history" />
                     <input type="hidden" name="_wpnonce" value="<?php echo esc_attr( wp_create_nonce( 'thrg_si_clear_history' ) ); ?>" />
                     <button type="submit" class="button-link si-delete">Clear history</button>

@@ -135,7 +135,7 @@ final class THRG_SI_Monitor {
             wp_die( esc_html__( 'You do not have permission to do that.', 'thrg-site-inspector' ), '', array( 'response' => 403 ) );
         }
         check_admin_referer( 'thrg_si_monitor' );
-        if ( 'POST' !== ( isset( $_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' ) ) {
+        if ( 'POST' !== THRG_Site_Inspector::request_method() ) {
             wp_die( esc_html__( 'Use the monitoring form.', 'thrg-site-inspector' ), '', array( 'response' => 405 ) );
         }
         // phpcs:disable WordPress.Security.NonceVerification.Missing -- nonce checked above.

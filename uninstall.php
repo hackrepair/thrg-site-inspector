@@ -28,6 +28,7 @@ if ( ! function_exists( 'thrg_shc_uninstall_site' ) ) {
         delete_transient( 'thrg_si_monitor_lock' );
         global $wpdb;
         // Per-sender throttle keys are plugin-owned and expire after one minute.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time uninstall lookup of this plugin's own transient names by prefix; there is no API for a prefix search, and caching is pointless during uninstall.
         $mail_keys = $wpdb->get_col( $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $wpdb->esc_like( '_transient_thrg_si_mail_' ) . '%' ) );
         foreach ( $mail_keys as $mail_key ) {
             delete_transient( substr( $mail_key, strlen( '_transient_' ) ) );

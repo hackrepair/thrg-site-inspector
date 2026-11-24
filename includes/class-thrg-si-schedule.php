@@ -281,7 +281,7 @@ final class THRG_SI_Schedule {
             'day'         => isset( $_POST['day'] ) ? absint( $_POST['day'] ) : 1,
             'only_issues' => isset( $_POST['only_issues'] ) && '1' === $_POST['only_issues'],
             'who'         => isset( $_POST['who'] ) ? sanitize_key( wp_unslash( $_POST['who'] ) ) : 'all',
-            'users'       => isset( $_POST['users'] ) ? array_map( 'absint', array_filter( (array) wp_unslash( $_POST['users'] ), 'is_scalar' ) ) : array(),
+            'users'       => isset( $_POST['users'] ) && is_array( $_POST['users'] ) ? array_values( array_filter( array_filter( map_deep( wp_unslash( $_POST['users'] ), 'absint' ), 'is_int' ) ) ) : array(),
             'note'        => isset( $_POST['note'] ) ? sanitize_textarea_field( wp_unslash( $_POST['note'] ) ) : '',
             'owner'       => get_current_user_id(),
         );

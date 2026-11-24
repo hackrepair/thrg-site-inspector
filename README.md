@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/branding/thrg-heart-animated.gif" alt="The Hack Repair Guy heart and wrench logo" width="144" height="144">
+  <img src="docs/img/thrg-heart-animated.gif" alt="The Hack Repair Guy heart and wrench logo" width="144" height="144">
 </p>
 
 <h1 align="center">The Hack Repair Guy's Site Inspector</h1>
@@ -8,7 +8,7 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-Version **2.5.2**. See [release notes](https://github.com/hackrepair/thrg-site-inspector/releases/tag/v2.5.2).
+This repository holds version **2.6.0**, the WordPress.org-ready build. A [2.6.0 test release](https://github.com/hackrepair/thrg-site-inspector/releases/tag/v2.6.0-wporg-test "Site Inspector 2.6.0 WordPress.org test build") has the same files as a zip. The [latest regular release](https://github.com/hackrepair/thrg-site-inspector/releases/tag/v2.5.2 "Site Inspector 2.5.2 release notes") is still 2.5.2, the GitHub edition that updates itself from this repository.
 
 <p align="center">
   <strong>▶ Watch Site Inspector in 75 seconds</strong><br>
@@ -44,7 +44,7 @@ Each finding says why it matters, what was observed, and what to do next, with t
 
 **Support.** A Support container at the bottom of the screen links to the buy-Jim-a-coffee page and to GitHub Discussions.
 
-**Settings → Site Health Controls** keeps the original feature: switch off the WordPress Site Health menu item, screen redirect, dashboard widget, background tests, weekly cron check, REST routes and AJAX actions, with administrator and user ID exemptions. It also has an opt-in *Delete all plugin data* setting for uninstall.
+**Settings → Site Health Controls** keeps the original feature, and nothing is switched off until you choose it: switch off the WordPress Site Health menu item, screen redirect, dashboard widget, background tests, weekly cron check, REST routes and AJAX actions, with administrator and user ID exemptions. It also has an opt-in *Delete all plugin data* setting for uninstall.
 
 ## Email a report to administrators
 
@@ -93,7 +93,7 @@ Upload the plugin ZIP under **Plugins → Add New → Upload Plugin**, or place 
 
 On Site Inspector and Site Health Controls screens, other notices can be expanded with **Show**. Late notices join the panel automatically. If the panel cannot initialize, notices remain visible.
 
-The plugin lives in the `thrg-site-inspector` folder and starts from `index.php`. Updates come from this repository's [GitHub releases](https://github.com/hackrepair/thrg-site-inspector/releases "All Site Inspector releases and download files").
+The plugin lives in the `thrg-site-inspector` folder and starts from `thrg-site-inspector.php`. This build has no built-in updater: once Site Inspector is listed in the WordPress.org plugin directory, updates will come from there. Copies installed from the 2.5.2 release (which start from `index.php`) keep updating from this repository's [GitHub releases](https://github.com/hackrepair/thrg-site-inspector/releases "All Site Inspector releases and download files") and are not offered the test build.
 
 ## Author and support
 
@@ -105,11 +105,13 @@ The plugin lives in the `thrg-site-inspector` folder and starts from `index.php`
 
 [GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2"). Started from a 2019 plugin by Louis Fico, used under the GPLv2-or-later license; the original attribution is retained.
 
-Update checks use [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker "Plugin Update Checker on GitHub") by Jānis Elsts (MIT license), 6.0, including Parsedown 1.8.0, included unmodified. Output from remote release notes remains sanitized before display.
-
 Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair").
 
 ## Changelog
+
+### 2.6.0 (WordPress.org-ready build, test release)
+
+Prepared for the WordPress.org plugin directory: the main file is now `thrg-site-inspector.php`, the GitHub updater and the Other THRG Plugins tab are not included, and Site Health Controls start switched off. The share-box and monthly-email scripts load from a script file instead of inline code. Requires WordPress 6.9 or newer.
 
 ### 2.5.2
 
