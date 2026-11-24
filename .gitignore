@@ -10,3 +10,11 @@
 
 # Python bytecode from running scripts/tests locally.
 __pycache__/
+
+# Local-only maintainer and audit notes (kept outside the public repo).
+/PROJECT.md
+/docs/dependency-coverage.md
+/docs/release-verification-*.md
+/docs/repository-protection-*.md
+/docs/review-fixes-*.md
+/docs/security-reporting-verification*.md

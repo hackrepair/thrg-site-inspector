@@ -49,7 +49,6 @@ def main():
     require("5 business days" in policy and "10 business days" in policy and "not guaranteed" in policy, "Missing qualified response targets.")
     require("latest stable release" in policy, "Missing supported-version policy.")
     require("[Security reporting](SECURITY.md)" in readme, "README does not link to the policy.")
-    require((ROOT / "docs/security-reporting-verification.md").is_file(), "Missing verification procedure.")
     print("PASS local policy, repository destination, fallback and README:", repo)
     if args.local:
         return

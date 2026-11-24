@@ -42,4 +42,4 @@ Security controls, automated checks and code reviews reduce risk; they are not a
 
 ## Verify the reporting route
 
-The repeatable maintainer check is documented in [Security reporting verification](docs/security-reporting-verification.md). From a local checkout, run `python3 scripts/verify-security-policy.py --local` for document checks, or `python3 scripts/verify-security-policy.py` to also verify the published files and live GitHub setting. A successful check does not prove email delivery or application security.
+From a local checkout, run `python3 scripts/verify-security-policy.py --local` for document checks, or `python3 scripts/verify-security-policy.py` to also verify the published files and live GitHub setting. A successful check does not prove email delivery or application security.
