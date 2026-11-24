@@ -49,6 +49,23 @@ final class THRG_SI_Email {
         return $n . ' ' . ( 1 === (int) $n ? $one : $many );
     }
 
+    /**
+     * Keep positive, unique recipient IDs in selection order.
+     *
+     * @param mixed $values Submitted or stored IDs.
+     * @return int[]
+     */
+    public static function recipient_ids( $values ) {
+        $ids = array();
+        foreach ( (array) $values as $value ) {
+            $id = is_scalar( $value ) ? (int) $value : 0;
+            if ( $id > 0 && ! in_array( $id, $ids, true ) ) {
+                $ids[] = $id;
+            }
+        }
+        return array_slice( $ids, 0, self::MAX_RECIPIENTS );
+    }
+
     /** Report acceptance separately from confirmed inbox delivery. */
     public static function feedback( $accepted, $failed ) {
         return sprintf(

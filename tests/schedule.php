@@ -59,9 +59,9 @@ check( THRG_SI_Schedule::worth_sending( array( $row( 'Review' ) ), true ) && THR
 
 // Status line on the screen.
 check( 'Not sent yet.' === THRG_SI_Schedule::describe( null, '' ), 'status before the first run' );
-check( 'Last sent Nov 1 to 2 administrators.' === THRG_SI_Schedule::describe( array( 'result' => 'sent', 'sent' => 2 ), 'Nov 1' ), 'status after a send' );
+check( 'Last attempt Nov 1. ' . THRG_SI_Email::feedback( 2, 0 ) === THRG_SI_Schedule::describe( array( 'result' => 'sent', 'sent' => 2 ), 'Nov 1' ), 'status after a send' );
 check( false !== strpos( THRG_SI_Schedule::describe( array( 'result' => 'skipped' ), 'Nov 1' ), 'nothing needed attention' ), 'status after a skipped month' );
-check( false !== strpos( THRG_SI_Schedule::describe( array( 'result' => 'partial', 'sent' => 1, 'failed' => 1 ), 'Nov 1' ), '1 sent, 1 failed' ), 'status after a partial failure' );
+check( false !== strpos( THRG_SI_Schedule::describe( array( 'result' => 'partial', 'sent' => 1, 'failed' => 1 ), 'Nov 1' ), 'Email accepted for sending: 1. Failed: 1.' ), 'status after a partial failure' );
 check( false !== strpos( THRG_SI_Schedule::describe( array( 'result' => 'no-recipients' ), 'Nov 1' ), 'none of the chosen administrators' ), 'status when nobody could be emailed' );
 
 // Email wording for scheduled runs.

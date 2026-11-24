@@ -11,3 +11,7 @@ The daily check uses WP-Cron, so timing depends on site traffic or the host’s 
 Inventory and recent changes stay in site-local WordPress options. Disabling monitoring clears both and cancels the daily check. Enabling it again starts fresh. Monthly inspection emails have their own settings and schedule.
 
 In 2.5.1, Last monitoring email shows the latest attempt’s time, alert type, accepted count and failed count. The site stores one record without recipient addresses or message contents. Acceptance does not confirm delivery. Turning monitoring off clears the record.
+
+The monitoring panel shows the next scheduled check in site time. A warning appears when the scheduled check is more than six hours late or the last inventory is more than 30 hours old. A missing scheduled event prompts you to save monitoring settings.
+
+Monthly email feedback now uses the same accepted/failed wording as monitoring. Monthly runs reload settings after inspection and before sending, so disabling the schedule or changing recipients, the note, or the send condition takes effect. Daily and monthly settings share recipient-ID validation.

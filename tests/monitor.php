@@ -47,6 +47,12 @@ function wp_cache_delete( $key, $group = '' ) {
 }
 function wp_clean_plugins_cache( $clear = true ) {}
 function get_users( $args = array() ) {
+    if ( in_array( 'user_email', $args['fields'], true ) ) {
+        return array(
+            (object) array( 'ID' => 1, 'display_name' => 'Alice', 'user_email' => 'alice@example.com' ),
+            (object) array( 'ID' => 2, 'display_name' => 'Bob', 'user_email' => 'bob@example.com' )
+        );
+    }
     return $GLOBALS['admins'];
 }
 function get_plugins() {
@@ -80,18 +86,10 @@ class Fake_Theme {
     }
 }
 
-final class THRG_SI_Email {
-    const MAX_RECIPIENTS = 25;
-    public static function site_domain() {
-        return 'example.com';
-    }
-    public static function recipients() {
-        return array(
-            array( 'id' => 1, 'name' => 'Alice', 'email' => 'alice@example.com' ),
-            array( 'id' => 2, 'name' => 'Bob', 'email' => 'bob@example.com' ),
-        );
-    }
-}
+function home_url( $path = '' ) { return 'https://example.com/'; }
+function wp_parse_url( $url, $part ) { return parse_url( $url, $part ); }
+function is_email( $email ) { return filter_var( $email, FILTER_VALIDATE_EMAIL ); }
+require __DIR__ . '/../includes/class-thrg-si-email.php';
 
 final class THRG_Site_Inspector {
     const PAGE_URL = 'tools.php?page=thrg-site-inspector';
@@ -261,3 +259,13 @@ $GLOBALS['options']['thrg_si_monitor']['users'] = array( 99 );
 THRG_SI_Monitor::grant( 5, 'administrator' );
 $status = $GLOBALS['options']['thrg_si_monitor_mail'];
 check( 0 === $status['sent'] && 0 === $status['failed'], 'no eligible recipients replaces stale success counts' );
+
+
+// Timing uses both the scheduled event and the last completed inventory.
+$now = 200000;
+check( ! THRG_SI_Monitor::is_overdue( array( 'time' => $now ), $now + DAY_IN_SECONDS, $now ), 'fresh inventory with future check is on time' );
+check( ! THRG_SI_Monitor::is_overdue( array(), $now - THRG_SI_Monitor::LATE_SECONDS, $now ), 'scheduled check stays within the six-hour grace boundary' );
+check( THRG_SI_Monitor::is_overdue( array(), $now - THRG_SI_Monitor::LATE_SECONDS - 1, $now ), 'scheduled check past grace is overdue' );
+check( ! THRG_SI_Monitor::is_overdue( array( 'time' => $now - DAY_IN_SECONDS - THRG_SI_Monitor::LATE_SECONDS ), false, $now ), 'inventory stays within the thirty-hour boundary' );
+check( THRG_SI_Monitor::is_overdue( array( 'time' => $now - DAY_IN_SECONDS - THRG_SI_Monitor::LATE_SECONDS - 1 ), $now + DAY_IN_SECONDS, $now ), 'future event does not hide a stale inventory' );
+check( ! THRG_SI_Monitor::is_overdue( 'invalid', false, $now ), 'missing inventory and event do not invent an overdue timestamp' );

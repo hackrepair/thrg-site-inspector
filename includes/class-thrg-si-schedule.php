@@ -56,22 +56,15 @@ final class THRG_SI_Schedule {
      * @return array
      */
     public static function normalize( $s ) {
-        $s   = array_merge( self::defaults(), is_array( $s ) ? $s : array() );
-        $day = (int) $s['day'];
-        $ids = array();
-        foreach ( (array) $s['users'] as $id ) {
-            $id = is_scalar( $id ) ? (int) $id : 0;
-            if ( $id > 0 && ! in_array( $id, $ids, true ) ) {
-                $ids[] = $id;
-            }
-        }
+        $s    = array_merge( self::defaults(), is_array( $s ) ? $s : array() );
+        $day  = (int) $s['day'];
         $note = trim( (string) ( is_scalar( $s['note'] ) ? $s['note'] : '' ) );
         return array(
             'enabled'     => empty( $s['enabled'] ) ? 0 : 1,
             'day'         => max( 1, min( self::LAST_DAY, $day ) ),
             'only_issues' => empty( $s['only_issues'] ) ? 0 : 1,
             'who'         => 'chosen' === $s['who'] ? 'chosen' : 'all',
-            'users'       => array_slice( $ids, 0, THRG_SI_Email::MAX_RECIPIENTS ),
+            'users'       => THRG_SI_Email::recipient_ids( $s['users'] ),
             'note'        => function_exists( 'mb_substr' ) ? mb_substr( $note, 0, THRG_SI_Email::NOTE_LENGTH ) : substr( $note, 0, THRG_SI_Email::NOTE_LENGTH ),
             'owner'       => max( 0, (int) $s['owner'] ),
         );
@@ -145,11 +138,11 @@ final class THRG_SI_Schedule {
         $failed = (int) ( isset( $log['failed'] ) ? $log['failed'] : 0 );
         switch ( $log['result'] ) {
             case 'sent':
-                return sprintf( 'Last sent %s to %d administrator%s.', $when, $sent, 1 === $sent ? '' : 's' );
             case 'partial':
-                return sprintf( 'Last run %s: %d sent, %d failed. Check your site\'s email setup.', $when, $sent, $failed );
             case 'failed':
-                return sprintf( 'Last run %s: WordPress could not send the email. Check your site\'s email setup.', $when );
+                return sprintf( 'Last attempt %s. %s', $when, THRG_SI_Email::feedback( $sent, $failed ) );
+            case 'disabled':
+                return sprintf( 'Last run %s: monthly email was disabled before sending.', $when );
             case 'skipped':
                 return sprintf( 'Last run %s: nothing needed attention, so no email was sent.', $when );
             case 'no-recipients':
@@ -242,7 +235,16 @@ final class THRG_SI_Schedule {
                 'sent'   => 0,
                 'failed' => 0,
             );
-            $to  = self::pick( THRG_SI_Email::recipients(), $s );
+            // Re-read settings after the inspection so changes made during the run take effect.
+            wp_cache_delete( self::OPTION, 'options' );
+            wp_cache_delete( 'alloptions', 'options' );
+            $s = self::settings();
+            if ( ! $s['enabled'] ) {
+                $log['result'] = 'disabled';
+                update_option( self::LOG, $log, false );
+                return $log;
+            }
+            $to = self::pick( THRG_SI_Email::recipients(), $s );
             if ( ! self::worth_sending( $rows, $s['only_issues'] ) ) {
                 $log['result'] = 'skipped';
             } elseif ( ! $to ) {

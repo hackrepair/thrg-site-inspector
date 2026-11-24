@@ -4,7 +4,7 @@ Tags: security, audit, site health, report, hardening
 Requires at least: 6.9.4
 Requires PHP: 7.4
 Tested up to: 7.1
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Support link: https://github.com/hackrepair/thrg-site-inspector/discussions
@@ -155,6 +155,12 @@ Plugin update discovery and package downloads contact GitHub independently of in
 By default nothing is deleted, so a reinstall picks up where you left off. Uninstall cancels the monthly email and the daily monitoring check. Opt-in cleanup also removes the schedule and monitoring locks, monitoring email status, and database-backed email throttle transients; any external-cache throttle entries expire after one minute. To remove saved plugin data, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
 == Changelog ==
+
+= 2.5.2 =
+
+* The monitoring panel shows the next scheduled check in site time and warns when the check is overdue or missing.
+
+* Monthly email shows accepted and failed counts and reloads settings after inspection, before sending. Daily and monthly settings share recipient-ID validation.
 
 = 2.5.1 =
 

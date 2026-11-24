@@ -62,3 +62,7 @@ check( 'Reply-To: "Jim Walker" <jim@example.com>' === THRG_SI_Email::reply_to( '
 check( 'Reply-To: "Walker Jim Ops" <jim@example.com>' === THRG_SI_Email::reply_to( 'Walker, Jim <Ops>', 'jim@example.com' ), 'reply-to strips separators from the name' );
 check( 'Reply-To: <jim@example.com>' === THRG_SI_Email::reply_to( '""', 'jim@example.com' ), 'reply-to without a usable name' );
 check( '' === THRG_SI_Email::reply_to( 'Jim', 'not-an-email' ), 'no reply-to without a valid address' );
+
+check( array( 3, 7 ) === THRG_SI_Email::recipient_ids( array( '3', 3, -1, 0, array( 9 ), new stdClass(), 'x', 7 ) ), 'recipient IDs reject invalid entries and preserve unique order' );
+check( array( 3 ) === THRG_SI_Email::recipient_ids( '3' ), 'legacy scalar recipient stays supported' );
+check( 25 === count( THRG_SI_Email::recipient_ids( range( 1, 30 ) ) ), 'recipient IDs retain the existing limit' );

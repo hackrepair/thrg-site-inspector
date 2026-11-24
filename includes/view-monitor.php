@@ -9,6 +9,8 @@ defined( 'ABSPATH' ) || exit;
 $thrg_si_monitor        = THRG_SI_Monitor::normalize_settings( get_option( 'thrg_si_monitor' ) );
 $thrg_si_mail           = get_option( 'thrg_si_monitor_mail', array() );
 $thrg_si_inventory      = get_option( 'thrg_si_inventory', array() );
+$thrg_si_monitor_next   = $thrg_si_monitor ? wp_next_scheduled( THRG_SI_Monitor::HOOK ) : false;
+$thrg_si_monitor_late   = $thrg_si_monitor && THRG_SI_Monitor::is_overdue( $thrg_si_inventory, $thrg_si_monitor_next, time() );
 $thrg_si_admin_ids      = array_map( 'intval', array_column( $admins, 'id' ) );
 $thrg_si_active_monitor = $thrg_si_monitor ? array_intersect( $thrg_si_monitor['users'], $thrg_si_admin_ids ) : array();
 ?>
@@ -18,6 +20,16 @@ $thrg_si_active_monitor = $thrg_si_monitor ? array_intersect( $thrg_si_monitor['
     </h2>
     <div class="si-card">
     <p>Check daily for new administrators, plugins, and themes. The first check records what’s already on the site. Each subsequent check reports any additions since the previous check.</p>
+    <?php if ( $thrg_si_monitor ) : ?>
+        <?php if ( $thrg_si_monitor_next ) : ?>
+            <p>Next scheduled check: <?php echo esc_html( wp_date( $thrg_si_fmt, (int) $thrg_si_monitor_next ) ); ?> (site time).</p>
+        <?php else : ?>
+            <div class="si-callout si-callout--warning" role="status"><p>No daily monitoring check is scheduled. Save monitoring settings to schedule the next check.</p></div>
+        <?php endif; ?>
+        <?php if ( $thrg_si_monitor_late ) : ?>
+            <div class="si-callout si-callout--warning" role="status"><p>The daily monitoring check is overdue. WordPress runs scheduled jobs when someone visits the site. Ask your host to check scheduled tasks and set up a server cron job for wp-cron.php so checks run on time.</p></div>
+        <?php endif; ?>
+    <?php endif; ?>
     <?php if ( in_array( $flag, array( 'monitor-saved', 'monitor-off', 'monitor-none' ), true ) ) : ?>
         <div class="si-callout<?php echo in_array( $flag, $thrg_si_warn, true ) ? ' si-callout--warning' : ''; ?>" role="status"><p><?php echo esc_html( $thrg_si_notices[ $flag ] ); ?></p></div>
     <?php endif; ?>

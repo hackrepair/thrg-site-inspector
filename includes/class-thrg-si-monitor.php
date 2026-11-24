@@ -12,6 +12,9 @@ final class THRG_SI_Monitor {
     const LOCK    = 'thrg_si_monitor_lock';
     const MAX_LOG = 50;
 
+    /** Grace period after the daily inventory becomes due. */
+    const LATE_SECONDS = 21600;
+
     public static function boot() {
         add_action( 'admin_post_thrg_si_monitor', array( __CLASS__, 'save' ) );
         add_action( 'admin_init', array( __CLASS__, 'schedule' ) );
@@ -29,17 +32,8 @@ final class THRG_SI_Monitor {
         if ( ! is_array( $raw ) ) {
             return null;
         }
-        $ids = array();
-        if ( isset( $raw['users'] ) && is_array( $raw['users'] ) ) {
-            foreach ( $raw['users'] as $id ) {
-                $id = is_scalar( $id ) ? (int) $id : 0;
-                if ( $id > 0 && ! in_array( $id, $ids, true ) ) {
-                    $ids[] = $id;
-                }
-            }
-        }
         return array(
-            'users'     => array_slice( $ids, 0, THRG_SI_Email::MAX_RECIPIENTS ),
+            'users'     => THRG_SI_Email::recipient_ids( isset( $raw['users'] ) && is_array( $raw['users'] ) ? $raw['users'] : array() ),
             'immediate' => ! empty( $raw['immediate'] ),
             'digest'    => ! empty( $raw['digest'] ),
         );
@@ -80,6 +74,20 @@ final class THRG_SI_Monitor {
             $log[] = array( (int) $now, (string) $change );
         }
         return array_slice( $log, -self::MAX_LOG );
+    }
+
+    /**
+     * Detect a late scheduled event or an inventory that has stopped advancing.
+     *
+     * @param mixed     $inventory Stored inventory.
+     * @param int|false $next      Next scheduled check.
+     * @param int       $now       Current Unix time.
+     * @return bool
+     */
+    public static function is_overdue( $inventory, $next, $now ) {
+        $last = is_array( $inventory ) && isset( $inventory['time'] ) && is_numeric( $inventory['time'] ) ? (int) $inventory['time'] : 0;
+        return ( $next && $now - (int) $next > self::LATE_SECONDS )
+            || ( $last > 0 && $now - $last > DAY_IN_SECONDS + self::LATE_SECONDS );
     }
 
     public static function schedule() {
