@@ -480,8 +480,8 @@ $thrg_si_actions = static function ( $actions ) {
     <section id="support" class="si-block si-support" aria-labelledby="si-support-title">
         <h2 id="si-support-title" class="si-section"><?php esc_html_e( 'Support', 'thrg-site-inspector' ); ?></h2>
         <div class="si-card">
-            <p>&#9749; <?php echo wp_kses_post( __( 'If you found this plugin helpful, please <a href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener">buy Jim a cup of coffee?</a>', 'thrg-site-inspector' ) ); ?></p>
-            <p><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo wp_kses_post( __( 'Questions and Feedback: For questions, ideas, or help with the plugin, <a href="https://github.com/hackrepair/thrg-site-inspector/discussions" target="_blank" rel="noopener">visit GitHub Discussions</a>.', 'thrg-site-inspector' ) ); ?></p>
+            <p>&#9749; <?php echo wp_kses_post( __( 'Hi, I&rsquo;m Jim. I made this! If Site Inspector saved you some time and worry, I&rsquo;d be so grateful if you&rsquo;d <a href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener noreferrer">buy me a cup of coffee</a>. Thank you!', 'thrg-site-inspector' ) ); ?></p>
+            <p><span class="dashicons dashicons-editor-help" aria-hidden="true"></span> <?php echo wp_kses_post( __( 'Questions or ideas? Visit the <a href="https://wordpress.org/support/plugin/thrg-site-inspector/" target="_blank" rel="noopener noreferrer">support forum on WordPress.org</a>. If Site Inspector helped, a <a href="https://wordpress.org/support/plugin/thrg-site-inspector/reviews/#new-post" target="_blank" rel="noopener noreferrer">review</a> helps others find it.', 'thrg-site-inspector' ) ); ?></p>
         </div>
     </section>
 

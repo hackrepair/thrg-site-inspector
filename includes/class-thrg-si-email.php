@@ -166,16 +166,6 @@ final class THRG_SI_Email {
     }
 
     /**
-     * Whether emails end with the "Need a deeper look?" line. Only the GitHub edition adds it;
-     * the WordPress.org edition sends no promotional text in emails.
-     *
-     * @return bool
-     */
-    private static function help_line() {
-        return function_exists( 'thrg_si_github_edition' ) && thrg_si_github_edition();
-    }
-
-    /**
      * A Reply-To header for the sender, or '' without a valid address.
      * The display name loses characters wp_mail() treats as separators.
      *
@@ -349,9 +339,7 @@ final class THRG_SI_Email {
             $h .= self::e( self::SCHEDULED_FOOTER ) . ' ';
         }
         $h .= 'This is a read-only look at the site&rsquo;s own files and settings. It does not test what the public can reach, match known vulnerabilities, or scan for malware. ';
-        if ( self::help_line() ) {
-            $h .= 'Need a deeper look? Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" style="color:#8f3a00;">The Hack Repair Guy</a>.';
-        }
+        $h .= 'Need a deeper look? Contact <a href="https://hackrepair.com/" title="The Hack Repair Guy: WordPress security and hack repair" style="color:#8f3a00;">The Hack Repair Guy</a>.';
         $h .= '</td></tr></table></td></tr></table></body></html>';
         return $h;
     }
@@ -405,7 +393,7 @@ final class THRG_SI_Email {
         if ( '' !== (string) $a['view_url'] ) {
             $out .= "\nOpen the full report (administrator login required):\n" . $a['view_url'] . "\n";
         }
-        $out .= "\n--\nSent by " . $a['sender'] . ' from ' . $site . " with The Hack Repair Guy's Site Inspector. Usernames are partly hidden. " . ( $a['scheduled'] ? self::SCHEDULED_FOOTER . ' ' : '' ) . "This is a read-only look at the site's own files and settings; it does not test what the public can reach, match known vulnerabilities, or scan for malware." . ( self::help_line() ? ' Need a deeper look? https://hackrepair.com/' : '' ) . "\n";
+        $out .= "\n--\nSent by " . $a['sender'] . ' from ' . $site . " with The Hack Repair Guy's Site Inspector. Usernames are partly hidden. " . ( $a['scheduled'] ? self::SCHEDULED_FOOTER . ' ' : '' ) . "This is a read-only look at the site's own files and settings; it does not test what the public can reach, match known vulnerabilities, or scan for malware. Need a deeper look? https://hackrepair.com/\n";
         return $out;
     }
 

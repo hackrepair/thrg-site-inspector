@@ -1,7 +1,6 @@
 <?php
 /**
  * Plugin Name:       The Hack Repair Guy's Site Inspector
- * Plugin URI:        https://github.com/hackrepair/thrg-site-inspector
  * Description:       Your friendly WordPress security inspector. Keeps a history of your reports and shows what changed. Includes optional Site Health controls.
  * Version:           2.6.0
  * Author:            The Hack Repair Guy
@@ -21,16 +20,6 @@ defined( 'ABSPATH' ) || exit;
 
 const THRG_SI_VERSION = '2.6.0';
 const THRG_SI_FILE    = __FILE__;
-
-/*
- * GitHub edition extras: release updates, the local View Details dialog and the
- * Other THRG Plugins tab. Everything GitHub-only lives in github/; the
- * WordPress.org build leaves that folder out, and
- * WordPress.org provides updates and plugin details itself.
- */
-if ( is_readable( __DIR__ . '/github/github-edition.php' ) ) {
-    require_once __DIR__ . '/github/github-edition.php';
-}
 
 require_once __DIR__ . '/includes/class-thrg-site-inspector.php';
 THRG_Site_Inspector::boot();
@@ -57,24 +46,14 @@ function thrg_si_slug() {
 }
 
 /**
- * Whether this copy is the GitHub edition (it ships github/github-edition.php).
- *
- * @return bool
- */
-function thrg_si_github_edition() {
-    return defined( 'THRG_SI_GITHUB_EDITION' ) && THRG_SI_GITHUB_EDITION;
-}
-
-/**
  * Default settings. Saved settings override these defaults; user exemptions
  * are off by default.
  *
  * @return array
  */
 function thrg_shc_defaults() {
-    // The GitHub edition keeps its long-standing defaults (all seven controls on).
-    // The WordPress.org edition leaves Site Health alone until the owner opts in.
-    $on = thrg_si_github_edition() ? 1 : 0;
+    // Site Health is left alone until the owner opts in.
+    $on = 0;
     return array(
         'hide_menu'        => $on,
         'redirect'         => $on,
@@ -395,7 +374,7 @@ function thrg_shc_render_settings_page() {
             <div>
                 <p class="si-eyebrow">The Hack Repair Guy&rsquo;s</p>
                 <h1><?php esc_html_e( 'Site Health Controls', 'thrg-site-inspector' ); ?></h1>
-                <p class="si-byline"><?php echo esc_html( thrg_si_github_edition() ? __( 'Choose which parts of WordPress Site Health to switch off. All seven are on until you save your own choices. Uncheck an option to restore that feature.', 'thrg-site-inspector' ) : __( 'Choose which parts of WordPress Site Health to switch off. Nothing is switched off until you tick an option and save. Uncheck an option to restore that feature.', 'thrg-site-inspector' ) ); ?></p>
+                <p class="si-byline"><?php echo esc_html( __( 'Choose which parts of WordPress Site Health to switch off. Nothing is switched off until you tick an option and save. Uncheck an option to restore that feature.', 'thrg-site-inspector' ) ); ?></p>
             </div>
         </div>
         <hr class="wp-header-end" />

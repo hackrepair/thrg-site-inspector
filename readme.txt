@@ -64,13 +64,24 @@ Started from a 2019 plugin by Louis Fico, used under the [GPLv2-or-later license
 
 On Site Inspector and Site Health Controls screens, choose Show to expand other notices. Late notices are included automatically, and notices stay visible if the panel cannot initialize.
 
+== External services ==
+
+Site Inspector does not contact any outside service. Inspections, report history, change monitoring and the monthly email all run on your own site. Emails go only to the site's own administrators, through your site's normal WordPress mail setup. The PHP support dates and security fixes it checks against are built into the plugin and need no request.
+
+Site Inspector has no account, license server, analytics or advertising requests.
+
 == Installation ==
 
-1. In WordPress, open Plugins > Add New Plugin, search for "Site Inspector Hack Repair Guy" and click Install Now. You can also upload the thrg-site-inspector folder to wp-content/plugins/.
+1. In WordPress, open Plugins > Add New Plugin, search for "The Hack Repair Guy's Site Inspector" and choose Install Now. You can also upload the thrg-site-inspector folder to wp-content/plugins/.
 2. Activate The Hack Repair Guy's Site Inspector.
 3. Open Tools > Site Inspector and click Inspect this site.
 4. To email a saved report, open it and choose Email to administrators under Send this report to your designer or developer. Review recipients and Subject, optionally add a note, then choose Send email.
 5. Optional: under Settings > Site Health Controls, choose any Site Health features you want switched off. Nothing is switched off until you save a choice there.
+
+== Support ==
+
+Hi, I'm Jim, the author. Questions, ideas, or stuck on something? I'd love to hear from you and I'm happy to help. Visit the plugin's support forum on WordPress.org:
+https://wordpress.org/support/plugin/thrg-site-inspector/
 
 == Frequently Asked Questions ==
 
@@ -140,15 +151,11 @@ No. Site Inspector makes no outside requests, needs no account or license key, a
 
 By default nothing is deleted, so a reinstall picks up where you left off. Uninstall cancels the monthly email and the daily monitoring check. Opt-in cleanup also removes the schedule and monitoring locks, monitoring email status, and database-backed email throttle transients; any external-cache throttle entries expire after one minute. To remove saved plugin data, tick "Delete all plugin data" under Settings > Site Health Controls before you delete the plugin. Deactivating never deletes data.
 
-= Where can I get help? =
+== Screenshots ==
 
-For questions and help, use the plugin's support forum on WordPress.org. Ideas and discussion are also welcome on GitHub Discussions:
-https://github.com/hackrepair/thrg-site-inspector/discussions
-
-Report reproducible bugs through Issues:
-https://github.com/hackrepair/thrg-site-inspector/issues
-
-Report security concerns privately to Jim Walker at jim@hackrepair.com. Do not include credentials or sensitive site information in public posts.
+1. A report: what needs attention first, what to review, and what was found clean, with a plain-language next step for each finding.
+2. Share a report: copy it, download it, print it, or email a "state of security" summary to the site's administrators.
+3. The optional monthly security email: pick the day, when to send, and who receives it.
 
 == Changelog ==
 
