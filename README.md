@@ -14,9 +14,9 @@ This repository holds version **2.6.0**, the WordPress.org-ready build. A [2.6.0
   <strong>▶ Watch Site Inspector in 75 seconds</strong><br>
   <a href="https://www.youtube.com/watch?v=ruIz3vJbSUM" title="Watch the Site Inspector intro on YouTube (75 seconds)"><img src="docs/img/video-thumb.jpg" alt="The Hack Repair Guy's Site Inspector: watch the 75-second tour on YouTube" width="480"></a>
   <br><br>
-  <a href="https://github.com/hackrepair/thrg-site-inspector/releases/latest" title="Download the latest Site Inspector plugin zip from GitHub"><img src="https://img.shields.io/badge/%E2%AC%87%20%20Download%20the%20latest%20release-b34700?style=for-the-badge&labelColor=b34700" alt="Download the latest release" height="46"></a>
+  <a href="https://github.com/hackrepair/thrg-site-inspector/releases/download/v2.6.0-wporg-test/thrg-site-inspector.2.6.0.wporg.zip" title="Download the Site Inspector 2.6.0 plugin zip"><img src="https://img.shields.io/badge/%E2%AC%87%20%20Download%20Site%20Inspector%202.6.0-b34700?style=for-the-badge&labelColor=b34700" alt="Download Site Inspector 2.6.0" height="46"></a>
   <br>
-  <sub>Free. Upload the zip in WordPress, and later updates arrive on the Plugins screen.</sub>
+  <sub>Free. Upload the zip in WordPress. Once Site Inspector is in the WordPress.org directory, updates arrive on the Plugins screen.</sub>
   <br><br>
   <a href="https://hackrepair.github.io/thrg-site-inspector/" title="The Site Inspector project page">Visit the Site Inspector page</a>
 </p>

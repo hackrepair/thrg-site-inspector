@@ -243,13 +243,13 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
         <h1>Find the open doors <em>before someone else does.</em></h1>
         <p class="lede">A friendly, read-only security checkup for WordPress. In a few seconds it looks for the things most hacked sites had in common, then tells you in plain language what it found and what to do next.</p>
         <div class="actions">
-          <a class="btn" data-download href="https://github.com/hackrepair/thrg-site-inspector/releases/latest">
+          <a class="btn" href="https://github.com/hackrepair/thrg-site-inspector/releases/download/v2.6.0-wporg-test/thrg-site-inspector.2.6.0.wporg.zip">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-5-5m5 5 5-5M5 20h14"/></svg>
-            <span data-download-label>Download Site Inspector</span>
+            <span>Download Site Inspector 2.6.0</span>
           </a>
           <a class="text-link" href="#tour">Watch the 75-second tour</a>
         </div>
-        <p class="fine">Free and open source (GPL-2.0-or-later). Needs WordPress 6.9.4 or newer and PHP 7.4 or newer.</p>
+        <p class="fine">Free and open source (GPL-2.0-or-later). Needs WordPress 6.9 or newer and PHP 7.4 or newer.</p>
       </div>
 
       <div class="report" role="img" aria-label="An example Site Inspector report: 2 items need attention, 4 to review, 7 checks with nothing found.">
@@ -282,11 +282,11 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
       </div>
       <noscript><p><a href="https://www.youtube.com/watch?v=ruIz3vJbSUM">Watch the video on YouTube</a></p></noscript>
       <div class="below">
-        <a class="btn" data-download href="https://github.com/hackrepair/thrg-site-inspector/releases/latest">
+        <a class="btn" href="https://github.com/hackrepair/thrg-site-inspector/releases/download/v2.6.0-wporg-test/thrg-site-inspector.2.6.0.wporg.zip">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-5-5m5 5 5-5M5 20h14"/></svg>
-          <span data-download-label>Download Site Inspector</span>
+          <span>Download Site Inspector 2.6.0</span>
         </a>
-        <p class="version" data-version>Free, and updates arrive inside WordPress.</p>
+        <p class="version">Version 2.6.0, released November 24, 2026. Free, and prepared for the WordPress.org plugin directory.</p>
       </div>
     </section>
 
@@ -356,7 +356,7 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
         <ul class="pills"><li>Read-only</li><li>Nothing is changed</li><li>No network requests</li><li>Reports stay on your site</li></ul>
         <p>Optional daily monitoring records new administrators, plugins and themes. Choose who receives daily change emails or immediate administrator alerts. Monitoring starts off and keeps the latest 50 additions locally.</p>
         <p>An inspection reads your site's settings and file listings without opening file contents, applying fixes or contacting any outside service. Reports are stored only in your own WordPress database, and leave it only when an administrator chooses to export or email one, or enables the monthly email. Emails can go only to the site's own administrators.</p>
-        <p class="small">Plugin updates come from this project's GitHub releases, separately from inspections. Site Inspector is not a malware scanner, a firewall or a vulnerability feed. "Nothing found" means just that, for the check described. If you think your site has been hacked, <a href="https://hackrepair.com/">The Hack Repair Guy</a> can help.</p>
+        <p class="small">Once Site Inspector is listed in the WordPress.org plugin directory, updates will arrive through WordPress like any other plugin, separately from inspections. Site Inspector is not a malware scanner, a firewall or a vulnerability feed. "Nothing found" means just that, for the check described. If you think your site has been hacked, <a href="https://hackrepair.com/">The Hack Repair Guy</a> can help.</p>
       </div>
     </div>
   </div>
@@ -365,7 +365,7 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
     <section aria-labelledby="extra-h">
       <div class="extra">
         <h3 id="extra-h">Bonus: Site Health Controls</h3>
-        <p>Under <strong>Settings › Site Health Controls</strong> you can switch off WordPress's Site Health menu, dashboard widget, background tests and weekly check, with exemptions for administrators or specific users.</p>
+        <p>Under <strong>Settings › Site Health Controls</strong> you can switch off WordPress's Site Health menu, dashboard widget, background tests and weekly check, with exemptions for administrators or specific users. Nothing is switched off until you choose it.</p>
       </div>
     </section>
 
@@ -377,11 +377,11 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
         <li><strong>Activate it</strong>, open <strong>Tools › Site Inspector</strong>, and click <strong>Inspect this site</strong>.</li>
       </ol>
       <div class="below" style="margin-top:0">
-        <a class="btn" data-download href="https://github.com/hackrepair/thrg-site-inspector/releases/latest">
+        <a class="btn" href="https://github.com/hackrepair/thrg-site-inspector/releases/download/v2.6.0-wporg-test/thrg-site-inspector.2.6.0.wporg.zip">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11m0 0-5-5m5 5 5-5M5 20h14"/></svg>
-          <span data-download-label>Download Site Inspector</span>
+          <span>Download Site Inspector 2.6.0</span>
         </a>
-        <p class="version">Later updates arrive on the normal Plugins screen, from this project's GitHub releases.</p>
+        <p class="version">Already running an older copy from GitHub? Deactivate and delete it first. Your saved reports and settings are kept unless you ticked "Delete all plugin data".</p>
       </div>
     </section>
   </div>
@@ -430,22 +430,6 @@ footer { margin-top: 96px; padding: 44px 0 56px; border-top: 2px solid var(--ink
     });
   }
 
-  // Point every download button at the newest zip. If the lookup fails, the
-  // buttons keep going to the latest release page.
-  fetch('https://api.github.com/repos/hackrepair/thrg-site-inspector/releases/latest', { headers: { Accept: 'application/vnd.github+json' } }).then(function (r) {
-    return r.ok ? r.json() : null;
-  }).then(function (rel) {
-    if (!rel || !rel.assets) { return; }
-    var zip = rel.assets.filter(function (a) { return /^thrg-site-inspector\.\d+\.\d+\.\d+\.zip$/.test(a.name); })[0];
-    if (!zip) { return; }
-    var version = String(rel.tag_name || '').replace(/^v/, '');
-    document.querySelectorAll('[data-download]').forEach(function (a) { a.href = zip.browser_download_url; });
-    document.querySelectorAll('[data-download-label]').forEach(function (s) { s.textContent = 'Download Site Inspector ' + version; });
-    var when = rel.published_at ? new Date(rel.published_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-    document.querySelectorAll('[data-version]').forEach(function (p) {
-      p.textContent = 'Latest version ' + version + (when ? ', released ' + when : '') + '. Updates arrive inside WordPress.';
-    });
-  }).catch(function () {});
 })();
 </script>
 </body>
