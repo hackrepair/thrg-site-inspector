@@ -13,60 +13,73 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 == Description ==
 
-Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those, in a few seconds, and tells you in plain language what it found, why it matters, and what to do about it. The inspection does not apply fixes to your site. Reports are saved locally when history is enabled.
+Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder.
+
+Site Inspector looks for exactly those in a few seconds, then tells you in plain language what it found, why it matters and what to do about it. The inspection doesn't change your site. If you keep history on, reports are saved on your own site.
 
 Open **Tools > Site Inspector** and click **Inspect this site**. It checks:
 
 * Updates waiting for WordPress, plugins and themes (from WordPress's own update data)
 * Administrator accounts, including recently created ones and accounts with admin power but no Administrator role
-* PHP files hiding in the uploads folder (tiny placeholder index.php files are recognized and ignored)
+* PHP files hiding in the uploads folder (it recognizes and skips the tiny placeholder index.php files)
 * Backups, error_log and debug logs, and leftover wp-config copies sitting in the web folder
-* Must-use plugins and drop-ins, which run on every page but don't appear in the plugin list
-* Unused plugins and themes
-* PHP version support, and whether a known PHP security fix is missing, plus security keys and salts, the built-in code editor, and PHP error display
+* Must-use plugins and drop-ins, which run on every page but don't show in the plugin list
+* Plugins and themes you aren't using
+* Whether your PHP version is still supported, and whether a known PHP security fix is missing
+* Security keys and salts, the built-in code editor and PHP error display
 * Registration privileges, HTTPS settings and wp-config.php permissions
 
-**Every finding is easy to act on.** Each one says why it matters, what was observed and what to do next, with the limits of the check one click away. Passing checks are tucked away so the problems stand out, and most results link straight to the admin page where you can fix them.
+Each finding tells you why it matters, what Site Inspector saw and what to do next, with the limits of the check one click away. Passing checks are tucked out of the way so the problems stand out, and most results link straight to the admin page where you fix them.
 
-**Your reports build a history.** When history is enabled, inspections are saved on your own site (up to 25 reports within a 600,000-byte storage limit), so you can reopen an earlier report and see what is new and what you have fixed since the last one. You can pause history, delete a single report or clear it all at any time.
+With history on, Site Inspector saves up to 25 reports on your site, within a 600 KB limit. Reopen an earlier report to see what's new and what you've fixed since the last one. You can pause history, delete a single report or clear them all at any time.
 
-**Hand it to someone else.** Copy your report as plain text for an email or support ticket, download it as a text file, or print it. Usernames are masked on paper.
+To hand a report to someone else, copy it as plain text for an email or support ticket, download it as a text file, or print it. Printed copies mask usernames.
 
-**Email a "state of security" briefing.** From any report, send a friendly, plain-language summary to some or all of the site's administrators: what needs fixing first, what's worth a second look, what's already in good shape, and what changed since the last check, with a subject line that tells them where things stand before they open it. You can add a personal note, each administrator gets their own copy, and replies come back to you.
+From any report, you can also email a "state of security" briefing to some or all of your site's administrators. It covers what needs fixing first, what's worth a second look, what's already in good shape and what changed since the last check. The subject line tells them where things stand before they open it. Add a personal note if you like. Each administrator gets their own copy, and replies come back to you.
 
-**Monitor and report site changes.** Monitoring is off by default. Under Tools → Site Inspector, turn on **Monitor this site daily** to record the current administrators, plugins and themes. Each daily check lists additions since the previous inventory, including inactive plugins and themes. You can email selected administrators immediately when WordPress grants administrator access, send a daily email when additions appear, or just review changes in the dashboard.
+Change monitoring is off by default. Under **Tools > Site Inspector**, turn on **Monitor this site daily** and it records your current administrators, plugins and themes. Each daily check lists anything added since the last inventory, inactive plugins and themes included. Then you choose: email selected administrators as soon as WordPress grants someone administrator access, send a daily email when additions show up, or just review the changes in your dashboard.
 
-**Get a monthly security statement.** Turn on the monthly email to have Site Inspector check the site on a day you choose and send the statement to all administrators or the ones you pick. It is off until you turn it on. Send it every month, or only when something needs fixing or a second look.
+The monthly security statement is off by default too. Turn it on and pick a day, and Site Inspector checks the site and sends the statement to all administrators or the ones you choose. Send it every month, or only when something needs fixing or a second look.
 
-Administrator emails use a full-width branded HTML layout with a plain-text alternative. Subjects follow `[example.com] [Site Inspector] Security Check: 2 issues need attention`, retaining the report status and change counts. The configured home URL supplies the domain, preserving subdomains and explicit ports such as `localhost:8081`. The subject preview matches the sent message.
+Emails use a full-width branded layout with a plain-text version. The subject starts with your site's address, subdomain and port included, and carries the report status and change counts, like `[example.com] [Site Inspector] Security Check: 2 issues need attention`. The subject you preview is the subject that's sent.
+
+On the Site Inspector and Site Health Controls screens, other notices are folded away. Click **Show** to see them. Notices that load late are included, and if the panel can't load, notices stay visible.
 
 = Privacy =
 
-Monitoring stores the inventory, the latest 50 additions, and the latest monitoring email attempt status locally. Monitoring emails may include the administrator’s login or the name and location of an added plugin or theme. Turning monitoring off clears the inventory, its change history, and the email status.
+The inspection reads your site's settings and a limited set of file and folder details. It doesn't open file contents, contact outside services or apply fixes. Saving report history and changing Site Health Controls do save plugin settings and data.
 
-The inspection reads local settings and bounded filesystem metadata without applying fixes, making external requests, or reading file contents. Saving report history and changing Site Health Controls do write plugin settings/data. Reports are stored only in your site's database and include usernames and file names, so share them only with people you trust. Reports leave the site only when you choose to export or email them, or when you turn on the monthly email, and emails can only go to the site's own administrators, with usernames partly hidden. Optionally, you can have all plugin data deleted when the plugin is deleted (see below).
+Reports are stored only in your site's database. They include usernames and file names, so share them only with people you trust. A report leaves your site only when you export or email it, or when you've turned on the monthly email. Emails can only go to the site's own administrators, with usernames partly hidden.
 
-= What it is not =
+Monitoring keeps its inventory, the latest 50 additions and the status of its last email on your site. A monitoring email may include an administrator's login, or the name and location of a newly added plugin or theme. Turning monitoring off clears the inventory, its change history and the email status.
 
-Site Inspector is not a malware scanner, a firewall or a vulnerability database. It does not test what the public can reach or prove that a site is clean. "Nothing found" applies only to the check described. If you want a deeper look, [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair") can help.
+You can also have deleting the plugin delete all of its data (see Site Health Controls below).
+
+= What it isn't =
+
+Site Inspector isn't a malware scanner, a firewall or a vulnerability database. It doesn't test what the public can reach, and it can't prove a site is clean. "Nothing found" applies only to the check described. If you want a deeper look, [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair") can help.
 
 = Site Health Controls =
 
-Under **Settings > Site Health Controls** you can choose which parts of WordPress Site Health to switch off: the Tools menu item, direct visits to the screen, the dashboard widget, the background tests (including loopback and REST self-checks), the weekly cron check, the wp-site-health/v1 REST routes and the Site Health AJAX actions. All seven are off until you tick them and save, so Site Health keeps working until you decide otherwise. These options turn off real diagnostics, so switch on only the ones you need.
+Under **Settings > Site Health Controls** you choose which parts of WordPress Site Health to switch off:
 
-You can exempt administrators or specific user IDs, define THRG_SHC_ALLOW_ADMINS in wp-config.php, or use the thrg_shc_is_exempt and thrg_shc_redirect_url filters. Network admin Site Health is handled on multisite.
+* The Tools menu item
+* Direct visits to the Site Health screen
+* The dashboard widget
+* The background tests, including loopback and REST self-checks
+* The weekly cron check
+* The wp-site-health/v1 REST routes
+* The Site Health AJAX actions
 
-The same page has an **Uninstall** option: tick "Delete all plugin data" and deleting the plugin also removes its settings and saved reports. It is off by default, so nothing is lost if you reinstall.
+Nothing is switched off until you tick it and save, so Site Health keeps working until you decide otherwise. Each of these turns off real diagnostics, so only tick the ones you need.
 
-= Credits =
+You can exempt administrators or specific user IDs, define `THRG_SHC_ALLOW_ADMINS` in wp-config.php, or use the `thrg_shc_is_exempt` and `thrg_shc_redirect_url` filters. On multisite, it covers network admin Site Health too.
 
-Started from a 2019 plugin by Louis Fico, used under the [GPLv2-or-later license](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2").
-
-On Site Inspector and Site Health Controls screens, choose Show to expand other notices. Late notices are included automatically, and notices stay visible if the panel cannot initialize.
+The same page has an **Uninstall** option. Tick "Delete all plugin data" and deleting the plugin also removes its settings and saved reports. It's off by default, so nothing is lost if you reinstall.
 
 == External services ==
 
-Site Inspector does not contact any outside service. Inspections, report history, change monitoring and the monthly email all run on your own site. Emails go only to the site's own administrators, through your site's normal WordPress mail setup. The PHP support dates and security fixes it checks against are built into the plugin and need no request.
+Site Inspector doesn't contact any outside service. Inspections, report history, change monitoring and the monthly email all run on your own site. Emails go only to the site's own administrators, through your site's normal WordPress mail setup. The PHP support dates and security fixes it checks against are built into the plugin and need no request.
 
 Site Inspector has no account, license server, analytics or advertising requests.
 

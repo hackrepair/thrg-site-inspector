@@ -11,7 +11,7 @@
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  *
- * Adapted from a 2019 plugin by Louis Fico, licensed GPLv2 or later.
+ * Adapted from WP Disable Site Health (2019) by Louis Fico, licensed GPLv2 or later.
  *
  * @package THRG_Site_Inspector
  */

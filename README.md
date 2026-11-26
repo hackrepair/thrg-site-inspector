@@ -103,7 +103,7 @@ The plugin lives in the `thrg-site-inspector` folder and starts from `thrg-site-
 
 ## License and credits
 
-[GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2"). Started from a 2019 plugin by Louis Fico, used under the GPLv2-or-later license; the original attribution is retained.
+[GPLv2 or later](https://www.gnu.org/licenses/gpl-2.0.html "Read the GNU General Public License, version 2"). Started from WP Disable Site Health (2019) by Louis Fico, used under the GPLv2-or-later license; the original attribution is retained.
 
 Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: WordPress security and hack repair").
 
