@@ -8,15 +8,15 @@ Your friendly WordPress security inspector. Keeps a history of every report, so 
 
 Most hacked WordPress sites were open to the same handful of things: out-of-date software, an admin account nobody remembers, a stray PHP file in uploads, a backup left in the web folder. Site Inspector looks for exactly those in a few seconds, explains what it found in plain language, and does not apply fixes to your site. Reports are saved locally when history is enabled.
 
-This repository holds version **2.6.0**, the WordPress.org-ready build. A [2.6.0 test release](https://github.com/hackrepair/thrg-site-inspector/releases/tag/v2.6.0-wporg-test "Site Inspector 2.6.0 WordPress.org test build") has the same files as a zip. The [latest regular release](https://github.com/hackrepair/thrg-site-inspector/releases/tag/v2.5.2 "Site Inspector 2.5.2 release notes") is still 2.5.2, the GitHub edition that updates itself from this repository.
+**Version 2.6.0** is the first WordPress.org release. Install Site Inspector from the [WordPress.org Plugin Directory](https://wordpress.org/plugins/thrg-site-inspector/).
 
 <p align="center">
   <strong>▶ Watch Site Inspector in 75 seconds</strong><br>
   <a href="https://www.youtube.com/watch?v=ruIz3vJbSUM" title="Watch the Site Inspector intro on YouTube (75 seconds)"><img src="docs/img/video-thumb.jpg" alt="The Hack Repair Guy's Site Inspector: watch the 75-second tour on YouTube" width="480"></a>
   <br><br>
-  <a href="https://github.com/hackrepair/thrg-site-inspector/releases/download/v2.6.0-wporg-test/thrg-site-inspector.2.6.0.wporg.zip" title="Download the Site Inspector 2.6.0 plugin zip"><img src="https://img.shields.io/badge/%E2%AC%87%20%20Download%20Site%20Inspector%202.6.0-b34700?style=for-the-badge&labelColor=b34700" alt="Download Site Inspector 2.6.0" height="46"></a>
+  <a href="https://wordpress.org/plugins/thrg-site-inspector/" title="Install The Hack Repair Guy's Site Inspector from WordPress.org"><img src="https://img.shields.io/badge/%E2%AC%87%20%20Install%20from%20WordPress.org-b34700?style=for-the-badge&labelColor=b34700" alt="Install from WordPress.org" height="46"></a>
   <br>
-  <sub>Free. Upload the zip in WordPress. Once Site Inspector is in the WordPress.org directory, updates arrive on the Plugins screen.</sub>
+  <sub>Free. Install directly from Plugins → Add New in WordPress, and updates arrive automatically from WordPress.org.</sub>
   <br><br>
   <a href="https://hackrepair.github.io/thrg-site-inspector/" title="The Site Inspector project page">Visit the Site Inspector page</a>
 </p>
@@ -89,17 +89,19 @@ It is not a malware scanner, firewall, vulnerability-feed client, or a complete 
 
 ## Install
 
-Upload the plugin ZIP under **Plugins → Add New → Upload Plugin**, or place the `thrg-site-inspector` folder in `wp-content/plugins/`, then activate it and open **Tools → Site Inspector**.
+In WordPress, go to **Plugins → Add New**, search for **The Hack Repair Guy's Site Inspector**, click **Install Now**, then activate it and open **Tools → Site Inspector**. You can also upload the plugin ZIP under **Plugins → Add New → Upload Plugin**, or place the `thrg-site-inspector` folder in `wp-content/plugins/`.
 
 On Site Inspector and Site Health Controls screens, other notices can be expanded with **Show**. Late notices join the panel automatically. If the panel cannot initialize, notices remain visible.
 
-The plugin lives in the `thrg-site-inspector` folder and starts from `thrg-site-inspector.php`. This build has no built-in updater: once Site Inspector is listed in the WordPress.org plugin directory, updates will come from there. Copies installed from the 2.5.2 release (which start from `index.php`) keep updating from this repository's [GitHub releases](https://github.com/hackrepair/thrg-site-inspector/releases "All Site Inspector releases and download files") and are not offered the test build.
+The plugin lives in the `thrg-site-inspector` folder and starts from `thrg-site-inspector.php`. Updates come directly from WordPress.org. Copies installed from the older 2.5.2 GitHub release (which start from `index.php`) keep updating from this repository's [GitHub releases](https://github.com/hackrepair/thrg-site-inspector/releases "All Site Inspector releases and download files"); to move to the WordPress.org edition, deactivate and delete that copy, then install from WordPress.org. Saved reports and settings are kept unless "Delete all plugin data" is ticked.
 
 ## Author and support
 
 **[Jim Walker](https://hackrepair.com/)** — The Hack Repair Guy — author and maintainer.
 
-[Questions, ideas and community support](https://github.com/hackrepair/thrg-site-inspector/discussions) · [Report a bug](https://github.com/hackrepair/thrg-site-inspector/issues) · [Security reporting](SECURITY.md) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
+Hi, I'm Jim, the author. Questions, ideas, or stuck on something? Please post in the plugin's [support forum on WordPress.org](https://wordpress.org/support/plugin/thrg-site-inspector/ "Site Inspector support forum on WordPress.org"), so other site owners can find the answers too.
+
+[Support forum](https://wordpress.org/support/plugin/thrg-site-inspector/) · [Report a reproducible bug](https://github.com/hackrepair/thrg-site-inspector/issues) · [Security reporting](SECURITY.md) · [Buy Jim a coffee](https://hackrepair.com/donations/buy-jim-a-coffee)
 
 ## License and credits
 
@@ -109,7 +111,7 @@ Made by [The Hack Repair Guy](https://hackrepair.com/ "The Hack Repair Guy: Word
 
 ## Changelog
 
-### 2.6.0 (WordPress.org-ready build, test release)
+### 2.6.0 (first WordPress.org release)
 
 Prepared for the WordPress.org plugin directory: the main file is now `thrg-site-inspector.php`, the GitHub updater and the Other THRG Plugins tab are not included, and Site Health Controls start switched off. The welcome notice appears once, on the Plugins screen and Site Health Controls. The share-box and monthly-email scripts load from a script file instead of inline code. Requires WordPress 6.9 or newer.
 
